@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L2L - Save to Learn</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21Z" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 7H17" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 12H13" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 17H11" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>L2L</span>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Login View -->
+      <div id="loginView" class="view">
+        <div class="welcome-section">
+          <h2>Welcome to L2L</h2>
+          <p>Sign in to start your learning journey</p>
+        </div>
+        <form id="loginForm" class="form">
+          <div class="form-group">
+            <input type="email" id="loginEmail" placeholder="Email" required>
+          </div>
+          <div class="form-group">
+            <input type="password" id="loginPassword" placeholder="Password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+        <p class="signup-link">
+          Don't have an account? <a href="https://l2l.com/register" target="_blank">Sign up</a>
+        </p>
+      </div>
+
+      <!-- Save View -->
+      <div id="saveView" class="view hidden">
+        <div class="page-info">
+          <div class="page-icon" id="pageIcon">📄</div>
+          <div class="page-details">
+            <h3 id="pageTitle" class="page-title">Loading...</h3>
+            <p id="pageUrl" class="page-url">...</p>
+          </div>
+        </div>
+
+        <form id="saveForm" class="form">
+          <div class="form-group">
+            <label for="topicSelect">Topic</label>
+            <select id="topicSelect" class="select" required>
+              <option value="">Select a topic</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="projectSelect">Project</label>
+            <select id="projectSelect" class="select" required>
+              <option value="">Select a project</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tagsInput">Tags</label>
+            <input type="text" id="tagsInput" placeholder="Add tags separated by commas">
+          </div>
+
+          <div class="form-group">
+            <label for="notesInput">Notes</label>
+            <textarea id="notesInput" rows="3" placeholder="Add your notes..."></textarea>
+          </div>
+
+          <div class="ai-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="aiSummary" checked>
+              <span>Generate AI Summary</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="aiFlashcards" checked>
+              <span>Create Flashcards</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 8V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Save to L2L
+          </button>
+        </form>
+      </div>
+
+      <!-- Loading View -->
+      <div id="loadingView" class="view hidden">
+        <div class="spinner"></div>
+        <p id="loadingMessage">Processing...</p>
+      </div>
+
+      <!-- Success View -->
+      <div id="successView" class="view hidden">
+        <div class="success-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#34C759"/>
+            <path d="M8 12L11 15L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Saved Successfully!</h3>
+        <p>Your content has been saved and will be processed by AI.</p>
+        <button id="saveAnother" class="btn btn-secondary">Save Another</button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="user-info" id="userInfo">
+        <span class="username">Not logged in</span>
+      </div>
+      <div class="actions">
+        <button id="openDashboard" class="btn-icon" title="Open Dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="logoutBtn" class="btn-icon hidden" title="Logout">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

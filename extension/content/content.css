@@ -1,0 +1,18 @@
+#l2l-save-button:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4) !important;
+}
+
+.l2l-button-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.l2l-button-content svg {
+  flex-shrink: 0;
+}
+
+.l2l-button-content span {
+  white-space: nowrap;
+}
