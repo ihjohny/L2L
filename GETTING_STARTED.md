@@ -212,6 +212,9 @@ REFRESH_TOKEN_SECRET=change-this-to-another-random-secret
 cd app
 flutter pub get
 flutter run
+
+# Or run on Chrome
+flutter run -d chrome
 ```
 
 ### Browser Extension
@@ -219,6 +222,65 @@ flutter run
 2. Enable "Developer mode"
 3. Click "Load unpacked"
 4. Select `extension/` directory
+
+---
+
+## Quick Reference
+
+### Ready to Run? Quick Start Commands
+
+```bash
+# Navigate to project
+cd /Users/bs0650/R&D/AI/L2L
+
+# Start development (once Docker is ready)
+./start-dev.sh
+
+# Run Flutter app
+cd app && flutter run
+
+# Load browser extension
+# Open chrome://extensions/ and load the extension folder
+```
+
+### Test the API
+
+```bash
+# Register a new user
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "username": "testuser",
+    "password": "Password123",
+    "firstName": "Test",
+    "lastName": "User"
+  }'
+
+# Login
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "Password123"
+  }'
+```
+
+### What You Can Do Now
+
+1. **Explore the API** - Test endpoints with Postman or curl
+2. **Run the Flutter app** - See the mobile/web interface
+3. **Load the extension** - Save web pages to L2L
+4. **Build features** - Start implementing AI processing!
+5. **Run tests** - `cd services && npm test`
+
+### Tips
+
+- First-time Docker startup may take a few minutes
+- Keep Docker Desktop running in the background
+- Use `./start-dev.sh` for easy startup
+- Check logs if something isn't working
+- All data persists in Docker volumes
 
 ---
 

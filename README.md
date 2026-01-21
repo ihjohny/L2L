@@ -125,7 +125,6 @@ Topics (High-Level Categories)
 
 - **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide (Docker + Local setup)
 - **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local development without Docker
-- **[READY_TO_RUN.md](READY_TO_RUN.md)** - Quick reference once ready
 
 ### 🚀 One-Command Start
 

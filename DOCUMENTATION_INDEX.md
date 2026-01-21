@@ -8,7 +8,6 @@ Complete guide to all L2L documentation and how to use it.
 1. **[README.md](README.md)** - Project overview and introduction
 2. **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide (Docker + Local setup)
 3. **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local setup without Docker (detailed)
-4. **[READY_TO_RUN.md](READY_TO_RUN.md)** - Quick reference once you're ready to run
 
 ---
 
@@ -227,7 +226,6 @@ L2L/
 ├── README.md                    # Start here!
 ├── GETTING_STARTED.md           # Complete getting started guide
 ├── RUN_WITHOUT_DOCKER.md        # Local setup guide (detailed)
-├── READY_TO_RUN.md              # Quick reference
 ├── DOCUMENTATION_INDEX.md       # This file!
 ├── start-dev.sh                 # Docker startup script
 ├── start-local.sh               # Local startup script
@@ -277,7 +275,6 @@ L2L/
 ### For Setup & Installation
 1. GETTING_STARTED.md - Complete setup guide (Docker + Local)
 2. RUN_WITHOUT_DOCKER.md - Detailed local setup guide
-3. READY_TO_RUN.md - Quick reference
 
 ### For Understanding the System
 1. docs/product_concept.md - Product vision
@@ -346,10 +343,9 @@ L2L/
 
 ## 📊 File Categories
 
-### Setup & Installation (3 files)
+### Setup & Installation (2 files)
 - GETTING_STARTED.md
 - RUN_WITHOUT_DOCKER.md
-- READY_TO_RUN.md
 
 ### Product Documentation (3 files)
 - docs/product_concept.md
