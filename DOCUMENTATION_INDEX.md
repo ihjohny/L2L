@@ -8,7 +8,7 @@ Complete guide to all L2L documentation and how to use it.
 1. **[README.md](README.md)** - Project overview and introduction
 2. **[QUICKSTART.md](QUICKSTART.md)** - Comprehensive quick start guide
 3. Choose your setup method:
-   - **[DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md)** - Docker setup (recommended)
+   - **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Docker setup (recommended)
    - **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local setup without Docker
 
 ### Quick Reference
@@ -19,22 +19,14 @@ Complete guide to all L2L documentation and how to use it.
 ## 📖 Setup & Installation Guides
 
 ### Docker-Based Setup (Recommended)
-- **[DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md)** - Complete Docker installation guide
-  - Manual download instructions
-  - Homebrew installation
-  - Alternative: Colima (lightweight)
-  - Troubleshooting common issues
-
-- **[DOCKER_SETUP.md](DOCKER_SETUP.md)** - Comprehensive Docker usage guide
-  - Development vs production setups
-  - Docker commands
-  - Container management
-  - Monitoring and logs
-
-- **[DOCKER_STATUS.md](DOCKER_STATUS.md)** - Installation status tracker
-  - Current installation status
-  - Next steps checklist
+- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Complete Docker guide
+  - Installation instructions (Direct download, Homebrew, Colima)
+  - Configuration and setup
+  - Running L2L with Docker
+  - Common commands
   - Troubleshooting
+  - Advanced usage
+  - All Docker topics in one place!
 
 ### Local Setup (Without Docker)
 - **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Complete local development guide
@@ -208,7 +200,7 @@ kubectl apply -f infrastructure/kubernetes/
 ### Common Issues
 
 #### Docker won't start
-- **Solution**: [DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md)
+- **Solution**: [DOCKER_GUIDE.md](DOCKER_GUIDE.md)
 
 #### Port conflicts
 ```bash
@@ -240,10 +232,9 @@ redis-cli ping
 L2L/
 ├── README.md                    # Start here!
 ├── QUICKSTART.md               # Comprehensive quick start
-├── DOCKER_INSTALLATION.md      # Docker setup guide
+├── DOCKER_GUIDE.md             # Complete Docker guide
 ├── RUN_WITHOUT_DOCKER.md       # Local setup guide
 ├── READY_TO_RUN.md             # Quick reference
-├── DOCKER_STATUS.md            # Installation status
 ├── DOCUMENTATION_INDEX.md      # This file!
 ├── start-dev.sh                # Docker startup script
 ├── start-local.sh              # Local startup script
@@ -292,7 +283,7 @@ L2L/
 
 ### For Setup & Installation
 1. QUICKSTART.md - Choose your setup method
-2. DOCKER_INSTALLATION.md or RUN_WITHOUT_DOCKER.md - Follow the guide
+2. DOCKER_GUIDE.md or RUN_WITHOUT_DOCKER.md - Follow the guide
 3. READY_TO_RUN.md - Quick reference
 
 ### For Understanding the System
@@ -311,7 +302,7 @@ L2L/
 - Review [README.md](README.md)
 
 ### Troubleshooting
-- Check [DOCKER_STATUS.md](DOCKER_STATUS.md) for Docker issues
+- Check [DOCKER_GUIDE.md](DOCKER_GUIDE.md) for Docker issues
 - Check [RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md) for local setup issues
 - Review troubleshooting sections in each guide
 
@@ -362,11 +353,9 @@ L2L/
 
 ## 📊 File Categories
 
-### Setup & Installation (6 files)
+### Setup & Installation (4 files)
 - QUICKSTART.md
-- DOCKER_INSTALLATION.md
-- DOCKER_SETUP.md
-- DOCKER_STATUS.md
+- DOCKER_GUIDE.md
 - RUN_WITHOUT_DOCKER.md
 - READY_TO_RUN.md
 

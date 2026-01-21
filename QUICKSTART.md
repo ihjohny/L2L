@@ -11,7 +11,7 @@ You can run L2L in two ways:
 ✅ Isolated environment
 ✅ Consistent across machines
 
-**See**: [DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md) | [READY_TO_RUN.md](READY_TO_RUN.md)
+**See**: [DOCKER_GUIDE.md](DOCKER_GUIDE.md) | [READY_TO_RUN.md](READY_TO_RUN.md)
 
 ### Option B: Without Docker (Local Installation)
 ✅ Full control over services
@@ -87,7 +87,7 @@ L2L/
 1. Install dependencies: MongoDB, Redis, Node.js
 2. Run: `./start-local.sh`
 
-**Full guides**: [DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md) | [RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)
+**Full guides**: [DOCKER_GUIDE.md](DOCKER_GUIDE.md) | [RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)
 
 ### Step 2: Verify Installation
 
