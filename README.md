@@ -123,8 +123,7 @@ Topics (High-Level Categories)
 
 ### 📖 Setup Guides
 
-- **[QUICKSTART.md](QUICKSTART.md)** - Start here! Comprehensive quick start guide
-- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Complete Docker guide (installation & usage)
+- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide (Docker + Local setup)
 - **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local development without Docker
 - **[READY_TO_RUN.md](READY_TO_RUN.md)** - Quick reference once ready
 
@@ -143,7 +142,7 @@ Topics (High-Level Categories)
 ### 📋 Prerequisites
 
 **Option A: Docker**
-- Docker Desktop (see [DOCKER_GUIDE.md](DOCKER_GUIDE.md))
+- Docker Desktop (see [GETTING_STARTED.md](GETTING_STARTED.md))
 
 **Option B: Local**
 - Node.js 18+

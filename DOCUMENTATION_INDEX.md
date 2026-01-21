@@ -6,30 +6,24 @@ Complete guide to all L2L documentation and how to use it.
 
 ### New to L2L? Start with these:
 1. **[README.md](README.md)** - Project overview and introduction
-2. **[QUICKSTART.md](QUICKSTART.md)** - Comprehensive quick start guide
-3. Choose your setup method:
-   - **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Docker setup (recommended)
-   - **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local setup without Docker
-
-### Quick Reference
-- **[READY_TO_RUN.md](READY_TO_RUN.md)** - Quick reference once you're ready to run
+2. **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide (Docker + Local setup)
+3. **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local setup without Docker (detailed)
+4. **[READY_TO_RUN.md](READY_TO_RUN.md)** - Quick reference once you're ready to run
 
 ---
 
 ## 📖 Setup & Installation Guides
 
-### Docker-Based Setup (Recommended)
-- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Complete Docker guide
-  - Installation instructions (Direct download, Homebrew, Colima)
-  - Configuration and setup
-  - Running L2L with Docker
-  - Common commands
+### Getting Started
+- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide
+  - Docker installation and setup (recommended)
+  - Local setup instructions
+  - Common commands for both methods
   - Troubleshooting
-  - Advanced usage
-  - All Docker topics in one place!
+  - Testing and verification
 
 ### Local Setup (Without Docker)
-- **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Complete local development guide
+- **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Detailed local development guide
   - Installing MongoDB, Redis, Node.js, Flutter
   - Service management with Homebrew
   - Manual service startup
@@ -200,7 +194,7 @@ kubectl apply -f infrastructure/kubernetes/
 ### Common Issues
 
 #### Docker won't start
-- **Solution**: [DOCKER_GUIDE.md](DOCKER_GUIDE.md)
+- **Solution**: [GETTING_STARTED.md](GETTING_STARTED.md)
 
 #### Port conflicts
 ```bash
@@ -231,13 +225,12 @@ redis-cli ping
 ```
 L2L/
 ├── README.md                    # Start here!
-├── QUICKSTART.md               # Comprehensive quick start
-├── DOCKER_GUIDE.md             # Complete Docker guide
-├── RUN_WITHOUT_DOCKER.md       # Local setup guide
-├── READY_TO_RUN.md             # Quick reference
-├── DOCUMENTATION_INDEX.md      # This file!
-├── start-dev.sh                # Docker startup script
-├── start-local.sh              # Local startup script
+├── GETTING_STARTED.md           # Complete getting started guide
+├── RUN_WITHOUT_DOCKER.md        # Local setup guide (detailed)
+├── READY_TO_RUN.md              # Quick reference
+├── DOCUMENTATION_INDEX.md       # This file!
+├── start-dev.sh                 # Docker startup script
+├── start-local.sh               # Local startup script
 │
 ├── docs/                       # Product & technical docs
 │   ├── product_concept.md
@@ -276,14 +269,14 @@ L2L/
 
 ### For New Developers
 1. README.md - Project overview
-2. QUICKSTART.md - Get it running
+2. GETTING_STARTED.md - Get it running
 3. docs/product_concept.md - Understand the product
 4. docs/technical_specification.md - Understand the architecture
 5. docs/IMPLEMENTATION_SUMMARY.md - See what was built
 
 ### For Setup & Installation
-1. QUICKSTART.md - Choose your setup method
-2. DOCKER_GUIDE.md or RUN_WITHOUT_DOCKER.md - Follow the guide
+1. GETTING_STARTED.md - Complete setup guide (Docker + Local)
+2. RUN_WITHOUT_DOCKER.md - Detailed local setup guide
 3. READY_TO_RUN.md - Quick reference
 
 ### For Understanding the System
@@ -297,12 +290,12 @@ L2L/
 ## 🆘 Getting Help
 
 ### Documentation
-- Start with [QUICKSTART.md](QUICKSTART.md)
+- Start with [GETTING_STARTED.md](GETTING_STARTED.md)
 - Check relevant setup guide
 - Review [README.md](README.md)
 
 ### Troubleshooting
-- Check [DOCKER_GUIDE.md](DOCKER_GUIDE.md) for Docker issues
+- Check [GETTING_STARTED.md](GETTING_STARTED.md) for common issues
 - Check [RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md) for local setup issues
 - Review troubleshooting sections in each guide
 
@@ -333,7 +326,7 @@ L2L/
 
 ### Beginner
 - Read README.md
-- Follow QUICKSTART.md
+- Follow GETTING_STARTED.md
 - Get the system running
 - Explore the codebase
 
@@ -353,9 +346,8 @@ L2L/
 
 ## 📊 File Categories
 
-### Setup & Installation (4 files)
-- QUICKSTART.md
-- DOCKER_GUIDE.md
+### Setup & Installation (3 files)
+- GETTING_STARTED.md
 - RUN_WITHOUT_DOCKER.md
 - READY_TO_RUN.md
 
@@ -386,4 +378,4 @@ L2L/
 
 ---
 
-*This index serves as your navigation hub for all L2L documentation. Start with QUICKSTART.md if you're new!*
+*This index serves as your navigation hub for all L2L documentation. Start with GETTING_STARTED.md if you're new!*
