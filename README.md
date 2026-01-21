@@ -109,63 +109,84 @@ Topics (High-Level Categories)
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 🎯 Choose Your Setup Method
+
+**Option A: With Docker** (Recommended - Easiest)
+- Single command startup
+- Isolated environment
+- Consistent across machines
+
+**Option B: Without Docker** (Local Installation)
+- Full control over services
+- No Docker overhead
+- Direct access to databases
+
+### 📖 Setup Guides
+
+- **[QUICKSTART.md](QUICKSTART.md)** - Start here! Comprehensive quick start guide
+- **[DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md)** - Docker installation guide
+- **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local development without Docker
+- **[READY_TO_RUN.md](READY_TO_RUN.md)** - Quick reference once ready
+
+### 🚀 One-Command Start
+
+#### With Docker (Once Installed)
+```bash
+./start-dev.sh
+```
+
+#### Without Docker (Once Dependencies Installed)
+```bash
+./start-local.sh
+```
+
+### 📋 Prerequisites
+
+**Option A: Docker**
+- Docker Desktop (see [DOCKER_INSTALLATION.md](DOCKER_INSTALLATION.md))
+
+**Option B: Local**
 - Node.js 18+
-- Flutter 3.0+
 - MongoDB 6.0+
 - Redis 7.0+
-- Docker & Docker Compose
+- Flutter 3.0+ (for mobile/web app)
 
-### Local Development Setup
+### 📍 Access Points
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-org/L2L.git
-   cd L2L
-   ```
+Once running:
+- **API**: http://localhost:3000
+- **Health Check**: http://localhost:3000/health
+- **MongoDB**: mongodb://localhost:27017
+- **Redis**: redis://localhost:6379
 
-2. **Install dependencies**
-   ```bash
-   # Backend services
-   cd services
-   npm install
+### 🧪 Verify Installation
 
-   # Frontend app
-   cd ../app
-   flutter pub get
+```bash
+# Test the API
+curl http://localhost:3000/health
 
-   # Browser extension
-   cd ../extension
-   npm install
-   ```
+# Expected response:
+# {
+#   "status": "ok",
+#   "database": "connected",
+#   "environment": "development"
+# }
+```
 
-3. **Environment setup**
-   ```bash
-   # Copy environment templates
-   cp .env.example .env
-   cp services/.env.example services/.env
+### 📱 Additional Components
 
-   # Update with your API keys and configurations
-   ```
+#### Flutter App
+```bash
+cd app
+flutter pub get
+flutter run
+```
 
-4. **Start development environment**
-   ```bash
-   # Start all services with Docker Compose
-   docker-compose -f docker-compose.dev.yml up -d
-
-   # Start backend services
-   cd services
-   npm run dev
-
-   # Start Flutter app
-   cd ../app
-   flutter run
-   ```
-
-5. **Install browser extension**
-   - Open Chrome/Edge: `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked" and select `extension/` directory
+#### Browser Extension
+1. Open Chrome/Edge: `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select `extension/` directory
 
 ### Environment Variables
 
