@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:dotenv/dotenv.dart' show env, load;
 
@@ -10,8 +11,10 @@ class EnvConfig {
 
   static Future<void> load() async {
     // In production, these would come from environment variables
+    // Android emulator uses 10.0.2.2 to access host machine's localhost
+    final host = kDebugMode && Platform.isAndroid ? '10.0.2.2' : 'localhost';
     apiBaseUrl = kDebugMode
-        ? 'http://localhost:3000'
+        ? 'http://$host:3000'
         : 'https://api.l2l.com';
     apiVersion = 'v1';
     enableLogging = kDebugMode;

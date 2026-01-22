@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/auth_providers.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -14,7 +15,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,34 +28,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    // Clear any previous errors
+    ref.read(authProvider.notifier).clearError();
 
-    try {
-      // TODO: Implement actual login
-      await Future.delayed(const Duration(seconds: 1));
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-      if (mounted) {
-        context.go('/');
-      }
-    } catch (e) {
-      if (mounted) {
+    final success = await ref.read(authProvider.notifier).login(email, password);
+
+    if (success && mounted) {
+      // Navigate to home
+      context.go('/');
+    } else if (mounted) {
+      // Show error if available
+      final error = ref.read(authProvider).error;
+      if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login failed')),
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -89,9 +91,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
+                    border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -102,11 +106,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     }
                     return null;
                   },
+                  enabled: !isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _handleLogin(),
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outlined),
@@ -116,12 +123,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                     ),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -129,14 +139,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     }
                     return null;
                   },
+                  enabled: !isLoading,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
+                  onPressed: isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: _isLoading
+                  child: isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -146,9 +157,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {
-                    context.go('/register');
-                  },
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context.go('/register');
+                        },
                   child: const Text('Don\'t have an account? Sign up'),
                 ),
               ],

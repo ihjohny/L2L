@@ -6,64 +6,125 @@ import '../../presentation/pages/auth/login_page.dart';
 import '../../presentation/pages/auth/register_page.dart';
 import '../../presentation/pages/home/home_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
+import '../providers/auth_providers.dart';
 
+// Router key for navigation
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+// Router provider with auth state integration
 final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authProvider);
+
   return GoRouter(
+    navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      // Check if currently initializing (on splash screen)
+      final isInitializing = authState.isLoading && authState.user == null;
+      final isAuthenticated = authState.isAuthenticated;
+      final isLoggingIn = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
+      final isSplash = state.matchedLocation == '/splash';
+
+      // If still initializing, stay on splash
+      if (isSplash) {
+        if (!isInitializing) {
+          // Initialization complete, redirect appropriately
+          return isAuthenticated ? '/' : '/login';
+        }
+        return null;
+      }
+
+      // If not authenticated and trying to access protected route, redirect to login
+      if (!isAuthenticated && !isLoggingIn) {
+        return '/login';
+      }
+
+      // If authenticated and trying to access login/register, redirect to home
+      if (isAuthenticated && isLoggingIn) {
+        return '/';
+      }
+
+      return null;
+    },
     routes: [
       // Splash Screen
       GoRoute(
         path: '/splash',
         name: 'splash',
-        builder: (context, state) => const SplashPage(),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const SplashPage(),
+        ),
       ),
 
       // Authentication Routes
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const LoginPage(),
+        ),
       ),
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => const RegisterPage(),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const RegisterPage(),
+        ),
       ),
 
-      // Home & Main App Routes
+      // Home & Main App Routes (Protected)
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const HomePage(),
+        ),
       ),
 
-      // Topics Routes
+      // Topics Routes (Protected)
       GoRoute(
         path: '/topics',
         name: 'topics',
-        builder: (context, state) => const HomePage(initialIndex: 0),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const HomePage(initialIndex: 0),
+        ),
       ),
 
-      // Projects Routes
+      // Projects Routes (Protected)
       GoRoute(
         path: '/projects',
         name: 'projects',
-        builder: (context, state) => const HomePage(initialIndex: 1),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const HomePage(initialIndex: 1),
+        ),
       ),
 
-      // Bookmarks Routes
+      // Bookmarks Routes (Protected)
       GoRoute(
         path: '/bookmarks',
         name: 'bookmarks',
-        builder: (context, state) => const HomePage(initialIndex: 2),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const HomePage(initialIndex: 2),
+        ),
       ),
 
-      // Profile Routes
+      // Profile Routes (Protected)
       GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (context, state) => const HomePage(initialIndex: 3),
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const HomePage(initialIndex: 3),
+        ),
       ),
     ],
 

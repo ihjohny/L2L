@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/auth_providers.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -18,7 +19,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -36,34 +36,39 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    // Clear any previous errors
+    ref.read(authProvider.notifier).clearError();
 
-    try {
-      // TODO: Implement actual registration
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (mounted) {
-        context.go('/');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration failed')),
+    final success = await ref.read(authProvider.notifier).register(
+          email: _emailController.text.trim(),
+          username: _usernameController.text.trim(),
+          password: _passwordController.text,
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+
+    if (success && mounted) {
+      // Navigate to home
+      context.go('/');
+    } else if (mounted) {
+      // Show error if available
+      final error = ref.read(authProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -98,8 +103,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     Expanded(
                       child: TextFormField(
                         controller: _firstNameController,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                           labelText: 'First Name',
+                          border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -107,14 +115,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           }
                           return null;
                         },
+                        enabled: !isLoading,
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextFormField(
                         controller: _lastNameController,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                           labelText: 'Last Name',
+                          border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -122,6 +134,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           }
                           return null;
                         },
+                        enabled: !isLoading,
                       ),
                     ),
                   ],
@@ -129,9 +142,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _usernameController,
+                  textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     labelText: 'Username',
                     prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -140,16 +155,25 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     if (value.length < 3) {
                       return 'Username must be at least 3 characters';
                     }
+                    if (value.length > 30) {
+                      return 'Username must be less than 30 characters';
+                    }
+                    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+                      return 'Only letters, numbers, and underscores';
+                    }
                     return null;
                   },
+                  enabled: !isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
+                    border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -160,11 +184,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     }
                     return null;
                   },
+                  enabled: !isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outlined),
@@ -174,12 +200,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                     ),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -188,16 +217,24 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     if (value.length < 8) {
                       return 'Password must be at least 8 characters';
                     }
+                    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)')
+                        .hasMatch(value)) {
+                      return 'Must contain uppercase, lowercase, and number';
+                    }
                     return null;
                   },
+                  enabled: !isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _handleRegister(),
                   decoration: const InputDecoration(
                     labelText: 'Confirm Password',
                     prefixIcon: Icon(Icons.lock_outlined),
+                    border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -208,14 +245,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     }
                     return null;
                   },
+                  enabled: !isLoading,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _handleRegister,
+                  onPressed: isLoading ? null : _handleRegister,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: _isLoading
+                  child: isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -225,9 +263,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {
-                    context.go('/login');
-                  },
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          context.go('/login');
+                        },
                   child: const Text('Already have an account? Sign in'),
                 ),
               ],
