@@ -1,6 +1,5 @@
-import User, { User as UserModel } from '../../database/models/User.model';
+import User from '../../database/models/User.model';
 import { User as UserType, CreateUserDto, UpdateUserDto, LoginDto, AuthResponse } from '../../shared/interfaces/user.interface';
-import { hashPassword, comparePassword, generateVerificationToken } from '../../utils/crypto';
 import { generateAccessToken, generateRefreshToken, verifyAccessToken } from '../../utils/jwt';
 import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';
@@ -71,7 +70,7 @@ class UserService {
       await user.save();
 
       return {
-        user: user.toPublicJSON(),
+        user: (user as any).toPublicJSON(),
         token,
         refreshToken
       };
@@ -90,7 +89,7 @@ class UserService {
       }
 
       // Check password
-      const isPasswordValid = await user.comparePassword(dto.password);
+      const isPasswordValid = await (user as any).comparePassword(dto.password);
       if (!isPasswordValid) {
         throw new AppError('Invalid email or password', 'UNAUTHORIZED', 401);
       }
@@ -110,7 +109,7 @@ class UserService {
       await user.save();
 
       return {
-        user: user.toPublicJSON(),
+        user: (user as any).toPublicJSON(),
         token,
         refreshToken
       };
@@ -126,7 +125,7 @@ class UserService {
       if (!user) {
         throw new AppError('User not found', 'NOT_FOUND', 404);
       }
-      return user.toPublicJSON();
+      return (user as any).toPublicJSON();
     } catch (error: any) {
       logger.error('Error in getUserById:', error);
       throw error;
@@ -163,7 +162,7 @@ class UserService {
       await user.save();
       logger.info(`User updated: ${user.email}`);
 
-      return user.toPublicJSON();
+      return (user as any).toPublicJSON();
     } catch (error: any) {
       logger.error('Error in updateUser:', error);
       throw error;
@@ -241,7 +240,7 @@ class UserService {
       await user.save();
       logger.info(`User subscription updated: ${user.email} -> ${tier}`);
 
-      return user.toPublicJSON();
+      return (user as any).toPublicJSON();
     } catch (error: any) {
       logger.error('Error in updateSubscriptionTier:', error);
       throw error;
@@ -264,4 +263,6 @@ class UserService {
   }
 }
 
-export default new UserService();
+const userService = new UserService();
+export default userService;
+export { userService };

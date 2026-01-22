@@ -125,7 +125,7 @@ class ContentService {
       });
 
       // Add project to topic
-      topic.projects.push(project._id);
+      topic.projects.push(project._id.toString());
       await topic.save();
 
       logger.info(`Project created: ${project._id} by user ${userId}`);
@@ -250,7 +250,7 @@ class ContentService {
       });
 
       // Add entity to project
-      project.entities.push(entity._id);
+      project.entities.push(entity._id.toString());
       project.progress.totalEntities = project.entities.length;
       await project.save();
 
@@ -298,7 +298,7 @@ class ContentService {
     }
   }
 
-  async updateEntity(entityId: string, userId: string, dto: UpdateEntityDto) {
+  async updateEntity(entityId: string, userId: string, dto: UpdateEntityDto): Promise<any> {
     try {
       const entity = await Entity.findOne({ _id: entityId, userId });
       if (!entity) {
@@ -345,21 +345,21 @@ class ContentService {
     }
   }
 
-  async markEntityAsRead(entityId: string, userId: string) {
+  async markEntityAsRead(entityId: string, userId: string): Promise<any> {
     try {
       const entity = await Entity.findOne({ _id: entityId, userId });
       if (!entity) {
         throw new AppError('Entity not found or unauthorized', 'NOT_FOUND', 404);
       }
 
-      await entity.markAsRead();
+      await (entity as any).markAsRead();
 
       // Update project progress
       const project = await Project.findById(entity.projectId);
       if (project) {
         project.progress.entitiesCompleted += 1;
-        await project.updateProgress();
-        await project.addPoints(10); // Add 10 points for completing an entity
+        await (project as any).updateProgress();
+        await (project as any).addPoints(10); // Add 10 points for completing an entity
       }
 
       logger.info(`Entity marked as read: ${entityId}`);
@@ -370,14 +370,14 @@ class ContentService {
     }
   }
 
-  async toggleEntityFavorite(entityId: string, userId: string) {
+  async toggleEntityFavorite(entityId: string, userId: string): Promise<any> {
     try {
       const entity = await Entity.findOne({ _id: entityId, userId });
       if (!entity) {
         throw new AppError('Entity not found or unauthorized', 'NOT_FOUND', 404);
       }
 
-      await entity.toggleFavorite();
+      await (entity as any).toggleFavorite();
       logger.info(`Entity favorite toggled: ${entityId}`);
       return entity;
     } catch (error: any) {
@@ -430,4 +430,6 @@ class ContentService {
   }
 }
 
-export default new ContentService();
+const contentService = new ContentService();
+export default contentService;
+export { contentService };

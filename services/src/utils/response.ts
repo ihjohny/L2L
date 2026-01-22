@@ -23,7 +23,7 @@ export function errorResponse(
   statusCode: number = 500,
   details?: any
 ): Response {
-  const response: ApiResponse = {
+  const response: ApiResponse & { details?: any } = {
     success: false,
     error,
     message,

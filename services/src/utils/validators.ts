@@ -1,38 +1,38 @@
-import { Validator } from 'express-validator';
-import { ContentType, DifficultyLevel } from '../shared/interfaces/content.interface';
+// import { Validator } from 'express-validator';
+// import { ContentType, DifficultyLevel } from '../shared/interfaces/content.interface';
 
 export const validationRules = {
   auth: {
     register: [
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('email')
           .isEmail()
           .normalizeEmail()
           .withMessage('Please provide a valid email address');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('username')
           .isLength({ min: 3, max: 30 })
           .matches(/^[a-zA-Z0-9_]+$/)
           .withMessage('Username must be 3-30 characters and contain only letters, numbers, and underscores');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('password')
           .isLength({ min: 8 })
           .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
           .withMessage('Password must be at least 8 characters and contain uppercase, lowercase, and number');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('firstName')
           .trim()
           .notEmpty()
           .withMessage('First name is required');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('lastName')
           .trim()
@@ -41,14 +41,14 @@ export const validationRules = {
       }
     ],
     login: [
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('email')
           .isEmail()
           .normalizeEmail()
           .withMessage('Please provide a valid email address');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('password')
           .notEmpty()
@@ -59,21 +59,21 @@ export const validationRules = {
 
   content: {
     createTopic: [
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('name')
           .trim()
           .isLength({ min: 1, max: 100 })
           .withMessage('Topic name must be between 1 and 100 characters');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('description')
           .trim()
           .isLength({ min: 1, max: 500 })
           .withMessage('Description must be between 1 and 500 characters');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('color')
           .matches(/^#[0-9A-F]{6}$/i)
@@ -82,27 +82,27 @@ export const validationRules = {
     ],
 
     createProject: [
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('name')
           .trim()
           .isLength({ min: 1, max: 100 })
           .withMessage('Project name must be between 1 and 100 characters');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('description')
           .trim()
           .isLength({ min: 1, max: 500 })
           .withMessage('Description must be between 1 and 500 characters');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('topicId')
           .isMongoId()
           .withMessage('Invalid topic ID');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('difficulty')
           .optional()
@@ -112,13 +112,13 @@ export const validationRules = {
     ],
 
     createEntity: [
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('url')
           .isURL()
           .withMessage('Please provide a valid URL');
       },
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('projectId')
           .isMongoId()
@@ -127,7 +127,7 @@ export const validationRules = {
     ],
 
     updateEntity: [
-      (validator: Validator) => {
+      (validator: any) => {
         return validator
           .body('rating')
           .optional()

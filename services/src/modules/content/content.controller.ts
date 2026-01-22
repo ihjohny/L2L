@@ -301,4 +301,6 @@ class ContentController {
   }
 }
 
-export default new ContentController();
+const contentController = new ContentController();
+export default contentController;
+export { contentController as Content };
