@@ -27,11 +27,11 @@ class ThemeConfig {
       elevation: 0,
       centerTitle: true,
     ),
-    cardTheme: CardTheme(
+    cardTheme: const CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        side: BorderSide(color: Color(0xFFD1D1D6)),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -81,11 +81,11 @@ class ThemeConfig {
       elevation: 0,
       centerTitle: true,
     ),
-    cardTheme: CardTheme(
+    cardTheme: const CardThemeData(
       elevation: 0,
-      color: const Color(0xFF2C2C2E),
+      color: Color(0xFF2C2C2E),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

@@ -36,6 +36,7 @@ dependencies:
   # Utilities
   intl: ^0.18.1
   url_launcher: ^6.2.1
+  dotenv: ^4.2.0
   share_plus: ^7.2.1
   image_picker: ^1.0.7
 
@@ -64,13 +65,13 @@ flutter:
     - assets/icons/
     - assets/fonts/
 
-  fonts:
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Inter-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #         weight: 700
