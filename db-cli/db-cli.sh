@@ -43,7 +43,6 @@ show_help() {
     echo "  user-email <email>       Find user by email"
     echo "  user-username <name>     Find user by username"
     echo "  user-id <id>             Find user by ID"
-    echo "  topics                   Show all topics"
     echo "  projects                 Show all projects"
     echo "  entities                 Show all entities"
     echo "  collections              List all collections"
@@ -108,13 +107,6 @@ find_user_id() {
     echo -e "${BLUE}🔍 User with ID '$1':${NC}"
     echo ""
     exec_mongosh "db.users.findOne({_id: ObjectId('$1')}, {password: 0, refreshToken: 0, __v: 0})"
-}
-
-# Show all topics
-show_topics() {
-    echo -e "${BLUE}📚 All Topics:${NC}"
-    echo ""
-    exec_mongosh "db.topics.find().pretty()"
 }
 
 # Show all projects
@@ -221,9 +213,6 @@ case "$1" in
         ;;
     user-id)
         find_user_id "$2"
-        ;;
-    topics)
-        show_topics
         ;;
     projects)
         show_projects

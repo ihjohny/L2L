@@ -6,13 +6,6 @@ import { validate } from '../../middleware/validation.middleware';
 
 const router = Router();
 
-// Topic Routes
-router.post('/topics', authenticate, validationRules.content.createTopic, validate, Content.createTopic);
-router.get('/topics', authenticate, Content.getTopics);
-router.get('/topics/:topicId', Content.getTopicById);
-router.put('/topics/:topicId', authenticate, Content.updateTopic);
-router.delete('/topics/:topicId', authenticate, Content.deleteTopic);
-
 // Project Routes
 router.post('/projects', authenticate, validationRules.content.createProject, validate, Content.createProject);
 router.get('/projects', authenticate, Content.getProjects);

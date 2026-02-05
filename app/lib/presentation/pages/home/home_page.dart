@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'topics_page.dart';
 import 'projects_page.dart';
 import 'bookmarks_page.dart';
 import 'profile_page.dart';
@@ -40,11 +39,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.topic_outlined),
-            activeIcon: Icon(Icons.topic),
-            label: 'Topics',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.folder_outlined),
             activeIcon: Icon(Icons.folder),
             label: 'Projects',
@@ -65,7 +59,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   static final List<Widget> _pages = [
-    const TopicsPage(),
     const ProjectsPage(),
     const BookmarksPage(),
     const ProfilePage(),

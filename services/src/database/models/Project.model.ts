@@ -44,12 +44,6 @@ const projectSchema = new Schema(
       required: true,
       index: true
     },
-    topicId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Topic',
-      required: true,
-      index: true
-    },
     tags: [{
       type: String,
       trim: true,
@@ -99,7 +93,6 @@ const projectSchema = new Schema(
 
 // Indexes
 projectSchema.index({ userId: 1, createdAt: -1 });
-projectSchema.index({ topicId: 1, createdAt: -1 });
 projectSchema.index({ isPublic: 1, createdAt: -1 });
 projectSchema.index({ tags: 1 });
 projectSchema.index({ 'progress.completionPercentage': -1 });
@@ -135,14 +128,6 @@ projectSchema.methods.addPoints = function (points: number) {
 // Static method to find by user
 projectSchema.statics.findByUser = function (userId: string) {
   return this.find({ userId })
-    .populate('topicId', 'name color icon')
-    .sort({ createdAt: -1 });
-};
-
-// Static method to find by topic
-projectSchema.statics.findByTopic = function (topicId: string) {
-  return this.find({ topicId })
-    .populate('userId', 'username profile.firstName profile.lastName profile.avatar')
     .sort({ createdAt: -1 });
 };
 
@@ -150,13 +135,11 @@ projectSchema.statics.findByTopic = function (topicId: string) {
 projectSchema.statics.findPublic = function () {
   return this.find({ isPublic: true })
     .populate('userId', 'username profile.firstName profile.lastName profile.avatar')
-    .populate('topicId', 'name color icon')
     .sort({ 'gamification.points': -1 });
 };
 
 interface ProjectModel extends Model<ProjectDocument> {
   findByUser(userId: string): Promise<ProjectDocument[]>;
-  findByTopic(topicId: string): Promise<ProjectDocument[]>;
   findPublic(): Promise<ProjectDocument[]>;
 }
 

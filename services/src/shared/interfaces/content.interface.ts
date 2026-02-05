@@ -4,17 +4,6 @@ export type ContentType = 'article' | 'video' | 'podcast' | 'document' | 'book';
 export type ContentStatus = 'pending' | 'processing' | 'completed' | 'failed';
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
-export interface Topic extends BaseEntity {
-  name: string;
-  description: string;
-  userId: string;
-  color: string;
-  icon?: string;
-  isPublic: boolean;
-  projects: string[];
-  tags: string[];
-}
-
 export interface ProjectProgress {
   completionPercentage: number;
   lastAccessed: Date;
@@ -41,7 +30,6 @@ export interface Project extends BaseEntity {
   name: string;
   description: string;
   userId: string;
-  topicId: string;
   tags: string[];
   entities: string[];
   isPublic: boolean;
@@ -136,28 +124,9 @@ export interface Entity extends BaseEntity {
   userInteractions: UserInteractions;
 }
 
-export interface CreateTopicDto {
-  name: string;
-  description: string;
-  color: string;
-  icon?: string;
-  isPublic?: boolean;
-  tags?: string[];
-}
-
-export interface UpdateTopicDto {
-  name?: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  isPublic?: boolean;
-  tags?: string[];
-}
-
 export interface CreateProjectDto {
   name: string;
   description: string;
-  topicId: string;
   tags?: string[];
   isPublic?: boolean;
   difficulty?: DifficultyLevel;

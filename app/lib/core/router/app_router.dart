@@ -83,16 +83,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'home',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(),
-        ),
-      ),
-
-      // Topics Routes (Protected)
-      GoRoute(
-        path: '/topics',
-        name: 'topics',
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
           child: const HomePage(initialIndex: 0),
         ),
       ),
@@ -103,7 +93,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'projects',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 1),
+          child: const HomePage(initialIndex: 0),
         ),
       ),
 
@@ -113,7 +103,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'bookmarks',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 2),
+          child: const HomePage(initialIndex: 1),
         ),
       ),
 
@@ -123,7 +113,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 3),
+          child: const HomePage(initialIndex: 2),
         ),
       ),
     ],

@@ -89,38 +89,11 @@ async function loadPageInfo() {
     pageIcon.textContent = '📚';
   }
 
-  // Load topics and projects
-  await loadTopics();
+  // Load projects
+  await loadProjects();
 }
 
-async function loadTopics() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/content/topics`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      const topics = data.data || [];
-
-      const topicSelect = document.getElementById('topicSelect');
-      topicSelect.innerHTML = '<option value="">Select a topic</option>';
-
-      topics.forEach(topic => {
-        const option = document.createElement('option');
-        option.value = topic._id;
-        option.textContent = topic.name;
-        topicSelect.appendChild(option);
-      });
-    }
-  } catch (error) {
-    console.error('Failed to load topics:', error);
-  }
-}
-
-async function loadProjects(topicId) {
+async function loadProjects() {
   try {
     const response = await fetch(`${API_BASE_URL}/content/projects`, {
       headers: {
@@ -130,7 +103,7 @@ async function loadProjects(topicId) {
 
     if (response.ok) {
       const data = await response.json();
-      const projects = (data.data || []).filter(p => p.topicId === topicId);
+      const projects = data.data || [];
 
       const projectSelect = document.getElementById('projectSelect');
       projectSelect.innerHTML = '<option value="">Select a project</option>';
@@ -163,11 +136,6 @@ function setupEventListeners() {
   document.getElementById('saveForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     await handleSave();
-  });
-
-  // Topic change
-  document.getElementById('topicSelect').addEventListener('change', (e) => {
-    loadProjects(e.target.value);
   });
 
   // Logout
@@ -227,13 +195,12 @@ async function handleLogin() {
 }
 
 async function handleSave() {
-  const topicId = document.getElementById('topicSelect').value;
   const projectId = document.getElementById('projectSelect').value;
   const tags = document.getElementById('tagsInput').value;
   const notes = document.getElementById('notesInput').value;
 
-  if (!topicId || !projectId) {
-    alert('Please select a topic and project');
+  if (!projectId) {
+    alert('Please select a project');
     return;
   }
 

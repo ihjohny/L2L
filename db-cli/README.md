@@ -62,7 +62,6 @@ chmod +x db-cli.sh
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `topics` | Display all topics in the database | `./db-cli.sh topics` |
 | `projects` | Display all projects in the database | `./db-cli.sh projects` |
 | `entities` | Display all entities in the database | `./db-cli.sh entities` |
 | `collections` | List all collections in the database | `./db-cli.sh collections` |
@@ -117,11 +116,10 @@ View overall statistics:
 Output example:
 ```
 Database: l2l_dev
-Collections: 4
+Collections: 3
 
   users: 1 documents
   projects: 0 documents
-  topics: 0 documents
   entities: 0 documents
 ```
 

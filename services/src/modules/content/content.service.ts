@@ -1,109 +1,14 @@
-import Topic from '../../database/models/Topic.model';
 import Project from '../../database/models/Project.model';
 import Entity from '../../database/models/Entity.model';
 import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';
-import { CreateTopicDto, UpdateTopicDto, CreateProjectDto, UpdateProjectDto, CreateEntityDto, UpdateEntityDto } from '../../shared/interfaces/content.interface';
+import { CreateProjectDto, UpdateProjectDto, CreateEntityDto, UpdateEntityDto } from '../../shared/interfaces/content.interface';
 import { calculatePaginationMeta } from '../../utils/response';
 
 class ContentService {
-  // Topic Methods
-  async createTopic(userId: string, dto: CreateTopicDto) {
-    try {
-      const topic = await Topic.create({
-        ...dto,
-        userId,
-        projects: [],
-        tags: dto.tags || []
-      });
-
-      logger.info(`Topic created: ${topic._id} by user ${userId}`);
-      return topic;
-    } catch (error: any) {
-      logger.error('Error in createTopic:', error);
-      throw error;
-    }
-  }
-
-  async getTopicsByUser(userId: string, page: number = 1, limit: number = 20) {
-    try {
-      const skip = (page - 1) * limit;
-      const topics = await Topic.find({ userId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('projects', 'name progress');
-
-      const total = await Topic.countDocuments({ userId });
-
-      return {
-        data: topics,
-        meta: calculatePaginationMeta(total, page, limit)
-      };
-    } catch (error: any) {
-      logger.error('Error in getTopicsByUser:', error);
-      throw error;
-    }
-  }
-
-  async getTopicById(topicId: string) {
-    try {
-      const topic = await Topic.findById(topicId).populate('projects');
-      if (!topic) {
-        throw new AppError('Topic not found', 'NOT_FOUND', 404);
-      }
-      return topic;
-    } catch (error: any) {
-      logger.error('Error in getTopicById:', error);
-      throw error;
-    }
-  }
-
-  async updateTopic(topicId: string, userId: string, dto: UpdateTopicDto) {
-    try {
-      const topic = await Topic.findOne({ _id: topicId, userId });
-      if (!topic) {
-        throw new AppError('Topic not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
-      Object.assign(topic, dto);
-      await topic.save();
-
-      logger.info(`Topic updated: ${topicId}`);
-      return topic;
-    } catch (error: any) {
-      logger.error('Error in updateTopic:', error);
-      throw error;
-    }
-  }
-
-  async deleteTopic(topicId: string, userId: string) {
-    try {
-      const topic = await Topic.findOne({ _id: topicId, userId });
-      if (!topic) {
-        throw new AppError('Topic not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
-      // Delete all projects associated with this topic
-      await Project.deleteMany({ topicId });
-
-      await Topic.findByIdAndDelete(topicId);
-      logger.info(`Topic deleted: ${topicId}`);
-    } catch (error: any) {
-      logger.error('Error in deleteTopic:', error);
-      throw error;
-    }
-  }
-
   // Project Methods
   async createProject(userId: string, dto: CreateProjectDto) {
     try {
-      // Verify topic exists and belongs to user
-      const topic = await Topic.findOne({ _id: dto.topicId, userId });
-      if (!topic) {
-        throw new AppError('Topic not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
       const project = await Project.create({
         ...dto,
         userId,
@@ -124,10 +29,6 @@ class ContentService {
         }
       });
 
-      // Add project to topic
-      topic.projects.push(project._id.toString());
-      await topic.save();
-
       logger.info(`Project created: ${project._id} by user ${userId}`);
       return project;
     } catch (error: any) {
@@ -140,7 +41,6 @@ class ContentService {
     try {
       const skip = (page - 1) * limit;
       const projects = await Project.find({ userId })
-        .populate('topicId', 'name color icon')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -160,7 +60,6 @@ class ContentService {
   async getProjectById(projectId: string) {
     try {
       const project = await Project.findById(projectId)
-        .populate('topicId', 'name color icon')
         .populate('entities')
         .populate('collaborators', 'username profile.firstName profile.lastName profile.avatar');
 
@@ -198,12 +97,6 @@ class ContentService {
       if (!project) {
         throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
       }
-
-      // Remove project from topic
-      await Topic.updateOne(
-        { _id: project.topicId },
-        { $pull: { projects: projectId } }
-      );
 
       // Delete all entities associated with this project
       await Entity.deleteMany({ projectId });

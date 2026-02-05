@@ -38,20 +38,6 @@ export const validationRules = {
   },
 
   content: {
-    createTopic: [
-      body('name')
-        .trim()
-        .isLength({ min: 1, max: 100 })
-        .withMessage('Topic name must be between 1 and 100 characters'),
-      body('description')
-        .trim()
-        .isLength({ min: 1, max: 500 })
-        .withMessage('Description must be between 1 and 500 characters'),
-      body('color')
-        .matches(/^#[0-9A-F]{6}$/i)
-        .withMessage('Color must be a valid hex color code')
-    ],
-
     createProject: [
       body('name')
         .trim()
@@ -61,9 +47,6 @@ export const validationRules = {
         .trim()
         .isLength({ min: 1, max: 500 })
         .withMessage('Description must be between 1 and 500 characters'),
-      body('topicId')
-        .isMongoId()
-        .withMessage('Invalid topic ID'),
       body('difficulty')
         .optional()
         .isIn(['beginner', 'intermediate', 'advanced', 'expert'])
