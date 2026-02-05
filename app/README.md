@@ -1,16 +1,43 @@
-# l2l_app
+# L2L App
 
-A new Flutter project.
+L2L (Link to Learn) - Intelligent Learning Bookmark Platform
 
-## Getting Started
+## Code Generation
 
-This project is a starting point for a Flutter application.
+This project uses code generation for Freezed models, JSON serialization, and Riverpod providers.
 
-A few resources to get you started if this is your first Flutter project:
+### Running Build Runner
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Generate code after model changes or when cloning the project:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+**Alternative commands:**
+
+| Command | Purpose |
+|---------|---------|
+| `flutter pub run build_runner build` | One-time build |
+| `flutter pub run build_runner watch` | Continuous generation during development |
+| `flutter pub run build_runner clean` | Remove all generated files |
+
+### Troubleshooting
+
+If code generation fails:
+
+1. Clean and rebuild:
+   ```bash
+   flutter pub run build_runner clean
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+2. Ensure dependencies are installed:
+   ```bash
+   flutter pub get
+   ```
+
+3. Verify model files have:
+   - `part 'filename.freezed.dart';` declaration
+   - `part 'filename.g.dart';` (if using JSON serialization)
+   - `@freezed` or `@JsonSerializable` annotations
