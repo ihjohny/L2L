@@ -211,6 +211,46 @@ class ContentController {
       next(error);
     }
   }
+
+  async reprocessEntity(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.sub;
+      if (!userId) {
+        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
+      }
+
+      const { entityId } = req.params;
+      const entity = await contentService.reprocessEntity(entityId, userId);
+
+      return successResponse(res, entity, 'Entity re-processed successfully');
+    } catch (error: any) {
+      logger.error('Error in reprocessEntity controller:', error);
+      next(error);
+    }
+  }
+
+  async updateEntityTags(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.sub;
+      if (!userId) {
+        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
+      }
+
+      const { entityId } = req.params;
+      const { tags } = req.body;
+
+      if (!Array.isArray(tags)) {
+        return errorResponse(res, 'VALIDATION_ERROR', 'Tags must be an array', 400);
+      }
+
+      const entity = await contentService.updateEntityTags(entityId, userId, tags);
+
+      return successResponse(res, entity, 'Entity tags updated successfully');
+    } catch (error: any) {
+      logger.error('Error in updateEntityTags controller:', error);
+      next(error);
+    }
+  }
 }
 
 const contentController = new ContentController();

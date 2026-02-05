@@ -21,5 +21,7 @@ router.put('/entities/:entityId', authenticate, validationRules.content.updateEn
 router.delete('/entities/:entityId', authenticate, Content.deleteEntity);
 router.post('/entities/:entityId/read', authenticate, Content.markAsRead);
 router.post('/entities/:entityId/favorite', authenticate, Content.toggleFavorite);
+router.post('/entities/:entityId/reprocess', authenticate, Content.reprocessEntity);
+router.put('/entities/:entityId/tags', authenticate, Content.updateEntityTags);
 
 export default router;

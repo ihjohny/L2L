@@ -4,6 +4,7 @@ import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';
 import { CreateProjectDto, UpdateProjectDto, CreateEntityDto, UpdateEntityDto } from '../../shared/interfaces/content.interface';
 import { calculatePaginationMeta } from '../../utils/response';
+import { aiService } from '../ai';
 
 class ContentService {
   // Project Methods
@@ -120,15 +121,17 @@ class ContentService {
 
       // Fetch basic metadata from URL
       const metadata = await this.fetchUrlMetadata(dto.url);
+      const contentType = this.detectContentType(dto.url, metadata);
 
+      // Create entity with initial data
       const entity = await Entity.create({
         url: dto.url,
         title: metadata.title || 'Untitled',
         description: metadata.description || '',
         userId,
         projectId: dto.projectId,
-        type: this.detectContentType(dto.url, metadata),
-        status: 'pending',
+        type: contentType,
+        status: 'processing',
         metadata: {
           ...metadata,
           difficulty: 'intermediate',
@@ -147,10 +150,120 @@ class ContentService {
       project.progress.totalEntities = project.entities.length;
       await project.save();
 
+      // Trigger AI processing asynchronously (don't wait for it)
+      this.processEntityWithAI(entity._id.toString(), entity.url, entity.title, entity.description, contentType)
+        .catch(error => logger.error(`AI processing failed for entity ${entity._id}:`, error));
+
       logger.info(`Entity created: ${entity._id} by user ${userId}`);
       return entity;
     } catch (error: any) {
       logger.error('Error in createEntity:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process entity with AI to generate tags, summary, and learning materials
+   * This runs asynchronously after entity creation
+   */
+  private async processEntityWithAI(
+    entityId: string,
+    url: string,
+    title: string,
+    description: string,
+    type: any
+  ): Promise<void> {
+    try {
+      logger.info(`Starting AI processing for entity: ${entityId}`);
+
+      // Update status to processing
+      await Entity.findByIdAndUpdate(entityId, { status: 'processing' });
+
+      // Generate processed content with AI
+      const processedContent = await aiService.processContent(url, title, description, type);
+
+      // Generate learning materials
+      const learningMaterials = await aiService.generateLearningMaterials(
+        title,
+        description,
+        processedContent.difficulty
+      );
+
+      // Update entity with AI-generated content
+      await Entity.findByIdAndUpdate(entityId, {
+        status: 'completed',
+        processedContent,
+        learningMaterials,
+        metadata: {
+          difficulty: processedContent.difficulty,
+          readingTime: processedContent.readingTime,
+          sourceUrl: url,
+          language: 'en'
+        }
+      });
+
+      logger.info(`AI processing completed for entity: ${entityId}`);
+    } catch (error: any) {
+      logger.error(`AI processing failed for entity ${entityId}:`, error);
+
+      // Update status to failed
+      await Entity.findByIdAndUpdate(entityId, { status: 'failed' });
+    }
+  }
+
+  /**
+   * Manual trigger to re-process entity with AI
+   */
+  async reprocessEntity(entityId: string, userId: string): Promise<any> {
+    try {
+      const entity = await Entity.findOne({ _id: entityId, userId });
+      if (!entity) {
+        throw new AppError('Entity not found or unauthorized', 'NOT_FOUND', 404);
+      }
+
+      logger.info(`Re-processing entity: ${entityId}`);
+
+      // Update status to processing
+      entity.status = 'processing';
+      await entity.save();
+
+      // Re-process with AI
+      await this.processEntityWithAI(entity._id.toString(), entity.url, entity.title, entity.description, entity.type);
+
+      // Return updated entity
+      const updatedEntity = await Entity.findById(entityId);
+      return updatedEntity;
+    } catch (error: any) {
+      logger.error('Error in reprocessEntity:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update entity tags (manual tag editing)
+   */
+  async updateEntityTags(entityId: string, userId: string, tags: string[]): Promise<any> {
+    try {
+      const entity = await Entity.findOne({ _id: entityId, userId });
+      if (!entity) {
+        throw new AppError('Entity not found or unauthorized', 'NOT_FOUND', 404);
+      }
+
+      // Enhance tags with AI
+      const enhancedTags = await aiService.enhanceTags(tags, `${entity.title} ${entity.description}`);
+
+      // Update entity tags
+      if (entity.processedContent) {
+        entity.processedContent.tags = enhancedTags;
+      } else {
+        entity.processedContent = { tags: enhancedTags } as any;
+      }
+      await entity.save();
+
+      logger.info(`Entity tags updated: ${entityId}`);
+      return entity;
+    } catch (error: any) {
+      logger.error('Error in updateEntityTags:', error);
       throw error;
     }
   }
