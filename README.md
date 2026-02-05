@@ -9,7 +9,7 @@
 ## 🚀 Core Philosophy
 
 - **From Storage to Action:** Traditional bookmarks are static. L2L treats every saved link as a raw material for a learning module.
-- **Structure over Chaos:** Users don't just "save" links; they build **Projects** and **Topics**, creating a personal curriculum.
+- **Structure over Chaos:** Users don't just "save" links; they build **Projects** with flexible **Tags**, creating a personal curriculum.
 - **Community & Competition:** Learning is amplified when shared. L2L integrates gamification to drive consistency and collaboration.
 
 ## ✨ Key Features
@@ -60,11 +60,12 @@
 
 ### Information Hierarchy
 ```
-Topics (High-Level Categories)
-├── Projects (Goal-Oriented Learning)
-│   ├── Entities (Individual Resources/Links)
-│   └── Tags (Metadata for filtering)
-└── User Groups (Collaborative Spaces)
+Projects (Goal-Oriented Learning)
+├── Entities (Individual Resources/Links)
+│   ├── AI-Generated Summaries
+│   ├── Flashcards
+│   └── Quizzes
+└── Tags (Metadata for flexible topic classification)
 ```
 
 ## 🛠️ Technology Stack
