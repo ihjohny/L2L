@@ -2195,7 +2195,7 @@ mixin _$EntityModel {
   String get title => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
-  String get projectId => throw _privateConstructorUsedError;
+  List<String> get tags => throw _privateConstructorUsedError;
   ContentType get type => throw _privateConstructorUsedError;
   ContentStatus get status => throw _privateConstructorUsedError;
   ContentMetadata get metadata => throw _privateConstructorUsedError;
@@ -2225,7 +2225,7 @@ abstract class $EntityModelCopyWith<$Res> {
       String title,
       String description,
       String userId,
-      String projectId,
+      List<String> tags,
       ContentType type,
       ContentStatus status,
       ContentMetadata metadata,
@@ -2261,7 +2261,7 @@ class _$EntityModelCopyWithImpl<$Res, $Val extends EntityModel>
     Object? title = null,
     Object? description = null,
     Object? userId = null,
-    Object? projectId = null,
+    Object? tags = null,
     Object? type = null,
     Object? status = null,
     Object? metadata = null,
@@ -2292,10 +2292,10 @@ class _$EntityModelCopyWithImpl<$Res, $Val extends EntityModel>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
-      projectId: null == projectId
-          ? _value.projectId
-          : projectId // ignore: cast_nullable_to_non_nullable
-              as String,
+      tags: null == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -2394,7 +2394,7 @@ abstract class _$$EntityModelImplCopyWith<$Res>
       String title,
       String description,
       String userId,
-      String projectId,
+      List<String> tags,
       ContentType type,
       ContentStatus status,
       ContentMetadata metadata,
@@ -2432,7 +2432,7 @@ class __$$EntityModelImplCopyWithImpl<$Res>
     Object? title = null,
     Object? description = null,
     Object? userId = null,
-    Object? projectId = null,
+    Object? tags = null,
     Object? type = null,
     Object? status = null,
     Object? metadata = null,
@@ -2463,10 +2463,10 @@ class __$$EntityModelImplCopyWithImpl<$Res>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
-      projectId: null == projectId
-          ? _value.projectId
-          : projectId // ignore: cast_nullable_to_non_nullable
-              as String,
+      tags: null == tags
+          ? _value._tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -2512,7 +2512,7 @@ class _$EntityModelImpl extends _EntityModel {
       required this.title,
       required this.description,
       required this.userId,
-      required this.projectId,
+      final List<String> tags = const [],
       this.type = ContentType.article,
       this.status = ContentStatus.pending,
       required this.metadata,
@@ -2521,7 +2521,8 @@ class _$EntityModelImpl extends _EntityModel {
       this.userInteractions = const UserInteractions(),
       required this.createdAt,
       required this.updatedAt})
-      : super._();
+      : _tags = tags,
+        super._();
 
   @override
   final String id;
@@ -2533,8 +2534,15 @@ class _$EntityModelImpl extends _EntityModel {
   final String description;
   @override
   final String userId;
+  final List<String> _tags;
   @override
-  final String projectId;
+  @JsonKey()
+  List<String> get tags {
+    if (_tags is EqualUnmodifiableListView) return _tags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tags);
+  }
+
   @override
   @JsonKey()
   final ContentType type;
@@ -2557,7 +2565,7 @@ class _$EntityModelImpl extends _EntityModel {
 
   @override
   String toString() {
-    return 'EntityModel(id: $id, url: $url, title: $title, description: $description, userId: $userId, projectId: $projectId, type: $type, status: $status, metadata: $metadata, processedContent: $processedContent, learningMaterials: $learningMaterials, userInteractions: $userInteractions, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'EntityModel(id: $id, url: $url, title: $title, description: $description, userId: $userId, tags: $tags, type: $type, status: $status, metadata: $metadata, processedContent: $processedContent, learningMaterials: $learningMaterials, userInteractions: $userInteractions, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -2571,8 +2579,7 @@ class _$EntityModelImpl extends _EntityModel {
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.projectId, projectId) ||
-                other.projectId == projectId) &&
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.metadata, metadata) ||
@@ -2597,7 +2604,7 @@ class _$EntityModelImpl extends _EntityModel {
       title,
       description,
       userId,
-      projectId,
+      const DeepCollectionEquality().hash(_tags),
       type,
       status,
       metadata,
@@ -2623,7 +2630,7 @@ abstract class _EntityModel extends EntityModel {
       required final String title,
       required final String description,
       required final String userId,
-      required final String projectId,
+      final List<String> tags,
       final ContentType type,
       final ContentStatus status,
       required final ContentMetadata metadata,
@@ -2645,7 +2652,7 @@ abstract class _EntityModel extends EntityModel {
   @override
   String get userId;
   @override
-  String get projectId;
+  List<String> get tags;
   @override
   ContentType get type;
   @override

@@ -108,10 +108,9 @@ const entitySchema = new Schema(
       required: true,
       index: true
     },
-    projectId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Project',
-      required: true,
+    tags: {
+      type: [String],
+      default: [],
       index: true
     },
     type: {
@@ -155,10 +154,9 @@ const entitySchema = new Schema(
 
 // Indexes
 entitySchema.index({ userId: 1, createdAt: -1 });
-entitySchema.index({ projectId: 1, createdAt: -1 });
+entitySchema.index({ tags: 1, createdAt: -1 });
 entitySchema.index({ status: 1 });
 entitySchema.index({ type: 1 });
-entitySchema.index({ tags: 1 });
 entitySchema.index({ 'userInteractions.isRead': 1 });
 entitySchema.index({ 'userInteractions.isFavorite': 1 });
 entitySchema.index({ title: 'text', description: 'text', 'processedContent.summary': 'text' });
@@ -193,19 +191,19 @@ entitySchema.statics.findByUser = function (userId: string) {
   return this.find({ userId }).sort({ createdAt: -1 });
 };
 
-// Static method to find by project
-entitySchema.statics.findByProject = function (projectId: string) {
-  return this.find({ projectId }).sort({ createdAt: -1 });
-};
-
 // Static method to find pending processing
 entitySchema.statics.findPendingProcessing = function () {
   return this.find({ status: 'pending' }).limit(10);
 };
 
+// Static method to find by tags
+entitySchema.statics.findByTags = function (userId: string, tags: string[]) {
+  return this.find({ userId, tags: { $in: tags } }).sort({ createdAt: -1 });
+};
+
 interface EntityModel extends Model<EntityDocument> {
   findByUser(userId: string): Promise<EntityDocument[]>;
-  findByProject(projectId: string): Promise<EntityDocument[]>;
+  findByTags(userId: string, tags: string[]): Promise<EntityDocument[]>;
   findPendingProcessing(): Promise<EntityDocument[]>;
 }
 

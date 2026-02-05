@@ -4,41 +4,6 @@ export type ContentType = 'article' | 'video' | 'podcast' | 'document' | 'book';
 export type ContentStatus = 'pending' | 'processing' | 'completed' | 'failed';
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
-export interface ProjectProgress {
-  completionPercentage: number;
-  lastAccessed: Date;
-  timeSpent: number; // in minutes
-  entitiesCompleted: number;
-  totalEntities: number;
-}
-
-export interface ProjectGamification {
-  points: number;
-  badges: string[];
-  achievements: Achievement[];
-}
-
-export interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  iconUrl: string;
-  unlockedAt: Date;
-}
-
-export interface Project extends BaseEntity {
-  name: string;
-  description: string;
-  userId: string;
-  tags: string[];
-  entities: string[];
-  isPublic: boolean;
-  collaborators: string[];
-  progress: ProjectProgress;
-  gamification: ProjectGamification;
-  difficulty: DifficultyLevel;
-  estimatedTime: number; // in minutes
-}
 
 export interface ContentMetadata {
   author?: string;
@@ -115,7 +80,7 @@ export interface Entity extends BaseEntity {
   title: string;
   description: string;
   userId: string;
-  projectId: string;
+  tags: string[];
   type: ContentType;
   status: ContentStatus;
   metadata: ContentMetadata;
@@ -124,25 +89,8 @@ export interface Entity extends BaseEntity {
   userInteractions: UserInteractions;
 }
 
-export interface CreateProjectDto {
-  name: string;
-  description: string;
-  tags?: string[];
-  isPublic?: boolean;
-  difficulty?: DifficultyLevel;
-}
-
-export interface UpdateProjectDto {
-  name?: string;
-  description?: string;
-  tags?: string[];
-  isPublic?: boolean;
-  difficulty?: DifficultyLevel;
-}
-
 export interface CreateEntityDto {
   url: string;
-  projectId: string;
   tags?: string[];
   notes?: string;
 }

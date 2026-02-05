@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:dotenv/dotenv.dart' show env, load;
 
 class EnvConfig {
   static late String apiBaseUrl;

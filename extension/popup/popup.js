@@ -88,36 +88,6 @@ async function loadPageInfo() {
   } else {
     pageIcon.textContent = '📚';
   }
-
-  // Load projects
-  await loadProjects();
-}
-
-async function loadProjects() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/content/projects`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      const projects = data.data || [];
-
-      const projectSelect = document.getElementById('projectSelect');
-      projectSelect.innerHTML = '<option value="">Select a project</option>';
-
-      projects.forEach(project => {
-        const option = document.createElement('option');
-        option.value = project._id;
-        option.textContent = project.name;
-        projectSelect.appendChild(option);
-      });
-    }
-  } catch (error) {
-    console.error('Failed to load projects:', error);
-  }
 }
 
 function showView(viewName) {
@@ -195,14 +165,8 @@ async function handleLogin() {
 }
 
 async function handleSave() {
-  const projectId = document.getElementById('projectSelect').value;
   const tags = document.getElementById('tagsInput').value;
   const notes = document.getElementById('notesInput').value;
-
-  if (!projectId) {
-    alert('Please select a project');
-    return;
-  }
 
   showView('loading');
   document.getElementById('loadingMessage').textContent = 'Saving to L2L...';
@@ -216,7 +180,6 @@ async function handleSave() {
       },
       body: JSON.stringify({
         url: currentTab.url,
-        projectId: projectId,
         tags: tags ? tags.split(',').map(t => t.trim()) : [],
         notes: notes
       })

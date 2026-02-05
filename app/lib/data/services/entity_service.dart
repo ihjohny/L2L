@@ -28,7 +28,6 @@ class EntityService {
   /// Create a new bookmark/entity
   Future<EntityModel> createEntity({
     required String url,
-    required String projectId,
     List<String>? tags,
     String? notes,
   }) async {
@@ -37,7 +36,6 @@ class EntityService {
         '/content/entities',
         data: {
           'url': url,
-          'projectId': projectId,
           if (tags != null) 'tags': tags,
           if (notes != null) 'notes': notes,
         },
@@ -52,16 +50,25 @@ class EntityService {
     }
   }
 
-  /// Get all entities for a project
-  Future<List<EntityModel>> getEntitiesByProject(
-    String projectId, {
+  /// Get all entities for the user with optional filters
+  Future<List<EntityModel>> getEntities({
     int page = 1,
-    int limit = 20,
+    int limit = 50,
+    List<String>? tags,
+    String? search,
   }) async {
     try {
+      final queryParams = <String, dynamic>{'page': page, 'limit': limit};
+      if (tags != null && tags.isNotEmpty) {
+        queryParams['tags'] = tags.join(',');
+      }
+      if (search != null && search.isNotEmpty) {
+        queryParams['search'] = search;
+      }
+
       final response = await _dio.get(
-        '/content/projects/$projectId/entities',
-        queryParameters: {'page': page, 'limit': limit},
+        '/content/entities',
+        queryParameters: queryParams,
       );
 
       if (response.statusCode == 200) {

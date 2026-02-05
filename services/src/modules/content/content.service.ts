@@ -1,124 +1,14 @@
-import Project from '../../database/models/Project.model';
 import Entity from '../../database/models/Entity.model';
 import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';
-import { CreateProjectDto, UpdateProjectDto, CreateEntityDto, UpdateEntityDto } from '../../shared/interfaces/content.interface';
+import { CreateEntityDto, UpdateEntityDto } from '../../shared/interfaces/content.interface';
 import { calculatePaginationMeta } from '../../utils/response';
 import { aiService } from '../ai';
 
 class ContentService {
-  // Project Methods
-  async createProject(userId: string, dto: CreateProjectDto) {
-    try {
-      const project = await Project.create({
-        ...dto,
-        userId,
-        entities: [],
-        collaborators: [],
-        tags: dto.tags || [],
-        progress: {
-          completionPercentage: 0,
-          lastAccessed: new Date(),
-          timeSpent: 0,
-          entitiesCompleted: 0,
-          totalEntities: 0
-        },
-        gamification: {
-          points: 0,
-          badges: [],
-          achievements: []
-        }
-      });
-
-      logger.info(`Project created: ${project._id} by user ${userId}`);
-      return project;
-    } catch (error: any) {
-      logger.error('Error in createProject:', error);
-      throw error;
-    }
-  }
-
-  async getProjectsByUser(userId: string, page: number = 1, limit: number = 20) {
-    try {
-      const skip = (page - 1) * limit;
-      const projects = await Project.find({ userId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-
-      const total = await Project.countDocuments({ userId });
-
-      return {
-        data: projects,
-        meta: calculatePaginationMeta(total, page, limit)
-      };
-    } catch (error: any) {
-      logger.error('Error in getProjectsByUser:', error);
-      throw error;
-    }
-  }
-
-  async getProjectById(projectId: string) {
-    try {
-      const project = await Project.findById(projectId)
-        .populate('entities')
-        .populate('collaborators', 'username profile.firstName profile.lastName profile.avatar');
-
-      if (!project) {
-        throw new AppError('Project not found', 'NOT_FOUND', 404);
-      }
-      return project;
-    } catch (error: any) {
-      logger.error('Error in getProjectById:', error);
-      throw error;
-    }
-  }
-
-  async updateProject(projectId: string, userId: string, dto: UpdateProjectDto) {
-    try {
-      const project = await Project.findOne({ _id: projectId, userId });
-      if (!project) {
-        throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
-      Object.assign(project, dto);
-      await project.save();
-
-      logger.info(`Project updated: ${projectId}`);
-      return project;
-    } catch (error: any) {
-      logger.error('Error in updateProject:', error);
-      throw error;
-    }
-  }
-
-  async deleteProject(projectId: string, userId: string) {
-    try {
-      const project = await Project.findOne({ _id: projectId, userId });
-      if (!project) {
-        throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
-      // Delete all entities associated with this project
-      await Entity.deleteMany({ projectId });
-
-      await Project.findByIdAndDelete(projectId);
-      logger.info(`Project deleted: ${projectId}`);
-    } catch (error: any) {
-      logger.error('Error in deleteProject:', error);
-      throw error;
-    }
-  }
-
   // Entity Methods
   async createEntity(userId: string, dto: CreateEntityDto) {
     try {
-      // Verify project exists and belongs to user
-      const project = await Project.findOne({ _id: dto.projectId, userId });
-      if (!project) {
-        throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
       // Fetch basic metadata from URL
       const metadata = await this.fetchUrlMetadata(dto.url);
       const contentType = this.detectContentType(dto.url, metadata);
@@ -129,7 +19,7 @@ class ContentService {
         title: metadata.title || 'Untitled',
         description: metadata.description || '',
         userId,
-        projectId: dto.projectId,
+        tags: dto.tags || [],
         type: contentType,
         status: 'processing',
         metadata: {
@@ -144,11 +34,6 @@ class ContentService {
           notes: dto.notes
         }
       });
-
-      // Add entity to project
-      project.entities.push(entity._id.toString());
-      project.progress.totalEntities = project.entities.length;
-      await project.save();
 
       // Trigger AI processing asynchronously (don't wait for it)
       this.processEntityWithAI(entity._id.toString(), entity.url, entity.title, entity.description, contentType)
@@ -252,12 +137,8 @@ class ContentService {
       // Enhance tags with AI
       const enhancedTags = await aiService.enhanceTags(tags, `${entity.title} ${entity.description}`);
 
-      // Update entity tags
-      if (entity.processedContent) {
-        entity.processedContent.tags = enhancedTags;
-      } else {
-        entity.processedContent = { tags: enhancedTags } as any;
-      }
+      // Update entity tags at top level
+      entity.tags = enhancedTags;
       await entity.save();
 
       logger.info(`Entity tags updated: ${entityId}`);
@@ -268,22 +149,44 @@ class ContentService {
     }
   }
 
-  async getEntitiesByProject(projectId: string, page: number = 1, limit: number = 20) {
+  async getEntitiesByUser(
+    userId: string,
+    page: number = 1,
+    limit: number = 20,
+    tags?: string[],
+    search?: string
+  ) {
     try {
       const skip = (page - 1) * limit;
-      const entities = await Entity.find({ projectId })
+      const query: any = { userId };
+
+      // Filter by tags if provided
+      if (tags && tags.length > 0) {
+        query.tags = { $in: tags };
+      }
+
+      // Search in title, description, and summary
+      if (search) {
+        query.$or = [
+          { title: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { 'processedContent.summary': { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      const entities = await Entity.find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
 
-      const total = await Entity.countDocuments({ projectId });
+      const total = await Entity.countDocuments(query);
 
       return {
         data: entities,
         meta: calculatePaginationMeta(total, page, limit)
       };
     } catch (error: any) {
-      logger.error('Error in getEntitiesByProject:', error);
+      logger.error('Error in getEntitiesByUser:', error);
       throw error;
     }
   }
@@ -291,7 +194,6 @@ class ContentService {
   async getEntityById(entityId: string) {
     try {
       const entity = await Entity.findById(entityId)
-        .populate('projectId', 'name description')
         .populate('userId', 'username profile.firstName profile.lastName');
 
       if (!entity) {
@@ -335,14 +237,6 @@ class ContentService {
         throw new AppError('Entity not found or unauthorized', 'NOT_FOUND', 404);
       }
 
-      const projectId = entity.projectId;
-
-      // Remove entity from project
-      await Project.updateOne(
-        { _id: projectId },
-        { $pull: { entities: entityId } }
-      );
-
       await Entity.findByIdAndDelete(entityId);
       logger.info(`Entity deleted: ${entityId}`);
     } catch (error: any) {
@@ -359,14 +253,6 @@ class ContentService {
       }
 
       await (entity as any).markAsRead();
-
-      // Update project progress
-      const project = await Project.findById(entity.projectId);
-      if (project) {
-        project.progress.entitiesCompleted += 1;
-        await (project as any).updateProgress();
-        await (project as any).addPoints(10); // Add 10 points for completing an entity
-      }
 
       logger.info(`Entity marked as read: ${entityId}`);
       return entity;

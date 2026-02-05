@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../constants/app_constants.dart';
 import '../../presentation/pages/auth/login_page.dart';
 import '../../presentation/pages/auth/register_page.dart';
 import '../../presentation/pages/home/home_page.dart';
+import '../../presentation/pages/home/entities/entity_details_page.dart';
+import '../../presentation/pages/home/entities/add_entity_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../providers/auth_providers.dart';
 
@@ -87,23 +88,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
 
-      // Projects Routes (Protected)
+      // Entities Routes (Protected)
       GoRoute(
-        path: '/projects',
-        name: 'projects',
+        path: '/entities',
+        name: 'entities',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: const HomePage(initialIndex: 0),
         ),
       ),
 
-      // Bookmarks Routes (Protected)
+      // Entity Details Route (Protected)
       GoRoute(
-        path: '/bookmarks',
-        name: 'bookmarks',
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: const HomePage(initialIndex: 1),
+        path: '/entities/:entityId',
+        name: 'entity_details',
+        pageBuilder: (context, state) {
+          final entityId = state.pathParameters['entityId'] ?? '';
+          return MaterialPage(
+            key: state.pageKey,
+            child: EntityDetailsPage(entityId: entityId),
+          );
+        },
+      ),
+
+      // Add Entity Route (Protected)
+      GoRoute(
+        path: '/add-entity',
+        name: 'add_entity',
+        pageBuilder: (context, state) => const MaterialPage(
+          key: ValueKey('add_entity'),
+          child: AddEntityPage(),
         ),
       ),
 
@@ -113,7 +127,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 2),
+          child: const HomePage(initialIndex: 1),
         ),
       ),
     ],

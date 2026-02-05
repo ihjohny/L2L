@@ -40,7 +40,7 @@ async function handleSavePage(pageData, tab) {
       throw new Error('Not authenticated');
     }
 
-    // Call API to save bookmark
+    // Call API to save entity
     const response = await fetch('http://localhost:3000/api/v1/content/entities', {
       method: 'POST',
       headers: {
@@ -49,7 +49,6 @@ async function handleSavePage(pageData, tab) {
       },
       body: JSON.stringify({
         url: pageData.url,
-        projectId: pageData.projectId,
         tags: pageData.tags || [],
         notes: pageData.notes || ''
       })

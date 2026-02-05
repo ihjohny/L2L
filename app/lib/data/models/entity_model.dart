@@ -138,7 +138,7 @@ class EntityModel with _$EntityModel {
     required String title,
     required String description,
     required String userId,
-    required String projectId,
+    @Default([]) List<String> tags,
     @Default(ContentType.article) ContentType type,
     @Default(ContentStatus.pending) ContentStatus status,
     required ContentMetadata metadata,
@@ -156,7 +156,7 @@ class EntityModel with _$EntityModel {
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       userId: json['userId'] ?? '',
-      projectId: json['projectId'] ?? '',
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
       type: ContentType.values.firstWhere(
         (e) => e.name == json['type'],
         orElse: () => ContentType.article,
@@ -192,7 +192,6 @@ class EntityModel with _$EntityModel {
     title: '',
     description: '',
     userId: '',
-    projectId: '',
     metadata: const ContentMetadata(
       sourceUrl: '',
     ),
@@ -209,8 +208,7 @@ extension EntityModelX on EntityModel {
 
   bool get isFailed => status == ContentStatus.failed;
 
-  List<String> get displayTags =>
-      processedContent?.tags.isNotEmpty == true ? processedContent!.tags : [];
+  List<String> get displayTags => tags.isNotEmpty ? tags : (processedContent?.tags.isNotEmpty == true ? processedContent!.tags : []);
 
   String get displaySummary =>
       processedContent?.summary ?? description;
