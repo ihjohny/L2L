@@ -13,14 +13,12 @@ class AddEntityPage extends ConsumerStatefulWidget {
 class _AddEntityPageState extends ConsumerState<AddEntityPage> {
   final _urlController = TextEditingController();
   final _tagsController = TextEditingController();
-  final _notesController = TextEditingController();
   bool _isSubmitting = false;
 
   @override
   void dispose() {
     _urlController.dispose();
     _tagsController.dispose();
-    _notesController.dispose();
     super.dispose();
   }
 
@@ -58,19 +56,6 @@ class _AddEntityPageState extends ConsumerState<AddEntityPage> {
                 prefixIcon: Icon(Icons.label),
               ),
               maxLines: 2,
-            ),
-            const SizedBox(height: 16),
-
-            // Notes input
-            TextField(
-              controller: _notesController,
-              decoration: const InputDecoration(
-                labelText: 'Notes (optional)',
-                hintText: 'Add your personal notes...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.note),
-              ),
-              maxLines: 3,
             ),
             const SizedBox(height: 24),
 
@@ -156,9 +141,6 @@ class _AddEntityPageState extends ConsumerState<AddEntityPage> {
       final newEntity = await ref.read(entitiesProvider.notifier).addEntity(
             url: _urlController.text.trim(),
             tags: tags.isNotEmpty ? tags : null,
-            notes: _notesController.text.trim().isEmpty
-                ? null
-                : _notesController.text.trim(),
           );
 
       if (context.mounted) {

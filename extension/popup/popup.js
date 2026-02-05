@@ -166,7 +166,6 @@ async function handleLogin() {
 
 async function handleSave() {
   const tags = document.getElementById('tagsInput').value;
-  const notes = document.getElementById('notesInput').value;
 
   showView('loading');
   document.getElementById('loadingMessage').textContent = 'Saving to L2L...';
@@ -180,8 +179,7 @@ async function handleSave() {
       },
       body: JSON.stringify({
         url: currentTab.url,
-        tags: tags ? tags.split(',').map(t => t.trim()) : [],
-        notes: notes
+        tags: tags ? tags.split(',').map(t => t.trim()) : []
       })
     });
 

@@ -119,7 +119,6 @@ class UserInteractions with _$UserInteractions {
   const factory UserInteractions({
     @Default(false) bool isRead,
     @Default(false) bool isFavorite,
-    String? notes,
     int? rating,
     DateTime? readAt,
   }) = _UserInteractions;

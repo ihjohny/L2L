@@ -107,13 +107,11 @@ class EntitiesNotifier extends StateNotifier<EntitiesState> {
   Future<EntityModel?> addEntity({
     required String url,
     List<String>? tags,
-    String? notes,
   }) async {
     try {
       final newEntity = await _entityService.createEntity(
         url: url,
         tags: tags,
-        notes: notes,
       );
       state = state.copyWith(
         entities: [...state.entities, newEntity],
@@ -131,7 +129,6 @@ class EntitiesNotifier extends StateNotifier<EntitiesState> {
     String? title,
     String? description,
     List<String>? tags,
-    String? notes,
     int? rating,
   }) async {
     try {
@@ -140,7 +137,6 @@ class EntitiesNotifier extends StateNotifier<EntitiesState> {
         title: title,
         description: description,
         tags: tags,
-        notes: notes,
         rating: rating,
       );
       state = state.copyWith(

@@ -1958,7 +1958,6 @@ UserInteractions _$UserInteractionsFromJson(Map<String, dynamic> json) {
 mixin _$UserInteractions {
   bool get isRead => throw _privateConstructorUsedError;
   bool get isFavorite => throw _privateConstructorUsedError;
-  String? get notes => throw _privateConstructorUsedError;
   int? get rating => throw _privateConstructorUsedError;
   DateTime? get readAt => throw _privateConstructorUsedError;
 
@@ -1978,12 +1977,7 @@ abstract class $UserInteractionsCopyWith<$Res> {
           UserInteractions value, $Res Function(UserInteractions) then) =
       _$UserInteractionsCopyWithImpl<$Res, UserInteractions>;
   @useResult
-  $Res call(
-      {bool isRead,
-      bool isFavorite,
-      String? notes,
-      int? rating,
-      DateTime? readAt});
+  $Res call({bool isRead, bool isFavorite, int? rating, DateTime? readAt});
 }
 
 /// @nodoc
@@ -2003,7 +1997,6 @@ class _$UserInteractionsCopyWithImpl<$Res, $Val extends UserInteractions>
   $Res call({
     Object? isRead = null,
     Object? isFavorite = null,
-    Object? notes = freezed,
     Object? rating = freezed,
     Object? readAt = freezed,
   }) {
@@ -2016,10 +2009,6 @@ class _$UserInteractionsCopyWithImpl<$Res, $Val extends UserInteractions>
           ? _value.isFavorite
           : isFavorite // ignore: cast_nullable_to_non_nullable
               as bool,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
       rating: freezed == rating
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
@@ -2040,12 +2029,7 @@ abstract class _$$UserInteractionsImplCopyWith<$Res>
       __$$UserInteractionsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {bool isRead,
-      bool isFavorite,
-      String? notes,
-      int? rating,
-      DateTime? readAt});
+  $Res call({bool isRead, bool isFavorite, int? rating, DateTime? readAt});
 }
 
 /// @nodoc
@@ -2063,7 +2047,6 @@ class __$$UserInteractionsImplCopyWithImpl<$Res>
   $Res call({
     Object? isRead = null,
     Object? isFavorite = null,
-    Object? notes = freezed,
     Object? rating = freezed,
     Object? readAt = freezed,
   }) {
@@ -2076,10 +2059,6 @@ class __$$UserInteractionsImplCopyWithImpl<$Res>
           ? _value.isFavorite
           : isFavorite // ignore: cast_nullable_to_non_nullable
               as bool,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
       rating: freezed == rating
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
@@ -2096,11 +2075,7 @@ class __$$UserInteractionsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserInteractionsImpl implements _UserInteractions {
   const _$UserInteractionsImpl(
-      {this.isRead = false,
-      this.isFavorite = false,
-      this.notes,
-      this.rating,
-      this.readAt});
+      {this.isRead = false, this.isFavorite = false, this.rating, this.readAt});
 
   factory _$UserInteractionsImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserInteractionsImplFromJson(json);
@@ -2112,15 +2087,13 @@ class _$UserInteractionsImpl implements _UserInteractions {
   @JsonKey()
   final bool isFavorite;
   @override
-  final String? notes;
-  @override
   final int? rating;
   @override
   final DateTime? readAt;
 
   @override
   String toString() {
-    return 'UserInteractions(isRead: $isRead, isFavorite: $isFavorite, notes: $notes, rating: $rating, readAt: $readAt)';
+    return 'UserInteractions(isRead: $isRead, isFavorite: $isFavorite, rating: $rating, readAt: $readAt)';
   }
 
   @override
@@ -2131,7 +2104,6 @@ class _$UserInteractionsImpl implements _UserInteractions {
             (identical(other.isRead, isRead) || other.isRead == isRead) &&
             (identical(other.isFavorite, isFavorite) ||
                 other.isFavorite == isFavorite) &&
-            (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.rating, rating) || other.rating == rating) &&
             (identical(other.readAt, readAt) || other.readAt == readAt));
   }
@@ -2139,7 +2111,7 @@ class _$UserInteractionsImpl implements _UserInteractions {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, isRead, isFavorite, notes, rating, readAt);
+      Object.hash(runtimeType, isRead, isFavorite, rating, readAt);
 
   /// Create a copy of UserInteractions
   /// with the given fields replaced by the non-null parameter values.
@@ -2162,7 +2134,6 @@ abstract class _UserInteractions implements UserInteractions {
   const factory _UserInteractions(
       {final bool isRead,
       final bool isFavorite,
-      final String? notes,
       final int? rating,
       final DateTime? readAt}) = _$UserInteractionsImpl;
 
@@ -2173,8 +2144,6 @@ abstract class _UserInteractions implements UserInteractions {
   bool get isRead;
   @override
   bool get isFavorite;
-  @override
-  String? get notes;
   @override
   int? get rating;
   @override

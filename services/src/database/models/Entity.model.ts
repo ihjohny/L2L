@@ -81,7 +81,6 @@ const learningMaterialsSchema = new Schema({
 const userInteractionsSchema = new Schema({
   isRead: { type: Boolean, default: false },
   isFavorite: { type: Boolean, default: false },
-  notes: { type: String },
   rating: { type: Number, min: 1, max: 5 },
   readAt: { type: Date }
 });

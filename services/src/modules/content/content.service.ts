@@ -30,8 +30,7 @@ class ContentService {
         },
         userInteractions: {
           isRead: false,
-          isFavorite: false,
-          notes: dto.notes
+          isFavorite: false
         }
       });
 
@@ -214,9 +213,6 @@ class ContentService {
       }
 
       // Update user interactions
-      if (dto.notes !== undefined) {
-        entity.userInteractions.notes = dto.notes;
-      }
       if (dto.rating !== undefined) {
         entity.userInteractions.rating = dto.rating;
       }

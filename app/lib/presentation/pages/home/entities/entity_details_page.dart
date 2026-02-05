@@ -17,19 +17,11 @@ class EntityDetailsPage extends ConsumerStatefulWidget {
 
 class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
   bool _isEditing = false;
-  late TextEditingController _notesController;
   final List<String> _tags = [];
   final TextEditingController _tagController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _notesController = TextEditingController();
-  }
-
-  @override
   void dispose() {
-    _notesController.dispose();
     _tagController.dispose();
     super.dispose();
   }
@@ -56,9 +48,8 @@ class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
       );
     }
 
-    // Initialize notes and tags if not editing
+    // Initialize tags if not editing
     if (!_isEditing) {
-      _notesController.text = entity.userInteractions.notes ?? '';
       _tags.clear();
       _tags.addAll(entity.displayTags);
     }
@@ -76,9 +67,6 @@ class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
                 // Save changes
                 await ref.read(entitiesProvider.notifier).updateEntity(
                       entityId: widget.entityId,
-                      notes: _notesController.text.trim().isEmpty
-                          ? null
-                          : _notesController.text.trim(),
                       tags: _tags,
                     );
                 if (context.mounted) {
@@ -227,36 +215,6 @@ class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
                 }).toList(),
               ),
             const SizedBox(height: 24),
-
-            // Notes section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Notes',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (_isEditing)
-              TextField(
-                controller: _notesController,
-                decoration: const InputDecoration(
-                  hintText: 'Add your notes...',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 5,
-              )
-            else
-              Text(
-                entity.userInteractions.notes ?? 'No notes',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: entity.userInteractions.notes == null
-                          ? Colors.grey.shade600
-                          : null,
-                    ),
-              ),
           ],
         ),
       ),

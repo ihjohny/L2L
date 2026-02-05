@@ -206,7 +206,6 @@ _$UserInteractionsImpl _$$UserInteractionsImplFromJson(
     _$UserInteractionsImpl(
       isRead: json['isRead'] as bool? ?? false,
       isFavorite: json['isFavorite'] as bool? ?? false,
-      notes: json['notes'] as String?,
       rating: (json['rating'] as num?)?.toInt(),
       readAt: json['readAt'] == null
           ? null
@@ -218,7 +217,6 @@ Map<String, dynamic> _$$UserInteractionsImplToJson(
     <String, dynamic>{
       'isRead': instance.isRead,
       'isFavorite': instance.isFavorite,
-      'notes': instance.notes,
       'rating': instance.rating,
       'readAt': instance.readAt?.toIso8601String(),
     };

@@ -49,8 +49,7 @@ async function handleSavePage(pageData, tab) {
       },
       body: JSON.stringify({
         url: pageData.url,
-        tags: pageData.tags || [],
-        notes: pageData.notes || ''
+        tags: pageData.tags || []
       })
     });
 

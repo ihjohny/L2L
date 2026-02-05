@@ -8,7 +8,6 @@ class EntityService {
   Future<EntityModel> createEntity({
     required String url,
     List<String>? tags,
-    String? notes,
   }) async {
     try {
       final response = await _dioClient.dio.post(
@@ -16,7 +15,6 @@ class EntityService {
         data: {
           'url': url,
           if (tags != null) 'tags': tags,
-          if (notes != null) 'notes': notes,
         },
       );
 
@@ -74,13 +72,12 @@ class EntityService {
     }
   }
 
-  /// Update entity (notes, rating)
+  /// Update entity (rating)
   Future<EntityModel> updateEntity({
     required String entityId,
     String? title,
     String? description,
     List<String>? tags,
-    String? notes,
     int? rating,
   }) async {
     try {
@@ -90,7 +87,6 @@ class EntityService {
           if (title != null) 'title': title,
           if (description != null) 'description': description,
           if (tags != null) 'tags': tags,
-          if (notes != null) 'notes': notes,
           if (rating != null) 'rating': rating,
         },
       );

@@ -70,7 +70,6 @@ export interface LearningMaterials {
 export interface UserInteractions {
   isRead: boolean;
   isFavorite: boolean;
-  notes?: string;
   rating?: number; // 1-5
   readAt?: Date;
 }
@@ -92,14 +91,12 @@ export interface Entity extends BaseEntity {
 export interface CreateEntityDto {
   url: string;
   tags?: string[];
-  notes?: string;
 }
 
 export interface UpdateEntityDto {
   title?: string;
   description?: string;
   tags?: string[];
-  notes?: string;
   rating?: number;
 }
 
