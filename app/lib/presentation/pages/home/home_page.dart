@@ -40,7 +40,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark_outline),
             activeIcon: Icon(Icons.bookmark),
-            label: 'Entities',
+            label: 'Links',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),

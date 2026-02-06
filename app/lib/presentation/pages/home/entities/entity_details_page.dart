@@ -33,7 +33,7 @@ class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
     if (entity == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Entity Details'),
+          title: const Text('Link Details'),
         ),
         body: const Center(
           child: Column(
@@ -41,7 +41,7 @@ class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 16),
-              Text('Loading entity...'),
+              Text('Loading link...'),
             ],
           ),
         ),
@@ -58,7 +58,7 @@ class _EntityDetailsPageState extends ConsumerState<EntityDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Entity Details'),
+        title: const Text('Link Details'),
         actions: [
           IconButton(
             icon: Icon(_isEditing ? Icons.check : Icons.edit),

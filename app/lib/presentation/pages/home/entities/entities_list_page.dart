@@ -28,7 +28,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Entities'),
+        title: const Text('My Links'),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -58,7 +58,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
           context.push('/add-entity');
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Entity'),
+        label: const Text('Add Link'),
       ),
     );
   }
@@ -149,7 +149,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              hasFilters ? 'No matching entities' : 'No entities yet',
+              hasFilters ? 'No matching links' : 'No links yet',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.grey,
                   ),
@@ -157,7 +157,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
             const SizedBox(height: 8),
             if (!hasFilters)
               Text(
-                'Tap + to add your first entity',
+                'Tap + to add your first link',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
@@ -311,7 +311,10 @@ class EntitySearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    ref.read(entitiesProvider.notifier).setSearchQuery(query);
+    // Delay state update to avoid modifying provider during build
+    Future.microtask(() {
+      ref.read(entitiesProvider.notifier).setSearchQuery(query);
+    });
     final entitiesState = ref.watch(entitiesProvider);
     final results = entitiesState.filteredEntities;
 
@@ -332,7 +335,10 @@ class EntitySearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    ref.read(entitiesProvider.notifier).setSearchQuery(query);
+    // Delay state update to avoid modifying provider during build
+    Future.microtask(() {
+      ref.read(entitiesProvider.notifier).setSearchQuery(query);
+    });
     final entitiesState = ref.watch(entitiesProvider);
     final suggestions = entitiesState.filteredEntities;
 
