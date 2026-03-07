@@ -166,7 +166,7 @@ Public Launch (W36) ⭐
 ### In Scope (MVP)
 - ✅ Infrastructure (AWS, Kubernetes, CI/CD)
 - ✅ Authentication (JWT, OAuth)
-- ✅ Bookmark management (Topics, Projects, Entities)
+- ✅ Bookmark management (Projects, Links/Entities)
 - ✅ AI processing (Summaries, Flashcards, Quizzes)
 - ✅ Mobile apps (iOS, Android)
 - ✅ Browser extensions (Chrome, Firefox, Safari, Edge)

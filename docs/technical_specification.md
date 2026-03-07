@@ -60,16 +60,18 @@
   - `POST /auth/reset-password`
 
 #### 1.2.2 Content Management Service
-- **Purpose:** CRUD operations for bookmarks, projects, topics
+- **Purpose:** CRUD operations for bookmarks (entities), and projects
 - **Technology:** Node.js + Express
 - **Database:** MongoDB with GridFS for large content
 - **Endpoints:**
-  - `POST /content/bookmarks`
-  - `GET /content/bookmarks`
-  - `PUT /content/bookmarks/:id`
-  - `DELETE /content/bookmarks/:id`
+  - `POST /content/entities`
+  - `GET /content/entities`
+  - `PUT /content/entities/:id`
+  - `DELETE /content/entities/:id`
   - `POST /content/projects`
   - `GET /content/projects`
+  - `PUT /content/projects/:id`
+  - `DELETE /content/projects/:id`
 
 #### 1.2.3 AI Processing Service
 - **Purpose:** Content analysis, summary generation, flashcard/quiz creation
@@ -147,22 +149,6 @@
 }
 ```
 
-#### Topics Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String,
-  description: String,
-  userId: ObjectId,
-  color: String,
-  icon: String,
-  isPublic: Boolean,
-  projects: [ObjectId],
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
 #### Projects Collection
 ```javascript
 {
@@ -170,7 +156,6 @@
   name: String,
   description: String,
   userId: ObjectId,
-  topicId: ObjectId,
   tags: [String],
   entities: [ObjectId],
   isPublic: Boolean,
@@ -315,8 +300,8 @@ interface CreateBookmarkResponse {
   jobId: string; // AI processing job ID
 }
 
-// GET /api/v1/bookmarks
-interface GetBookmarksQuery {
+// GET /api/v1/entities
+interface GetEntitiesQuery {
   projectId?: string;
   tags?: string[];
   type?: string;
@@ -324,8 +309,8 @@ interface GetBookmarksQuery {
   limit?: number;
 }
 
-interface GetBookmarksResponse {
-  bookmarks: Bookmark[];
+interface GetEntitiesResponse {
+  entities: Entity[];
   pagination: {
     page: number;
     limit: number;

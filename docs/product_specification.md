@@ -72,11 +72,9 @@ L2L leverages AI agents to automatically process saved links, generating summari
 
 ### 4.1 Information Hierarchy
 ```
-Topics (High-Level Categories)
-├── Projects (Goal-Oriented Learning)
-│   ├── Entities (Individual Resources/Links)
-│   └── Tags (Metadata for filtering)
-└── User Groups (Collaborative Spaces)
+Projects (Goal-Oriented Learning)
+├── Links/Entities (Individual Resources)
+└── Tags (Metadata for filtering and organization)
 ```
 
 ### 4.2 Core Components
@@ -101,21 +99,12 @@ Topics (High-Level Categories)
 - Support for text, video, and podcast content
 - Offline reading mode
 
-#### 5.1.2 AI Knowledge Engine
-**Description:** Automated content processing and learning material generation
-**Acceptance Criteria:**
-- Generate summarized highlights within 30 seconds
-- Create 5-10 relevant flashcards per resource
-- Auto-generate 3-5 question quizzes
-- Extract key concepts and terminology
-- Support for multiple content formats
-
 #### 5.1.3 Learning Organization
-**Description:** Hierarchical structure for knowledge management
+**Description:** Simple structure for knowledge management
 **Acceptance Criteria:**
-- Create unlimited Topics and Projects
+- Create unlimited Projects
 - Tag-based filtering and search
-- Drag-and-drop organization
+- Drag-and-drop organization within projects
 - Bulk operations on resources
 - Import/export functionality
 
@@ -212,8 +201,8 @@ Topics (High-Level Categories)
 
 #### 7.2.1 Save Resource Flow
 1. User clicks browser extension
-2. Select Topic/Project (with AI suggestions)
-3. Add tags and notes
+2. Select Project (with AI suggestions)
+3. Add tags
 4. Resource automatically processed
 5. Confirmation with preview of generated materials
 
@@ -242,14 +231,14 @@ Topics (High-Level Categories)
 - 50 saved links per month
 - Basic AI summaries
 - Limited flashcards (5 per resource)
-- Personal projects only
+- Personal projects only (no sharing)
 - Basic analytics
 
 #### Premium Tier ($9.99/month)
 - Unlimited saved links
 - Advanced AI features
 - Unlimited flashcards and quizzes
-- Team collaboration features
+- Project sharing with individuals
 - Detailed analytics
 - Priority AI processing
 

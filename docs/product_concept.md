@@ -14,11 +14,11 @@
 
 ### 2. Information Architecture
 
-To ensure organized learning, the platform uses a streamlined hierarchy:
+To ensure organized learning, the platform uses a simple, two-level hierarchy:
 
 - **Projects (Goal-Oriented):** Specific learning goals (e.g., "Master React.js," "Investment Basics").
-    - *Metadata:* Projects support **Tags** for flexible topic classification and easy filtering.
-- **Entities (Resources):** The individual URLs/Links added to a Project.
+    - *Organization:* Projects support **Tags** for flexible classification and easy filtering.
+- **Links/Entities (Resources):** The individual URLs/Links added to a Project.
 
 ### 3. Key Features
 
@@ -51,7 +51,7 @@ L2L leverages psychology to keep users motivated.
 
 ### 4. The User Journey
 
-1. **Capture:** The user finds an insightful article or video and saves the link to L2L, assigning it to the "Product Management" **Project**.
+1. **Capture:** The user finds an insightful article or video and saves the link to L2L, assigning it to a "Product Management" **Project**.
 2. **Process:** The **AI Agent** scans the link. Within moments, it extracts the core concepts, adds 5 flashcards to the user's deck, and generates a 3-question quiz.
 3. **Learn:** The user reviews the AI-generated summary. Later, on their commute, they review the flashcards.
 4. **Test:** The user takes the quiz. They score 3/3, earning points and extending their daily streak.
@@ -64,6 +64,6 @@ L2L leverages psychology to keep users motivated.
 | **Feature** | **Benefit** |
 | --- | --- |
 | **AI Agents** | Saves time by automating note-taking and quiz creation. |
-| **Project & Entity Hierarchy** | Turns a messy list of links into a structured curriculum. |
+| **Simple Hierarchy: Project → Link/Entity** | Turns a messy list of links into a structured curriculum. |
 | **Gamification** | Increases user retention and daily active usage. |
 | **Social Sharing** | Transforms solitary reading into a collaborative team activity. |

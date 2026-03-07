@@ -9,8 +9,8 @@ A complete MVP for **L2L (Link to Learn)** - an AI-powered learning bookmark pla
 ### ✅ Backend API (Node.js/TypeScript)
 - **Modular Monolithic Architecture** - Ready for microservices migration
 - **User Authentication** - JWT-based with refresh tokens
-- **Content Management** - Topics, Projects, and Bookmarks (Entities)
-- **Database Models** - MongoDB with Mongoose (User, Topic, Project, Entity)
+- **Content Management** - Projects and Links/Entities
+- **Database Models** - MongoDB with Mongoose (User, Project, Entity)
 - **Middleware** - Auth, validation, rate limiting, error handling, CORS
 - **Security** - Password hashing, JWT, helmet.js, tier-based rate limiting
 - **API Endpoints** - RESTful API with 20+ endpoints
@@ -75,12 +75,11 @@ Each module is self-contained and can be extracted:
 - ✅ Preference management (theme, language, notifications)
 
 ### Content Organization
-- ✅ Topics (high-level categories)
 - ✅ Projects (goal-oriented learning)
-- ✅ Entities/Bookmarks (individual resources)
+- ✅ Links/Entities (individual resources)
 - ✅ Tag-based organization
 - ✅ Progress tracking
-- ✅ User interactions (favorites, notes, ratings)
+- ✅ User interactions (favorites, ratings)
 
 ### API Features
 - ✅ RESTful endpoints
@@ -95,7 +94,7 @@ Each module is self-contained and can be extracted:
 - ✅ Splash screen
 - ✅ Login page
 - ✅ Registration page
-- ✅ Home page with tabs (Topics, Projects, Bookmarks, Profile)
+- ✅ Home page with tabs (Projects, Bookmarks, Profile)
 - ✅ Navigation system
 - ✅ Theme switching
 
@@ -145,7 +144,7 @@ docker-compose -f docker-compose.prod.yml up -d
 - **Total Files Created**: 70+
 - **Lines of Code**: ~8,000+
 - **Backend Modules**: 2 (User, Content)
-- **Database Models**: 4 (User, Topic, Project, Entity)
+- **Database Models**: 3 (User, Project, Entity)
 - **API Endpoints**: 20+
 - **Flutter Screens**: 4
 - **Extension Files**: 7

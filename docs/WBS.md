@@ -133,28 +133,24 @@
   - 3.1.4.3 Achievement tracking
 
 ### 3.2 Content Management Service
-- 3.2.1 Topic management
-  - 3.2.1.1 Topic CRUD operations
-  - 3.2.1.2 Topic hierarchy
-  - 3.2.1.3 Color and icon customization
-  - 3.2.1.4 Public/private topics
-- 3.2.2 Project management
-  - 3.2.2.1 Project CRUD operations
-  - 3.2.2.2 Project-Topic association
-  - 3.2.2.3 Tag management
-  - 3.2.2.4 Project progress tracking
-  - 3.2.2.5 Bulk operations
-- 3.2.3 Entity (Bookmark) management
-  - 3.2.3.1 Bookmark CRUD operations
-  - 3.2.3.2 URL validation and normalization
-  - 3.2.3.3 Metadata extraction
-  - 3.2.3.4 Content type detection
-  - 3.2.3.5 Status tracking (pending/processing/completed/failed)
-- 3.2.4 Search functionality
-  - 3.2.4.1 Full-text search
-  - 3.2.4.2 Filter by tags/type
-  - 3.2.4.3 Advanced queries
-  - 3.2.4.4 Search history
+- 3.2.1 Project management
+  - 3.2.1.1 Project CRUD operations
+  - 3.2.1.2 Tag management
+  - 3.2.1.3 Project progress tracking
+  - 3.2.1.4 Bulk operations
+  - 3.2.1.5 Public/private projects
+- 3.2.2 Entity (Bookmark) management
+  - 3.2.2.1 Bookmark CRUD operations
+  - 3.2.2.2 URL validation and normalization
+  - 3.2.2.3 Metadata extraction
+  - 3.2.2.4 Content type detection
+  - 3.2.2.5 Status tracking (pending/processing/completed/failed)
+  - 3.2.2.6 Project association
+- 3.2.3 Search functionality
+  - 3.2.3.1 Full-text search
+  - 3.2.3.2 Filter by tags/type
+  - 3.2.3.3 Advanced queries
+  - 3.2.3.4 Search history
 
 ### 3.3 AI Processing Service (Python + FastAPI)
 - 3.3.1 Content fetching module
@@ -206,7 +202,7 @@
   - 3.4.4.3 Comment notifications
 - 3.4.5 Leaderboards
   - 3.4.5.1 Global leaderboard
-  - 3.4.5.2 Topic-specific leaderboards
+  - 3.4.5.2 Project-specific leaderboards
   - 3.4.5.3 Group leaderboards
   - 3.4.5.4 Time-based filters
 
@@ -335,21 +331,17 @@
   - 4.3.1.2 Quick actions
   - 4.3.1.3 Recent activity
   - 4.3.1.4 Statistics overview
-- 4.3.2 Topics screen
-  - 4.3.2.1 Topics grid/list view
-  - 4.3.2.2 Topic creation dialog
-  - 4.3.2.3 Topic customization
-  - 4.3.2.4 Drag-and-drop organization
-- 4.3.3 Projects screen
-  - 4.3.3.1 Projects list
-  - 4.3.3.2 Project creation
-  - 4.3.3.3 Project details view
-  - 4.3.3.4 Project progress indicator
-- 4.3.4 Bookmarks screen
-  - 4.3.4.1 Bookmarks list/grid
-  - 4.3.4.2 Bookmark cards
-  - 4.3.4.3 Filter and sort
-  - 4.3.4.4 Bulk actions
+- 4.3.2 Projects screen
+  - 4.3.2.1 Projects list
+  - 4.3.2.2 Project creation
+  - 4.3.2.3 Project details view
+  - 4.3.2.4 Project progress indicator
+  - 4.3.2.5 Drag-and-drop organization
+- 4.3.3 Bookmarks screen
+  - 4.3.3.1 Bookmarks list/grid
+  - 4.3.3.2 Bookmark cards
+  - 4.3.3.3 Filter and sort
+  - 4.3.3.4 Bulk actions
 - 4.3.5 Bookmark detail
   - 4.3.5.1 Content viewer
   - 4.3.5.2 AI summary display
@@ -391,7 +383,7 @@
   - 4.5.3.2 Achievement notifications
   - 4.5.3.3 Progress to next achievement
 - 4.5.4 Leaderboards
-  - 4.5.4.1 Leaderboard tabs (global, topic, group)
+  - 4.5.4.1 Leaderboard tabs (global, project, group)
   - 4.5.4.2 User ranking
   - 4.5.4.3 Top performers list
 - 4.5.5 Personal statistics
@@ -520,10 +512,9 @@
   - 5.3.1.2 Context menu integration
   - 5.3.1.3 Keyboard shortcut
 - 5.3.2 Save dialog
-  - 5.3.2.1 Topic/Project selector
+  - 5.3.2.1 Project selector
   - 5.3.2.2 Tag input
-  - 5.3.2.3 Notes field
-  - 5.3.2.4 Save confirmation
+  - 5.3.2.3 Save confirmation
 - 5.3.3 Extension popup
   - 5.3.3.1 Quick view of recent saves
   - 5.3.3.2 Search functionality
@@ -559,11 +550,10 @@
 ### 6.1 Database Schema Design
 - 6.1.1 MongoDB schema design
   - 6.1.1.1 Users collection
-  - 6.1.1.2 Topics collection
-  - 6.1.1.3 Projects collection
-  - 6.1.1.4 Entities (Bookmarks) collection
-  - 6.1.1.5 Analytics collection
-  - 6.1.1.6 Notifications collection
+  - 6.1.1.2 Projects collection
+  - 6.1.1.3 Entities (Bookmarks/Links) collection
+  - 6.1.1.4 Analytics collection
+  - 6.1.1.5 Notifications collection
 - 6.1.2 Indexing strategy
   - 6.1.2.1 Single-field indexes
   - 6.1.2.2 Compound indexes
