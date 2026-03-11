@@ -95,11 +95,11 @@ Projects (Goal-Oriented Learning)
 **Acceptance Criteria:**
 - Chrome extension for one-click saving
 - Mobile app share sheet integration
-- Automatic assignment to Topics/Projects
+- Automatic assignment to Projects/Tags
 - Support for text, video, and podcast content
 - Offline reading mode
 
-#### 5.1.3 Learning Organization
+#### 5.1.2 Learning Organization
 **Description:** Simple structure for knowledge management
 **Acceptance Criteria:**
 - Create unlimited Projects
@@ -108,7 +108,7 @@ Projects (Goal-Oriented Learning)
 - Bulk operations on resources
 - Import/export functionality
 
-#### 5.1.4 Gamification System
+#### 5.1.3 Gamification System
 **Description:** Motivational features to drive engagement
 **Acceptance Criteria:**
 - Points system for learning activities
@@ -170,8 +170,8 @@ Projects (Goal-Oriented Learning)
 - **Frontend:** Flutter
 - **Backend:** Node.js
 - **Database:** MongoDb + Redis (caching)
-- **AI/ML:** OpenAI API + Custom NLP models
-- **Infrastructure:** AWS/Azure cloud deployment
+- **AI/ML:** OpenAI API
+- **Infrastructure:** AWS
 
 ### 6.3 Performance Requirements
 - Page load time: < 2 seconds
