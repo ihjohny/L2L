@@ -1,10 +1,10 @@
 # L2L (Link to Learn) - Effort Estimation Report
 
 ## Document Information
-- **Version:** 1.0
-- **Date:** January 2026
+- **Version:** 2.0
+- **Date:** March 2026
 - **Project:** L2L Platform Development
-- **Timeline:** 48 weeks (12 months)
+- **Timeline:** 36 weeks (9 months)
 - **Status:** Draft
 
 ---
@@ -12,110 +12,79 @@
 ## Executive Summary
 
 ### Total Project Effort
-- **Total Person-Hours:** 20,896 hours
-- **Total Person-Days:** 2,618 days (based on 8-hour days)
-- **Total Person-Months:** 125 months (based on 21-day months)
-- **Average Team Size:** 10-12 FTE
-- **Project Duration:** 48 weeks (12 months)
+- **Total Person-Hours:** 13,104 hours
+- **Total Person-Days:** 1,638 days (based on 8-hour days)
+- **Total Person-Months:** 78 months (based on 21-day months)
+- **Average Team Size:** 7-9 FTE
+- **Project Duration:** 36 weeks (9 months)
 
 ### Cost Summary
-- **Personnel Costs:** $876,000 (95% of budget)
-- **Infrastructure Costs:** $45,960/year
-- **Total Project Budget:** $925,000
-- **Average Monthly Burn:** ~$77,000/month
+- **Personnel Costs:** $468,000 (85% of budget)
+- **Infrastructure Costs:** $48,000/year (AWS, OpenAI)
+- **Total Project Budget:** ~$550,000
+- **Average Monthly Burn:** ~$61,000/month
 
 ---
 
 ## 1. Effort by Phase
 
-### Phase 1: Foundation (Weeks 1-8)
-**Duration:** 8 weeks | **Team:** 6-8 FTE
+### Phase MVP (Weeks 1-12) - Closed Beta
+**Duration:** 12 weeks | **Team:** 7 FTE
 
 | WBS Item | Deliverable | Effort (Hours) | Resources |
 |----------|-------------|----------------|-----------|
-| 1.0 Project Management | Project setup, governance | 320 hrs | 1 PM × 8 wks |
-| 2.0 Infrastructure | AWS, Kubernetes, CI/CD | 960 hrs | 2 DevOps × 8 wks |
-| 3.1 User Service | Authentication, profiles | 480 hrs | 2 Backend × 4 wks |
-| 3.2 Content Service | Basic bookmark CRUD | 320 hrs | 2 Backend × 2 wks |
-| 3.8 API Gateway | Routing, validation | 240 hrs | 1 Backend × 6 wks |
-| 4.1 Core Setup | Flutter project structure | 240 hrs | 2 Frontend × 3 wks |
-| 4.2 Auth Screens | Login, registration | 320 hrs | 2 Frontend × 4 wks |
-| 5.1 Extension Core | Manifest, popup, basic save | 240 hrs | 1 Ext Dev × 8 wks |
-| 6.1 Database Design | Schema, indexes | 160 hrs | 1 DBA × 4 wks |
-| 8.1 Backend Tests | Unit, integration tests | 240 hrs | 1 QA × 8 wks |
-| 9.1 API Docs | Swagger, documentation | 80 hrs | 0.5 Writer × 4 wks |
+| **MVP-1.0 Project Management** | Sprint planning, coordination | 480 hrs | 1 PM × 12 wks |
+| **MVP-2.0 Infrastructure** | AWS, MongoDB, Redis, CI/CD | 640 hrs | 1 DevOps × 8 wks |
+| **MVP-3.1 Authentication** | Registration, login, JWT | 320 hrs | 1 Backend × 4 wks |
+| **MVP-3.2 Link Service** | CRUD, status tracking | 400 hrs | 1 Backend × 5 wks |
+| **MVP-3.3 Project Service** | CRUD, generate course trigger | 320 hrs | 1 Backend × 4 wks |
+| **MVP-3.4 AI Processing** | Per-link + Per-project pipeline | 800 hrs | 1 Backend + 0.5 ML × 10 wks |
+| **MVP-3.5 Job Queue** | Redis Queue (Bull) setup | 160 hrs | 1 Backend × 2 wks |
+| **MVP-3.6 API Layer** | Express routes, validation, docs | 240 hrs | 1 Backend × 3 wks |
+| **MVP-4.0 Frontend (Flutter)** | Mobile + Web app | 1,920 hrs | 2 Flutter × 12 wks |
+| **MVP-5.0 Chrome Extension** | One-click save, popup UI | 480 hrs | 1 Ext Dev × 12 wks |
+| **MVP-6.0 Database** | MongoDB schema, indexing | 240 hrs | 1 Backend × 3 wks |
+| **MVP-7.0 AI/ML** | OpenAI integration, prompts | 400 hrs | 0.5 ML × 10 wks |
+| **MVP-8.0 Testing** | Unit, integration, E2E | 480 hrs | 1 QA × 12 wks |
+| **MVP-9.0 Documentation** | API docs, setup guides | 160 hrs | 0.5 Tech Writer × 4 wks |
+| **MVP-10.0 Launch Prep** | Beta testing, Chrome store | 320 hrs | 1 PM + 0.5 DevOps × 4 wks |
 
-**Phase 1 Subtotal:** 3,600 hours (450 person-days)
+**Phase MVP Subtotal:** 7,360 hours (920 person-days | 44 person-months)
 
-### Phase 2: Core Features (Weeks 9-20)
-**Duration:** 12 weeks | **Team:** 10-12 FTE
+---
 
-| WBS Item | Deliverable | Effort (Hours) | Resources |
-|----------|-------------|----------------|-----------|
-| 3.2 Content Service | Full CRUD, search, bulk ops | 480 hrs | 2 Backend × 6 wks |
-| 3.3 AI Service | Content processing pipeline | 1,440 hrs | 2 ML + 1 Backend × 12 wks |
-| 3.5 Analytics | Event tracking, basic analytics | 480 hrs | 1 Backend × 12 wks |
-| 3.6 Notification Service | Email, push, in-app | 320 hrs | 1 Backend × 8 wks |
-| 4.3 Content UI | Dashboard, topics, projects | 720 hrs | 2 Frontend × 9 wks |
-| 4.4 Learning Interface | Summaries, flashcards, quizzes | 960 hrs | 2 Frontend × 12 wks |
-| 4.5 Gamification UI | Points, streaks, achievements | 480 hrs | 2 Frontend × 6 wks |
-| 5.2-5.3 Extension | Enhanced capture, UI improvements | 240 hrs | 1 Ext Dev × 12 wks |
-| 6.2-6.3 Database | Redis cache, vector DB | 240 hrs | 1 DBA × 6 wks |
-| 7.0 AI/ML | Model integration, QA | 960 hrs | 2 ML × 12 wks |
-| 8.2 Frontend Tests | Widget, integration tests | 480 hrs | 2 QA × 12 wks |
-
-**Phase 2 Subtotal:** 6,880 hours (860 person-days)
-
-### Phase 3: Social Features (Weeks 21-28)
-**Duration:** 8 weeks | **Team:** 10-12 FTE
+### Phase 2 (Weeks 13-24) - Public Launch
+**Duration:** 12 weeks | **Team:** 8 FTE
 
 | WBS Item | Deliverable | Effort (Hours) | Resources |
 |----------|-------------|----------------|-----------|
-| 3.4 Social Service | Sharing, groups, collaboration | 800 hrs | 2 Backend × 10 wks |
-| 3.5 Analytics | Learning analytics, reports | 320 hrs | 1 Backend × 8 wks |
-| 4.6 Social UI | Sharing, groups, comments | 640 hrs | 2 Frontend × 8 wks |
-| 4.7 Analytics Dashboard | Personal analytics, reports | 480 hrs | 2 Frontend × 6 wks |
-| 5.4-5.5 Extension | All browsers, sync, offline | 320 hrs | 1 Ext Dev × 8 wks |
-| 6.4 Migrations | Database migrations | 160 hrs | 1 DBA × 4 wks |
-| 8.3 E2E Tests | Mobile and web E2E | 320 hrs | 2 QA × 4 wks |
-| 9.2 User Docs | Guides, tutorials, FAQ | 240 hrs | 1 Writer × 6 wks |
+| **P2-1.0 Enhanced Organization** | AI categorization, search, bulk ops | 480 hrs | 1 Backend × 6 wks |
+| **P2-2.0 Progress Analytics** | Dashboard, heatmap, quiz history | 560 hrs | 1 Backend + 1 Flutter × 7 wks |
+| **P2-3.0 Sharing** | Share links/projects, public pages | 400 hrs | 1 Backend + 1 Flutter × 5 wks |
+| **P2-4.0 Gamification** | Points, achievements, streaks | 400 hrs | 1 Backend + 1 Flutter × 5 wks |
+| **P2-5.0 Subscription & Payment** | Stripe integration, plans | 480 hrs | 1 Backend × 6 wks |
+| **P2-6.0 Mobile App Enhancements** | Share sheet, push notifications | 640 hrs | 2 Flutter × 8 wks |
+| **P2-7.0 Testing (Phase 2)** | Load testing, security audit | 320 hrs | 1 QA × 8 wks |
+| **P2-8.0 Phase 2 Launch** | App Store submission, marketing | 320 hrs | 1 PM + 1 Designer × 4 wks |
 
-**Phase 3 Subtotal:** 3,280 hours (410 person-days)
+**Phase 2 Subtotal:** 3,600 hours (450 person-days | 21 person-months)
 
-### Phase 4: Launch Preparation (Weeks 29-36)
-**Duration:** 8 weeks | **Team:** 12 FTE
+---
 
-| WBS Item | Deliverable | Effort (Hours) | Resources |
-|----------|-------------|----------------|-----------|
-| 4.8 Settings UI | Settings, subscription, data mgmt | 320 hrs | 2 Frontend × 4 wks |
-| 4.9 Web App | Flutter Web optimization | 480 hrs | 2 Frontend × 6 wks |
-| 4.10 Accessibility | WCAG 2.1 AA compliance | 240 hrs | 2 Frontend × 3 wks |
-| 5.4 All Browsers | Chrome, Firefox, Safari, Edge | 320 hrs | 1 Ext Dev × 8 wks |
-| 8.4-8.6 Testing | Security, performance, a11y | 640 hrs | 2 QA × 8 wks |
-| 9.3 Dev Docs | Setup, contribution, deployment | 160 hrs | 1 Writer × 4 wks |
-| 9.4 Runbooks | Incident response, monitoring | 80 hrs | 0.5 DevOps × 4 wks |
-| 10.1 App Stores | iOS, Android, extension stores | 240 hrs | 1 PM × 6 wks |
-| 10.2 Marketing | Website, assets, press kit | 320 hrs | 1 Designer + 1 PM × 4 wks |
-| 10.3 Beta Testing | TestFlight, feedback, usability | 320 hrs | Full team × 2 wks |
-| 10.4 Launch Checklist | Technical, operational, legal | 160 hrs | Leads × 2 wks |
-
-**Phase 4 Subtotal:** 3,280 hours (410 person-days)
-
-### Phase 5: Advanced Features (Weeks 37-48)
-**Duration:** 12 weeks | **Team:** 12 FTE
+### Phase 3 (Weeks 25-36) - AI Learning Coach
+**Duration:** 12 weeks | **Team:** 9 FTE
 
 | WBS Item | Deliverable | Effort (Hours) | Resources |
 |----------|-------------|----------------|-----------|
-| 3.7 Payment Service | Stripe, billing, subscriptions | 480 hrs | 2 Backend × 6 wks |
-| 4.7 Advanced Analytics | Knowledge gaps, export, certificates | 480 hrs | 2 Frontend × 6 wks |
-| 7.0 AI Coach | Personalized learning guidance | 720 hrs | 2 ML × 9 wks |
-| 8.5 Security Testing | Penetration testing, hardening | 240 hrs | 1 QA + Security × 6 wks |
-| 9.3 Advanced Docs | API docs, enterprise guides | 160 hrs | 1 Writer × 4 wks |
-| 11.1 Production Support | Monitoring, incidents, maintenance | 480 hrs | Full team × 2 wks |
-| 11.2 Customer Support | Support channels, training | 320 hrs | 1 Support + 1 PM × 8 wks |
-| 11.3 Continuous Improvement | Feedback, analytics, iteration | 640 hrs | Full team × 4 wks |
+| **P3-1.0 Adaptive Learning** | Learning paths, study schedules | 480 hrs | 1 ML + 1 Backend × 6 wks |
+| **P3-2.0 Source Chatbot (RAG)** | Vector DB, embeddings, chat UI | 800 hrs | 1 ML + 1 Backend × 10 wks |
+| **P3-3.0 Spaced Repetition (SRS)** | SM-2 algorithm, scheduling | 320 hrs | 1 Backend × 4 wks |
+| **P3-4.0 Enhanced Collaboration** | Annotations, groups, public courses | 560 hrs | 1 Backend + 1 Flutter × 7 wks |
+| **P3-5.0 Mobile Share Sheet** | iOS/Android native share | 240 hrs | 1 Flutter × 3 wks |
+| **P3-6.0 Testing (Phase 3)** | RAG accuracy, real-time sync | 320 hrs | 1 QA × 8 wks |
+| **P3-7.0 Advanced Analytics** | Learning velocity, retention | 240 hrs | 1 Backend × 3 wks |
 
-**Phase 5 Subtotal:** 3,520 hours (440 person-days)
+**Phase 3 Subtotal:** 2,960 hours (370 person-days | 18 person-months)
 
 ---
 
@@ -125,29 +94,25 @@
 
 | Category | Hours | % of Total | Team |
 |----------|-------|------------|------|
-| **Backend Development** | 5,280 hrs | 25.3% | 2-3 Backend Devs |
-| **Frontend Development** | 4,640 hrs | 22.2% | 2-3 Frontend Devs |
-| **AI/ML Development** | 2,400 hrs | 11.5% | 1-2 ML Engineers |
-| **Browser Extension** | 880 hrs | 4.2% | 1 Extension Dev |
-| **DevOps/Infrastructure** | 1,120 hrs | 5.4% | 1 DevOps Engineer |
-| **Database Development** | 560 hrs | 2.7% | 1 DBA/Backend Dev |
-| **QA & Testing** | 2,080 hrs | 10.0% | 1-2 QA Engineers |
+| **Backend Development** | 4,640 hrs | 35.4% | 2 Backend Devs |
+| **Frontend Development (Flutter)** | 3,200 hrs | 24.4% | 2 Flutter Devs |
+| **AI/ML Development** | 1,520 hrs | 11.6% | 0.5 → 2 ML Engineers |
+| **Browser Extension** | 480 hrs | 3.7% | 1 Extension Dev |
+| **DevOps/Infrastructure** | 800 hrs | 6.1% | 0.5 DevOps Engineer |
+| **Database Development** | 240 hrs | 1.8% | Backend Dev (included above) |
+| **QA & Testing** | 1,120 hrs | 8.5% | 1 QA Engineer |
 
-**Development Subtotal:** 16,960 hours (81.3%)
+**Development Subtotal:** 12,000 hours (91.6%)
 
 ### 2.2 Non-Development Effort
 
 | Category | Hours | % of Total | Team |
 |----------|-------|------------|------|
-| **Project Management** | 960 hrs | 4.6% | 1 Product Manager |
-| **UI/UX Design** | 560 hrs | 2.7% | 1 UI/UX Designer |
-| **Documentation** | 720 hrs | 3.4% | 1 Technical Writer |
-| **Marketing & Launch** | 400 hrs | 1.9% | PM + Designer |
-| **Customer Support** | 320 hrs | 1.5% | 1 Support Specialist |
-| **Beta Testing** | 320 hrs | 1.5% | Full Team |
-| **Production Support** | 656 hrs | 3.1% | Full Team |
+| **Project Management** | 640 hrs | 4.9% | 1 Product Manager |
+| **UI/UX Design** | 320 hrs | 2.4% | 1 Designer (part-time) |
+| **Documentation** | 144 hrs | 1.1% | 0.5 Tech Writer |
 
-**Non-Development Subtotal:** 3,936 hours (18.7%)
+**Non-Development Subtotal:** 1,104 hours (8.4%)
 
 ---
 
@@ -155,171 +120,146 @@
 
 ### 3.1 Team Composition
 
-| Role | FTE | Hours/Month | Total Hours | % of Total |
-|------|-----|-------------|-------------|------------|
-| **Backend Developer** | 2.5 | 400 | 5,280 | 25.3% |
-| **Frontend Developer** | 2.5 | 400 | 4,640 | 22.2% |
-| **ML Engineer** | 1.5 | 240 | 2,400 | 11.5% |
-| **DevOps Engineer** | 1.0 | 160 | 1,120 | 5.4% |
-| **QA Engineer** | 1.5 | 240 | 2,080 | 10.0% |
-| **Browser Extension Dev** | 1.0 | 160 | 880 | 4.2% |
-| **UI/UX Designer** | 1.0 | 160 | 560 | 2.7% |
-| **Technical Writer** | 1.0 | 120 | 720 | 3.4% |
-| **Product Manager** | 1.0 | 160 | 960 | 4.6% |
-| **Support Specialist** | 0.5 | 80 | 320 | 1.5% |
-| **Technical Lead** | 1.0 | 160 | 1,936 | 9.3% |
-
-**Total:** 13 FTE average | 20,896 hours
+| Role | MVP FTE | Phase 2 FTE | Phase 3 FTE | Total Hours | % of Total |
+|------|---------|-------------|-------------|-------------|------------|
+| **Backend Developer** | 2 | 2 | 2 | 4,640 hrs | 35.4% |
+| **Frontend Developer (Flutter)** | 2 | 2 | 2 | 3,200 hrs | 24.4% |
+| **ML/AI Engineer** | 0.5 | 1 | 2 | 1,520 hrs | 11.6% |
+| **Extension Developer** | 1 | 0.5 | 0.5 | 480 hrs | 3.7% |
+| **QA Engineer** | 1 | 1 | 1 | 1,120 hrs | 8.5% |
+| **DevOps** | 0.5 | 0.5 | 0.5 | 480 hrs | 3.7% |
+| **Product Manager** | 1 | 1 | 1 | 640 hrs | 4.9% |
+| **UI/UX Designer** | 0.5 | 0.5 | 0.5 | 320 hrs | 2.4% |
+| **Technical Writer** | 0.5 | 0 | 0 | 160 hrs | 1.2% |
+| **Dev (Shared/Overlap)** | - | - | - | 144 hrs | 1.1% |
+| **Total** | **7** | **8** | **9** | **13,104 hrs** | **100%** |
 
 ### 3.2 Cost by Role
 
-| Role | FTE | Annual Cost | Monthly Cost | % of Personnel |
-|------|-----|-------------|--------------|----------------|
-| **Backend Developer** | 2.5 | $150,000 | $12,500 | 17.1% |
-| **Frontend Developer** | 2.5 | $150,000 | $12,500 | 17.1% |
-| **ML Engineer** | 1.5 | $135,000 | $11,250 | 15.4% |
-| **DevOps Engineer** | 1.0 | $120,000 | $10,000 | 13.7% |
-| **QA Engineer** | 1.5 | $96,000 | $8,000 | 11.0% |
-| **Browser Extension Dev** | 1.0 | $80,000 | $6,667 | 9.1% |
-| **UI/UX Designer** | 1.0 | $72,000 | $6,000 | 8.2% |
-| **Technical Writer** | 0.75 | $36,000 | $3,000 | 4.1% |
-| **Product Manager** | 1.0 | $96,000 | $8,000 | 11.0% |
-| **Support Specialist** | 0.5 | $24,000 | $2,000 | 2.7% |
-| **Technical Lead** | 1.0 | $117,000 | $9,750 | 13.4% |
+| Role | FTE (Avg) | Annual Cost | Monthly Cost | % of Personnel |
+|------|-----------|-------------|--------------|----------------|
+| **Backend Developer** | 2 | $120,000 | $10,000 | 25.6% |
+| **Frontend Developer** | 2 | $120,000 | $10,000 | 25.6% |
+| **ML/AI Engineer** | 1 | $90,000 | $7,500 | 19.2% |
+| **Extension Developer** | 0.75 | $45,000 | $3,750 | 9.6% |
+| **QA Engineer** | 1 | $60,000 | $5,000 | 12.8% |
+| **DevOps** | 0.5 | $30,000 | $2,500 | 6.4% |
+| **Product Manager** | 1 | $72,000 | $6,000 | 15.4% |
+| **UI/UX Designer** | 0.5 | $27,000 | $2,250 | 5.8% |
+| **Technical Writer** | 0.25 | $9,000 | $750 | 1.9% |
 
-**Personnel Subtotal:** $876,000 | **Average:** $73,000/month
+**Personnel Subtotal:** $473,000 | **Average:** $52,500/month
 
 ---
 
 ## 4. Effort by Feature Area
 
-### 4.1 Core Features (MVP)
+### 4.1 MVP Features (Weeks 1-12)
 
 | Feature | Hours | % of Dev | Priority |
 |---------|-------|----------|----------|
-| **User Authentication** | 640 hrs | 3.8% | P0 |
-| **Bookmark Management** | 960 hrs | 5.7% | P0 |
-| **AI Processing Pipeline** | 2,400 hrs | 14.2% | P0 |
-| **Mobile App (Core)** | 2,080 hrs | 12.3% | P0 |
-| **Browser Extension** | 880 hrs | 5.2% | P0 |
-| **Basic Analytics** | 480 hrs | 2.8% | P1 |
+| **User Authentication** | 480 hrs | 4.0% | P0 |
+| **Link Management** | 720 hrs | 6.0% | P0 |
+| **Project Management** | 480 hrs | 4.0% | P0 |
+| **Per-Link AI (Summary + Flashcards)** | 1,200 hrs | 10.0% | P0 |
+| **Per-Project AI (Course + Quiz)** | 640 hrs | 5.3% | P0 |
+| **Flutter Mobile App** | 1,600 hrs | 13.3% | P0 |
+| **Flutter Web App** | (included above) | - | P0 |
+| **Chrome Extension** | 480 hrs | 4.0% | P0 |
+| **Job Queue System** | 320 hrs | 2.7% | P0 |
 
-**Core Features Subtotal:** 7,440 hours (43.9% of dev effort)
+**MVP Features Subtotal:** 5,920 hours (49.3% of dev effort)
 
-### 4.2 Social Features (Phase 2-3)
-
-| Feature | Hours | % of Dev | Priority |
-|---------|-------|----------|----------|
-| **Project Sharing** | 480 hrs | 2.8% | P1 |
-| **User Groups** | 400 hrs | 2.4% | P1 |
-| **Real-time Collaboration** | 320 hrs | 1.9% | P1 |
-| **Comments & Discussions** | 240 hrs | 1.4% | P2 |
-| **Leaderboards** | 320 hrs | 1.9% | P1 |
-
-**Social Features Subtotal:** 1,760 hours (10.4% of dev effort)
-
-### 4.3 Advanced Features (Phase 4-5)
+### 4.2 Phase 2 Features (Weeks 13-24)
 
 | Feature | Hours | % of Dev | Priority |
 |---------|-------|----------|----------|
-| **Learning Analytics** | 800 hrs | 4.7% | P1 |
-| **AI Learning Coach** | 720 hrs | 4.2% | P2 |
-| **Payment System** | 480 hrs | 2.8% | P1 |
-| **Enterprise Features** | 640 hrs | 3.8% | P2 |
-| **Public API** | 400 hrs | 2.4% | P2 |
+| **AI-Inferred Categorization** | 160 hrs | 1.3% | P1 |
+| **Advanced Search & Filtering** | 240 hrs | 2.0% | P1 |
+| **Analytics Dashboard + Heatmap** | 480 hrs | 4.0% | P1 |
+| **Share Links/Projects** | 320 hrs | 2.7% | P1 |
+| **Gamification (Points, Streaks)** | 400 hrs | 3.3% | P1 |
+| **Stripe Subscription** | 480 hrs | 4.0% | P0 |
+| **Mobile Share Sheet + Push** | 640 hrs | 5.3% | P1 |
 
-**Advanced Features Subtotal:** 3,040 hours (17.9% of dev effort)
+**Phase 2 Features Subtotal:** 2,720 hours (22.7% of dev effort)
+
+### 4.3 Phase 3 Features (Weeks 25-36)
+
+| Feature | Hours | % of Dev | Priority |
+|---------|-------|----------|----------|
+| **Adaptive Learning Paths** | 320 hrs | 2.7% | P2 |
+| **Study Schedules** | 160 hrs | 1.3% | P2 |
+| **Spaced Repetition (SM-2)** | 240 hrs | 2.0% | P2 |
+| **RAG Source Chatbot** | 800 hrs | 6.7% | P2 |
+| **Collaborative Annotation** | 400 hrs | 3.3% | P2 |
+| **Group Learning** | 240 hrs | 2.0% | P3 |
+| **Public Courses** | 160 hrs | 1.3% | P3 |
+
+**Phase 3 Features Subtotal:** 2,320 hours (19.3% of dev effort)
 
 ### 4.4 Infrastructure & Operations
 
 | Component | Hours | % of Dev | Priority |
 |-----------|-------|----------|----------|
-| **AWS Infrastructure** | 640 hrs | 3.8% | P0 |
-| **CI/CD Pipeline** | 320 hrs | 1.9% | P0 |
-| **Monitoring & Logging** | 240 hrs | 1.4% | P0 |
-| **Database Setup** | 560 hrs | 3.3% | P0 |
-| **Security Hardening** | 320 hrs | 1.9% | P0 |
+| **AWS Infrastructure** | 400 hrs | 3.3% | P0 |
+| **CI/CD Pipeline** | 240 hrs | 2.0% | P0 |
+| **Monitoring & Logging** | 160 hrs | 1.3% | P0 |
+| **Database Setup & Indexing** | 240 hrs | 2.0% | P0 |
 
-**Infrastructure Subtotal:** 2,080 hours (12.3% of dev effort)
+**Infrastructure Subtotal:** 1,040 hours (8.7% of dev effort)
 
 ### 4.5 Quality & Documentation
 
 | Activity | Hours | % of Dev | Priority |
 |----------|-------|----------|----------|
-| **Unit & Integration Tests** | 1,440 hrs | 8.5% | P0 |
-| **E2E Testing** | 640 hrs | 3.8% | P0 |
-| **Performance Testing** | 320 hrs | 1.9% | P1 |
-| **Security Testing** | 240 hrs | 1.4% | P0 |
-| **Documentation** | 720 hrs | 4.2% | P1 |
+| **Unit & Integration Tests** | 800 hrs | 6.7% | P0 |
+| **E2E Testing** | 320 hrs | 2.7% | P0 |
+| **API Documentation** | 160 hrs | 1.3% | P1 |
+| **User Guides & Tutorials** | 80 hrs | 0.7% | P1 |
 
-**Quality & Docs Subtotal:** 3,360 hours (19.8% of dev effort)
+**Quality & Docs Subtotal:** 1,360 hours (11.3% of dev effort)
 
 ---
 
 ## 5. Phase-by-Phase Resource Ramp-Up
 
-### Phase 1: Foundation (Weeks 1-8)
-**Team Size:** 6-8 FTE | **Effort:** 3,600 hours
+### Phase MVP (Weeks 1-12)
+**Team Size:** 7 FTE | **Effort:** 7,360 hours
 
 | Role | Allocation | Key Activities |
 |------|------------|----------------|
-| Backend Dev | 2 FTE | Auth, basic CRUD, API Gateway |
-| Frontend Dev | 2 FTE | App setup, auth screens |
-| DevOps | 2 FTE | Infrastructure, CI/CD |
-| QA | 1 FTE | Early testing setup |
-| PM | 1 FTE | Project planning |
-| Designer | 0.5 FTE | Design system |
+| Backend Dev | 2 FTE | Auth, Link, Project, AI pipeline |
+| Flutter Dev | 2 FTE | Mobile + Web app |
+| Extension Dev | 1 FTE | Chrome extension |
+| ML Engineer | 0.5 FTE | OpenAI prompts, content processing |
+| QA Engineer | 1 FTE | Testing (unit, integration, E2E) |
+| Product/Design | 1 FTE | UX, requirements, design |
 
-### Phase 2: Core Features (Weeks 9-20)
-**Team Size:** 10-12 FTE | **Effort:** 6,880 hours
-
-| Role | Allocation | Key Activities |
-|------|------------|----------------|
-| Backend Dev | 3 FTE | Content, AI, analytics |
-| Frontend Dev | 3 FTE | Learning interface |
-| ML Engineer | 2 FTE | AI pipeline, models |
-| Extension Dev | 1 FTE | Enhanced features |
-| QA | 2 FTE | Comprehensive testing |
-| Designer | 1 FTE | UI components |
-| PM | 1 FTE | Sprint management |
-
-### Phase 3: Social Features (Weeks 21-28)
-**Team Size:** 10-12 FTE | **Effort:** 3,280 hours
+### Phase 2 (Weeks 13-24)
+**Team Size:** 8 FTE | **Effort:** 3,600 hours
 
 | Role | Allocation | Key Activities |
 |------|------------|----------------|
-| Backend Dev | 2 FTE | Social service, analytics |
-| Frontend Dev | 2 FTE | Social UI, analytics dashboards |
-| Extension Dev | 1 FTE | All browser support |
-| QA | 2 FTE | E2E testing |
-| Writer | 1 FTE | User documentation |
-| PM | 1 FTE | Beta preparation |
+| Backend Dev | 2 FTE | Analytics, sharing, Stripe |
+| Flutter Dev | 2 FTE | Dashboard, gamification, share sheet |
+| ML Engineer | 1 FTE | AI categorization, recommendations |
+| Extension Dev | 0.5 FTE | Extension maintenance |
+| QA Engineer | 1 FTE | Load testing, security audit |
+| Product/Design | 1 FTE | App Store assets, marketing |
+| DevOps | 0.5 FTE | Production scaling |
 
-### Phase 4: Launch Preparation (Weeks 29-36)
-**Team Size:** 12 FTE | **Effort:** 3,280 hours
-
-| Role | Allocation | Key Activities |
-|------|------------|----------------|
-| Frontend Dev | 2 FTE | Web app, accessibility |
-| Extension Dev | 1 FTE | All browsers |
-| QA | 2 FTE | Security, performance, a11y |
-| Designer | 1 FTE | Marketing assets |
-| Writer | 1 FTE | Dev docs, runbooks |
-| PM | 1 FTE | App stores, launch |
-| DevOps | 1 FTE | Production prep |
-| Support | 1 FTE | Support setup |
-
-### Phase 5: Advanced Features (Weeks 37-48)
-**Team Size:** 12 FTE | **Effort:** 3,520 hours
+### Phase 3 (Weeks 25-36)
+**Team Size:** 9 FTE | **Effort:** 2,960 hours
 
 | Role | Allocation | Key Activities |
 |------|------------|----------------|
-| Backend Dev | 2 FTE | Payment, advanced features |
-| ML Engineer | 2 FTE | AI coach |
-| Frontend Dev | 2 FTE | Advanced analytics |
-| QA | 1 FTE | Security testing |
-| Support | 1 FTE | Customer support |
-| PM | 1 FTE | Continuous improvement |
+| Backend Dev | 2 FTE | RAG, collaboration, advanced analytics |
+| Flutter Dev | 2 FTE | Chat UI, annotation UI |
+| ML Engineer | 2 FTE | RAG pipeline, SRS algorithm |
+| QA Engineer | 1 FTE | RAG accuracy, sync testing |
+| Product/Design | 1 FTE | UX refinement, user feedback |
+| DevOps | 0.5 FTE | Scaling, optimization |
 
 ---
 
@@ -330,103 +270,109 @@
 | Risk Category | Probability | Impact | Contingency |
 |---------------|-------------|--------|-------------|
 | **AI Processing Delays** | Medium | High | +10% AI effort |
-| **Performance Issues** | Medium | High | +15% infra/dev effort |
-| **App Store Rejection** | Low | Medium | +5% QA effort |
-| **Scope Creep** | High | Medium | +10% overall |
-| **Integration Complexity** | Medium | Medium | +8% backend effort |
+| **Content Extraction Failures** | High | Medium | +5% backend effort |
+| **High AI API Costs** | High | Medium | Mitigated via caching |
+| **Low User Adoption** | Medium | High | Marketing budget buffer |
+| **App Store Delays** | Low | Medium | +2 weeks buffer |
 
-**Total Contingency:** +12% overall effort
+**Total Contingency:** +10% overall effort
 
 ### 6.2 Adjusted Estimates
 
 | Category | Original | With Contingency | Increase |
 |----------|----------|------------------|----------|
-| **Development** | 16,960 hrs | 19,080 hrs | +2,120 hrs |
-| **Non-Development** | 3,936 hrs | 4,320 hrs | +384 hrs |
-| **Total** | 20,896 hrs | 23,400 hrs | +2,504 hrs |
+| **Development** | 12,000 hrs | 13,200 hrs | +1,200 hrs |
+| **Non-Development** | 1,104 hrs | 1,200 hrs | +96 hrs |
+| **Total** | 13,104 hrs | 14,400 hrs | +1,296 hrs |
 
-**Adjusted Total:** 23,400 hours (2,925 person-days | 139 person-months)
+**Adjusted Total:** 14,400 hours (1,800 person-days | 86 person-months)
 
 ---
 
 ## 7. Critical Path Analysis
 
-### 7.1 Critical Dependencies
+### 7.1 Critical Dependencies (36 weeks)
 
 ```
-Week 1-2: Infrastructure Setup
-  ↓
-Week 3-4: Authentication Service
-  ↓
-Week 5-6: Content APIs
-  ↓
-Week 7-8: Browser Extension MVP
-  ↓
-Week 9-14: AI Pipeline
-  ↓
-Week 15-20: Mobile App
-  ↓
-Week 31-32: Beta Testing
-  ↓
-Week 33-35: App Store Submission
-  ↓
-Week 36: Public Launch
+Week 1-2: Infrastructure Setup (AWS, MongoDB, Redis)
+         ↓
+Week 3-4: Authentication + DB Schema
+         ↓
+Week 5-6: Link/Project APIs
+         ↓
+Week 7-8: Per-Link AI Pipeline
+         ↓
+Week 9-10: Flutter App Core + Chrome Extension
+         ↓
+Week 11-12: Per-Project AI (Course/Quiz)
+         ↓
+Week 12: CLOSED BETA LAUNCH ⭐
+         ↓
+Week 13-18: Analytics + Sharing
+         ↓
+Week 19-21: Gamification + Payments
+         ↓
+Week 22-23: App Store Submission
+         ↓
+Week 24: PUBLIC LAUNCH ⭐
+         ↓
+Week 25-30: RAG Chatbot + SRS
+         ↓
+Week 31-34: Collaboration Features
+         ↓
+Week 36: FULL RELEASE ⭐
 ```
 
 ### 7.2 Schedule Compression Options
 
 | Option | Time Saved | Cost Impact | Risk |
 |--------|------------|-------------|------|
-| **Add 2 Backend Devs** | 4 weeks | +$24,000 | Low |
-| **Add 2 Frontend Devs** | 3 weeks | +$24,000 | Low |
-| **Reduce Testing Scope** | 2 weeks | $0 | High |
-| **Phase AI Launch** | 6 weeks | $0 | Medium |
-| **Outsource Extension** | 2 weeks | +$8,000 | Low |
+| **Add 1 Backend Dev** | 2 weeks | +$12,000 | Low |
+| **Add 1 Flutter Dev** | 2 weeks | +$12,000 | Low |
+| **Add 1 ML Engineer (early)** | 3 weeks | +$18,000 | Low |
+| **Reduce Phase 3 Scope** | 4 weeks | $0 | Medium |
 
-**Maximum Compression:** 8 weeks (launch at Week 28)
-**Recommended Compression:** 4 weeks (launch at Week 32)
+**Maximum Compression:** 6 weeks (launch at Week 30)
+**Recommended:** Stay on 36-week plan (lean team, sustainable pace)
 
 ---
 
 ## 8. Cost Breakdown
 
-### 8.1 Development Costs
+### 8.1 Development Costs by Phase
 
 | Phase | Duration | Team | Monthly Cost | Total Cost |
 |-------|----------|------|--------------|------------|
-| **Phase 1** | 8 wks | 6-8 FTE | $65,000 | $130,000 |
-| **Phase 2** | 12 wks | 10-12 FTE | $85,000 | $255,000 |
-| **Phase 3** | 8 wks | 10-12 FTE | $85,000 | $170,000 |
-| **Phase 4** | 8 wks | 12 FTE | $85,000 | $170,000 |
-| **Phase 5** | 12 wks | 12 FTE | $75,000 | $225,000 |
+| **Phase MVP** | 12 wks | 7 FTE | $52,000 | $156,000 |
+| **Phase 2** | 12 wks | 8 FTE | $60,000 | $180,000 |
+| **Phase 3** | 12 wks | 9 FTE | $68,000 | $204,000 |
 
-**Personnel Subtotal:** $950,000 (with contingency)
+**Personnel Subtotal:** $540,000
 
 ### 8.2 Non-Personnel Costs
 
-| Category | Annual Cost | Monthly Cost |
-|----------|-------------|--------------|
-| **AWS Infrastructure** | $28,000 | $2,333 |
-| **AI/ML Services** | $24,000 | $2,000 |
-| **Software & Services** | $6,096 | $508 |
-| **Marketing (Launch)** | $15,000 | $1,250 |
-| **Legal & Compliance** | $8,000 | $667 |
-| **Contingency (8%)** | $6,544 | $545 |
+| Category | Monthly | Annual (9 mo) | Notes |
+|----------|---------|---------------|-------|
+| **AWS Infrastructure** | $2,000 → $6,000 | $36,000 | Scales with users |
+| **OpenAI API** | $1,000 → $4,000 | $24,000 | Major cost driver |
+| **Software & Services** | $500 | $4,500 | Sentry, Stripe fees, etc. |
+| **Marketing** | $500 → $3,000 | $18,000 | Focused on Phase 2 launch |
+| **Domain/SSL/Tools** | $200 | $1,800 | Misc. operational |
 
-**Non-Personnel Subtotal:** $87,640
+**Non-Personnel Subtotal:** $84,300
 
 ### 8.3 Total Budget
 
 | Category | Cost | % of Total |
 |----------|------|------------|
-| **Personnel** | $876,000 | 91% |
-| **Infrastructure** | $45,960 | 5% |
-| **Software & Services** | $6,096 | 1% |
-| **Marketing** | $15,000 | 2% |
-| **Legal** | $8,000 | 1% |
-| **Contingency** | $73,944 | 8% |
+| **Personnel** | $468,000 | 85% |
+| **Infrastructure** (AWS) | $36,000 | 7% |
+| **AI/ML Services** (OpenAI) | $24,000 | 4% |
+| **Software & Services** | $4,500 | 1% |
+| **Marketing** | $18,000 | 3% |
+| **Contingency (10%)** | $55,000 | 10% |
 
-**Total Budget:** $1,025,000 (with contingency)
+**Total Budget:** ~$550,000 (with contingency)
 
 ---
 
@@ -434,21 +380,21 @@ Week 36: Public Launch
 
 | Feature Area | Effort (Hours) | Cost | % of Total |
 |--------------|----------------|------|------------|
-| **User Authentication** | 640 hrs | $36,480 | 3.6% |
-| **Bookmark Management** | 960 hrs | $54,720 | 5.3% |
-| **AI Processing** | 2,400 hrs | $136,800 | 13.3% |
-| **Mobile App** | 2,080 hrs | $118,560 | 11.6% |
-| **Browser Extension** | 880 hrs | $50,160 | 4.9% |
-| **Social Features** | 1,760 hrs | $100,320 | 9.8% |
-| **Analytics** | 1,280 hrs | $72,960 | 7.1% |
-| **Gamification** | 800 hrs | $45,600 | 4.4% |
-| **Payment System** | 480 hrs | $27,360 | 2.7% |
-| **Infrastructure** | 2,080 hrs | $118,560 | 11.6% |
-| **Testing** | 2,080 hrs | $118,560 | 11.6% |
-| **Documentation** | 720 hrs | $41,040 | 4.0% |
-| **Project Management** | 960 hrs | $54,720 | 5.3% |
-| **Design** | 560 hrs | $31,920 | 3.1% |
-| **Support & Launch** | 656 hrs | $37,392 | 3.6% |
+| **User Authentication** | 480 hrs | $21,600 | 3.9% |
+| **Link Management** | 720 hrs | $32,400 | 5.9% |
+| **Project Management** | 480 hrs | $21,600 | 3.9% |
+| **AI Processing (Both Tiers)** | 1,840 hrs | $82,800 | 15.1% |
+| **Mobile + Web App** | 1,920 hrs | $86,400 | 15.7% |
+| **Chrome Extension** | 480 hrs | $21,600 | 3.9% |
+| **Analytics + Heatmap** | 560 hrs | $25,200 | 4.6% |
+| **Sharing Features** | 400 hrs | $18,000 | 3.3% |
+| **Gamification** | 400 hrs | $18,000 | 3.3% |
+| **Stripe Integration** | 480 hrs | $21,600 | 3.9% |
+| **RAG Chatbot** | 800 hrs | $36,000 | 6.5% |
+| **Collaboration** | 560 hrs | $25,200 | 4.6% |
+| **Infrastructure** | 800 hrs | $36,000 | 6.5% |
+| **Testing** | 1,120 hrs | $50,400 | 9.2% |
+| **Project Management** | 640 hrs | $28,800 | 5.2% |
 
 ---
 
@@ -458,28 +404,29 @@ Week 36: Public Launch
 
 | Period | Users | Conversion | MRR | Annual Revenue |
 |--------|-------|------------|-----|----------------|
-| **Year 1** | 1,000,000 | 10% | $100,000 | $1,200,000 |
-| **Year 2** | 2,500,000 | 12% | $300,000 | $3,600,000 |
-| **Year 3** | 5,000,000 | 15% | $750,000 | $9,000,000 |
+| **Year 1** | 100,000 | 6% | $60,000 | $360,000 |
+| **Year 2** | 300,000 | 8% | $240,000 | $1,440,000 |
+| **Year 3** | 600,000 | 10% | $600,000 | $3,600,000 |
 
 ### 10.2 ROI Calculation
 
 | Metric | Year 1 | Year 2 | Year 3 |
 |--------|--------|--------|--------|
-| **Total Investment** | $1,025,000 | $1,500,000 | $2,200,000 |
-| **Revenue** | $1,200,000 | $3,600,000 | $9,000,000 |
-| **ROI** | 17% | 140% | 309% |
-| **Break-even** | Month 10 | Month 5 | Month 3 |
+| **Cumulative Investment** | $550,000 | $900,000 | $1,300,000 |
+| **Revenue** | $360,000 | $1,440,000 | $3,600,000 |
+| **Net (Year)** | -$190,000 | +$540,000 | +$2,300,000 |
+| **Cumulative Net** | -$190,000 | +$350,000 | +$2,650,000 |
+| **Break-even** | - | Month 16 | Month 8 |
 
 ### 10.3 Cost Per User
 
 | Metric | Value |
 |--------|-------|
-| **Development Cost/User** (Year 1) | $1.03 |
-| **Infrastructure Cost/User** (Year 1) | $0.05 |
-| **Total CAC** | $2.50 |
-| **LTV (Year 1)** | $12.00 |
-| **LTV:CAC Ratio** | 4.8:1 |
+| **Development Cost/User** (Year 1) | $5.50 |
+| **Infrastructure Cost/User** (Year 1) | $0.60 |
+| **Total CAC** | $3.00 |
+| **LTV (Year 1, 6% @ $9.99/mo, 6 mo retention)** | $36.00 |
+| **LTV:CAC Ratio** | 12:1 |
 
 ---
 
@@ -489,42 +436,32 @@ Week 36: Public Launch
 
 | Feature | Effort | Value | Recommendation |
 |---------|--------|-------|----------------|
-| **Basic Search** | 80 hrs | High | Implement in Phase 1 |
-| **Export Bookmarks** | 40 hrs | High | Implement in Phase 1 |
-| **Dark Mode** | 40 hrs | Medium | Implement in Phase 2 |
-| **Share Link** | 60 hrs | High | Implement in Phase 3 |
+| **Manual URL Input** | 40 hrs | High | MVP essential |
+| **Basic Search** | 80 hrs | High | Phase 2 early |
+| **Export Links (JSON)** | 40 hrs | Medium | Phase 2 |
+| **Share Project Link** | 60 hrs | High | Phase 2 essential |
 
 ### 11.2 Effort Reduction Opportunities
 
 | Area | Current Effort | Optimized Effort | Savings |
 |------|----------------|------------------|---------|
-| **Custom Auth UI** | 320 hrs | 160 hrs (use Auth0) | 160 hrs |
-| **Custom Analytics** | 480 hrs | 240 hrs (use Mixpanel) | 240 hrs |
-| **In-house Email** | 160 hrs | 80 hrs (use SendGrid) | 80 hrs |
-| **Custom Payment UI** | 240 hrs | 120 hrs (use Stripe Checkout) | 120 hrs |
+| **Use Firebase Auth** | 320 hrs | 160 hrs | 160 hrs |
+| **Use Stripe Checkout** | 240 hrs | 120 hrs | 120 hrs |
+| **Use Mixpanel/Amplitude** | 320 hrs | 160 hrs | 160 hrs |
+| **Use existing Flutter UI kits** | 400 hrs | 240 hrs | 160 hrs |
 
-**Total Potential Savings:** 600 hours (7.5 weeks)
+**Total Potential Savings:** 600 hours (~8 weeks of 1 FTE)
 
-### 11.3 Phased Rollout Strategy
+### 11.3 Build vs. Buy Decisions
 
-**MVP (Weeks 1-20):**
-- Core bookmarking
-- Basic AI processing
-- Mobile app MVP
-- Browser extension (Chrome only)
-- Essential gamification
-
-**Growth (Weeks 21-36):**
-- Social features
-- All browser extensions
-- Advanced analytics
-- Full mobile app
-
-**Scale (Weeks 37-48):**
-- Enterprise features
-- AI coach
-- Public API
-- Advanced reports
+| Component | Decision | Rationale |
+|-----------|----------|-----------|
+| **Authentication** | Build (JWT) | Core to platform, simple enough |
+| **Payments** | Buy (Stripe) | Complex compliance, use Stripe |
+| **Analytics** | Hybrid | Basic: build; Advanced: Mixpanel |
+| **Email** | Buy (SendGrid/AWS SES) | Deliverability critical |
+| **Vector DB** | Buy (Pinecone) | Phase 3, managed service |
+| **Error Tracking** | Buy (Sentry) | Core utility, not differentiator |
 
 ---
 
@@ -533,19 +470,20 @@ Week 36: Public Launch
 ### 12.1 Key Assumptions
 
 1. **Team Productivity:** 160 productive hours/month per FTE (80% efficiency)
-2. **Learning Curve:** 20% overhead for new technologies
-3. **Rework:** 15% of effort for bug fixes and iterations
-4. **Communication:** 20% overhead for team coordination
-5. **Testing:** 70% unit + integration, 20% E2E, 10% performance
+2. **Learning Curve:** 10% overhead for new technologies (Flutter, if new to team)
+3. **Rework:** 10% of effort for bug fixes and iterations
+4. **Communication:** 15% overhead for team coordination (daily standups, sprint planning)
+5. **AI Processing:** 70% of links process successfully on first try
 
 ### 12.2 Constraints
 
 | Constraint | Impact | Mitigation |
 |------------|--------|------------|
-| **Budget Cap** | $1M for Year 1 | Phased rollout, prioritize MVP |
-| **Timeline** | Launch by Week 36 | Critical path management |
-| **Team Size** | Max 12 FTE | Optimize allocation, outsource |
-| **AI Costs** | $2K/month | Usage optimization, caching |
+| **Budget Cap** | $550K for Year 1 | Lean team (7-9 FTE), phased rollout |
+| **Timeline** | 36 weeks to full release | Critical path management |
+| **Team Size** | Max 9 FTE | Careful hiring, avoid context switching |
+| **AI Costs** | $1K → $4K/month | Caching, prompt optimization, usage limits |
+| **Chrome Extension Review** | 1-2 weeks | Submit early (Week 10) |
 
 ---
 
@@ -555,18 +493,18 @@ Week 36: Public Launch
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| **Velocity** | 320 hrs/sprint | Sprint planning |
-| **Burn Rate** | $77K/month | Financial tracking |
-| **Scope Creep** | <5% per phase | Change requests |
-| **Defect Rate** | <5 bugs/KLOC | QA metrics |
-| **Time-to-Market** | 36 weeks | Project timeline |
+| **Velocity** | 280-320 hrs/sprint (2 weeks) | Sprint planning |
+| **Burn Rate** | $52K → $68K/month | Financial tracking |
+| **AI Success Rate** | > 90% | AI pipeline logs |
+| **Defect Rate** | < 3 bugs/KLOC | QA metrics |
+| **AI Cost per Link** | < $0.10 | OpenAI dashboard |
 
-### 13.2 Monthly Review Cadence
+### 13.2 Bi-Weekly Review Cadence
 
-1. **Week 1:** Sprint planning + previous retrospective
-2. **Week 2:** Progress check + risk assessment
-3. **Week 3:** Mid-sprint review + adjustment
-4. **Week 4:** Sprint demo + stakeholder update
+1. **Week 1:** Sprint planning + demo previous sprint
+2. **Week 2:** Sprint execution
+3. **Sprint End:** Demo + retrospective
+4. **Monthly:** Stakeholder update (metrics, risks, roadmap)
 
 ---
 
@@ -574,34 +512,34 @@ Week 36: Public Launch
 
 ### 14.1 Summary
 
-The L2L platform requires **20,896 hours** of effort over **48 weeks** with an **average team size of 10-12 FTE**. The total project budget is **$1,025,000** (including contingency), with **$876,000 (86%)** allocated to personnel costs.
+The L2L platform requires **13,104 hours** of effort over **36 weeks** with an **average team size of 7-9 FTE**. The total project budget is **~$550,000** (including contingency), with **$468,000 (85%)** allocated to personnel costs.
 
 ### 14.2 Critical Success Factors
 
-1. **AI Pipeline Reliability:** Core differentiator, requires focused effort
-2. **Mobile App Quality:** Primary user interface, critical for adoption
-3. **Time-to-Market:** 36-week launch target is aggressive but achievable
-4. **Cost Management:** AI costs must be monitored closely
-5. **Team Productivity:** 80% efficiency assumption must be maintained
+1. **AI Pipeline Quality:** Core differentiator; summaries, flashcards, courses, quizzes must be high quality
+2. **Two-Tier Processing:** Per-link (fast) and per-project (synthesis) must work reliably
+3. **Cross-Platform Experience:** Flutter app + Chrome extension must feel polished
+4. **Cost Management:** AI costs must stay within budget via caching and optimization
+5. **Team Stability:** Lean team means each member is critical; avoid turnover
 
 ### 14.3 Recommendations
 
-1. **Start with MVP:** Focus on core features first (bookmarking + AI)
-2. **Phase Social Features:** Can be added post-launch if needed
-3. **Monitor AI Costs:** Implement usage limits and caching early
-4. **Outsource Non-Core:** Use SaaS for auth, payments, analytics
-5. **Plan for Scale:** Architecture must support 10M+ users
+1. **MVP First:** Focus on Weeks 1-12 deliverables; closed beta validates core value
+2. **Phase 2 for Revenue:** Stripe integration unlocks monetization; prioritize for Week 24
+3. **Phase 3 for Differentiation:** RAG chatbot and SRS are competitive advantages
+4. **Use Managed Services:** MongoDB Atlas, ElastiCache, Pinecone reduce DevOps burden
+5. **Track AI Costs Daily:** Set up alerts at 50%, 80%, 100% of monthly budget
 
 ### 14.4 Next Steps
 
 1. Validate estimates with technical leads
-2. Secure funding for Year 1 ($1.025M)
-3. Hire core team (backend, frontend, ML)
-4. Begin Phase 1 infrastructure setup
+2. Secure funding for Year 1 ($550K)
+3. Hire core team (2 Backend, 2 Flutter, 0.5 ML, 1 QA, 1 PM/Design)
+4. Begin Phase MVP infrastructure setup (Week 1)
 5. Establish bi-weekly stakeholder reviews
 
 ---
 
 **End of Effort Estimation Report**
 
-*This estimation is based on the WBS, Project Plan, and Technical Specification. Actual effort may vary based on team experience, technical challenges, and scope changes. Regular reviews and adjustments are recommended.*
+*This estimation is based on the WBS (v3.0), Project Plan (v2.0), and Technical Specification. Actual effort may vary based on team experience, technical challenges, and scope changes. Regular reviews and adjustments are recommended.*
