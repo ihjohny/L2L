@@ -1,151 +1,180 @@
 # L2L (Link to Learn) - Project Plan
 
-**Version:** 1.0 | **Date:** January 2026 | **Timeline:** 48 weeks (12 months)
+**Version:** 2.0 | **Date:** March 2026 | **Timeline:** 36 weeks (9 months)
 
 ---
 
 ## Executive Summary
 
-L2L is an AI-powered knowledge management platform that transforms passive bookmarking into active, structured learning through AI-driven content processing, gamification, and social features.
+L2L is an AI-powered knowledge management platform that transforms passive bookmarking into active, structured learning. The platform uses a two-tier AI processing pipeline: per-link (summaries + flashcards) and per-project (courses + quizzes).
 
 **Key Objectives:**
-- Launch MVP in 36 weeks with 10,000 users in first month
-- Achieve 60% monthly retention and 10% premium conversion
-- Reach 1M users and $100K MRR within 12 months
+- Launch MVP (Closed Beta) in 12 weeks with 500-1,000 users
+- Public launch at Week 24 with 50,000 users
+- Achieve 60% weekly retention and 4-6% premium conversion
+- Reach 100K users and clear path to profitability by Week 36
 
-**Budget:** $925K Year 1 | **Team:** 8-12 FTE | **Launch Target:** September 2025
+**Budget:** $550K Year 1 | **Team:** 7-9 FTE | **Launch Target:** September 2026
 
 ---
 
 ## Timeline Overview
 
 ```
-Q1 2025 (W1-12):  Phase 1 - Foundation + Phase 2 - Core Features Start
-Q2 2025 (W13-24): Phase 2 - Core Features Complete
-Q3 2025 (W25-36): Phase 3 - Social Features + Phase 4 - Launch
-Q4 2025 (W37-48): Phase 5 - Advanced Features
+Q2 2026 (W1-12):  MVP - Closed Beta
+Q3 2026 (W13-24): Phase 2 - Public Launch
+Q4 2026 (W25-36): Phase 3 - AI Learning Coach
 ```
 
-### 5 Major Phases
+### 3 Development Phases
 
 | Phase | Duration | Focus | Key Deliverables |
 |-------|----------|-------|------------------|
-| **1. Foundation** | W1-8 (8w) | Infrastructure, Auth, Basic Bookmarking | AWS setup, Chrome extension MVP |
-| **2. Core Features** | W9-20 (12w) | AI Pipeline, Mobile App, Gamification | AI processing, iOS/Android apps |
-| **3. Social Features** | W21-28 (8w) | Sharing, Groups, Real-time collaboration | Project sharing, User groups |
-| **4. Launch Prep** | W29-36 (8w) | Analytics, Beta Testing, App Stores | Public launch, 10K users |
-| **5. Advanced** | W37-48 (12w) | Enterprise, API, AI Coach | Advanced features, Scaling |
+| **MVP** | W1-12 (12w) | Core Platform | Auth, Link/Project CRUD, Per-link AI, Per-project AI, Flutter app, Chrome extension, Closed Beta |
+| **Phase 2** | W13-24 (12w) | Growth & Engagement | Analytics, Sharing, Gamification, Payments, Mobile apps (App Store), Public Launch |
+| **Phase 3** | W25-36 (12w) | AI Coaching | Adaptive learning, RAG chatbot, Spaced repetition, Collaboration |
 
 ---
 
-## Critical Path (36 weeks to launch)
+## Critical Path (36 weeks to full launch)
 
 ```
-Infrastructure (W1-2)
-  ↓
-Authentication (W3-4)
-  ↓
-Content APIs (W5-6)
-  ↓
-Browser Extension (W7-8)
-  ↓
-AI Pipeline (W9-14)
-  ↓
-Learning Materials (W13-14)
-  ↓
-Mobile App (W15-20)
-  ↓
-Beta Testing (W31-32)
-  ↓
-App Stores (W33-35)
-  ↓
-Public Launch (W36) ⭐
+Infrastructure Setup (W1-2)
+       ↓
+Authentication + DB Schema (W3-4)
+       ↓
+Link/Project APIs (W5-6)
+       ↓
+Per-Link AI Pipeline (W7-8)
+       ↓
+Flutter App Core (W9-10)
+       ↓
+Chrome Extension (W9-10)
+       ↓
+Per-Project AI (Course/Quiz) (W11-12)
+       ↓
+CLOSED BETA LAUNCH (W12) ⭐
+       ↓
+Analytics + Sharing (W13-18)
+       ↓
+Gamification + Payments (W19-21)
+       ↓
+App Store Submission (W22-23)
+       ↓
+PUBLIC LAUNCH (W24) ⭐
+       ↓
+RAG Chatbot + SRS (W25-30)
+       ↓
+Collaboration Features (W31-34)
+       ↓
+FULL RELEASE (W36) ⭐
 ```
 
 ---
 
 ## Key Milestones
 
-| # | Milestone | Week | Date | Deliverable |
-|---|-----------|------|------|-------------|
-| M1 | Infrastructure Ready | 2 | Feb 2025 | AWS, Kubernetes, CI/CD operational |
-| M2 | Alpha Release | 8 | Mar 2025 | Internal testing (Phase 1 complete) |
-| M3 | AI Pipeline Complete | 14 | May 2025 | AI processing functional (95% accuracy) |
-| M4 | Mobile MVP Ready | 20 | Jun 2025 | iOS & Android apps core features |
-| M5 | Social Features Beta | 28 | Aug 2025 | Sharing, groups, collaboration |
-| M6 | Public Beta Launch | 32 | Aug 2025 | Open beta (5K-10K users) |
-| M7 | App Store Approval | 35 | Sep 2025 | Approved on all stores |
-| **M8** | **Public Launch** | **36** | **Sep 2025** | **Full product launch** |
-| M9 | Advanced Features | 48 | Dec 2025 | Enterprise features, API, AI coach |
+| # | Milestone | Week | Deliverable |
+|---|-----------|------|-------------|
+| M1 | Infrastructure Ready | 4 | AWS, MongoDB, Redis, CI/CD operational |
+| M2 | Core APIs Complete | 6 | Auth, Link, Project endpoints functional |
+| M3 | Per-Link AI Working | 8 | Summaries + Flashcards auto-generated |
+| M4 | Frontend MVP Ready | 10 | Flutter app + Chrome extension usable |
+| M5 | **Closed Beta Launch** | **12** | **500-1,000 users, full MVP feature set** |
+| M6 | Analytics + Sharing Complete | 18 | Dashboard, heatmap, share links/projects |
+| M7 | Payments Integrated | 21 | Stripe subscription flow working |
+| M8 | App Store Approval | 23 | iOS + Android apps approved |
+| M9 | **Public Launch** | **24** | **50K users target, all Phase 2 features** |
+| M10 | AI Chatbot Working | 30 | RAG-based Q&A functional |
+| M11 | Collaboration Complete | 34 | Annotations, groups, public courses |
+| M12 | **Full Release** | **36** | **100K users target, all Phase 3 features** |
 
 ---
 
-## Team Structure (8-12 FTE)
+## Team Structure (7-9 FTE)
 
 ### Core Team
-- **Product Manager** (1 FTE) - Product strategy, roadmap
-- **Technical Lead** (1 FTE) - Architecture, technical decisions
-- **Backend Developers** (2-3 FTE) - Node.js, TypeScript, microservices
-- **Frontend Developers** (2 FTE) - Flutter, mobile/web apps
-- **ML Engineer** (1-2 FTE) - Python, AI pipeline, GPT-4 integration
-- **DevOps Engineer** (1 FTE) - AWS, Kubernetes, CI/CD, monitoring
-- **QA Engineer** (1-2 FTE) - Testing automation, quality assurance
-- **UI/UX Designer** (1 FTE) - Design system, user research
 
-### Resource Ramp-Up
-- **Weeks 1-8:** 6-8 FTE (foundation)
-- **Weeks 9-28:** 10-12 FTE (core + social features)
-- **Weeks 29-48:** 12 FTE (launch + optimization)
+| Role | MVP (FTE) | Phase 2 (FTE) | Phase 3 (FTE) | Responsibilities |
+|------|-----------|---------------|---------------|------------------|
+| **Backend Developer** | 2 | 2 | 2 | Node.js APIs, AI pipeline, database |
+| **Frontend Developer (Flutter)** | 2 | 2 | 2 | Mobile + Web app |
+| **Extension Developer** | 1 | 0.5 | 0.5 | Chrome extension |
+| **ML/AI Engineer** | 0.5 | 1 | 2 | OpenAI integration, RAG, SRS |
+| **QA Engineer** | 1 | 1 | 1 | Testing (manual + automated) |
+| **DevOps** | 0.5 | 0.5 | 0.5 | Infrastructure, CI/CD, monitoring |
+| **Product/Design** | 1 | 1 | 1 | UX, requirements, design |
+| **Total** | **7** | **8** | **9** | |
+
+### Ramp-Up Schedule
+- **Weeks 1-12 (MVP):** 7 FTE core team
+- **Weeks 13-24 (Phase 2):** 8 FTE (+0.5 ML, +0.5 Extension)
+- **Weeks 25-36 (Phase 3):** 9 FTE (+1 ML for chatbot/collaboration)
 
 ---
 
 ## Budget Breakdown
 
-**Total: $925,000 Year 1 (~$77K/month)**
+**Total: ~$550,000 Year 1 (~$61K/month average)**
 
-### Annual Costs
+### Monthly Costs by Phase
 
-| Category | Monthly | Annual | % of Total |
-|----------|---------|--------|------------|
-| **Personnel** (13 FTE avg) | $73,000 | $876,000 | 95% |
-| **Infrastructure** (AWS, AI) | $3,830 | $45,960 | 5% |
-| **Software & Services** | $508 | $6,096 | <1% |
-| **Marketing (Launch)** | - | $15,000 | 2% |
-| **Legal & Compliance** | - | $8,000 | 1% |
-| **Contingency (8%)** | $6,164 | $73,944 | 8% |
+| Phase | Duration | Personnel | Infrastructure | Software | Marketing | **Monthly** |
+|-------|----------|-----------|----------------|----------|-----------|-------------|
+| **MVP** | W1-12 | $52K | $2K | $0.5K | $0.5K | **$55K** |
+| **Phase 2** | W13-24 | $60K | $4K | $1K | $3K | **$68K** |
+| **Phase 3** | W25-36 | $68K | $6K | $1.5K | $2K | **$77.5K** |
 
-### Monthly Burn Rate by Phase
-- **Phase 1-2 (Foundation):** ~$65K/month
-- **Phase 3-4 (Launch):** ~$85K/month
-- **Phase 5 (Optimization):** ~$75K/month
+### Annual Summary
+
+| Category | Annual Cost | % of Total |
+|----------|-------------|------------|
+| **Personnel** | $468,000 | 85% |
+| **Infrastructure** (AWS, OpenAI) | $48,000 | 9% |
+| **Software & Services** | $12,000 | 2% |
+| **Marketing** | $30,000 | 4% |
+| **Contingency (10%)** | $56,000 | 10% |
+
+### Cost Notes
+- **Infrastructure:** Scales with users ($2K MVP → $6K Phase 3)
+- **AI Costs:** Major component; optimize via caching and prompt efficiency
+- **Marketing:** Focused on Phase 2 public launch
+- **Runway:** $1M funding = ~18 months runway
 
 ---
 
 ## Success Metrics
 
-### Launch Success (Week 36)
+### MVP Launch (Week 12)
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| Registered users (Week 1) | 10,000 | Analytics |
-| App store rating | 4.0+ | App Store/Play Store |
-| Retention (Week 1) | 70% | Cohort analysis |
-| Bookmark-to-learning conversion | 50% | Funnel analysis |
-| Crash rate | <1% | Crashlytics |
-| Uptime | 99.9% | Monitoring |
-| API response (P95) | <500ms | APM |
+| Closed beta users | 500-1,000 | Analytics |
+| Link processing success rate | > 90% | AI pipeline logs |
+| AI processing time (per link) | < 30 seconds | Job queue metrics |
+| API response time (p95) | < 500ms | APM |
+| Weekly user retention | > 60% | Cohort analysis |
+| Course generation usage | > 30% of projects | Analytics |
 
-### Year 1 Success (Week 48)
+### Phase 2 Launch (Week 24)
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| Registered users | 1,000,000 | Analytics |
-| Monthly active users | 100,000 | Active users |
-| Monthly retention | 60% | Cohort analysis |
-| Premium conversion | 10% | Subscriptions |
-| Monthly Recurring Revenue | $100,000 | Stripe |
-| Customer satisfaction (NPS) | 80+ | Survey |
-| Profitability (Month 18) | Positive | P&L |
+| Registered users | 50,000 | Analytics |
+| Premium conversion | 4% | Stripe subscriptions |
+| DAU/MAU ratio | > 40% | Active users |
+| App store rating | > 4.0 | App Store / Play Store |
+| Monthly recurring revenue | $20K | Stripe |
+
+### Phase 3 Launch (Week 36)
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Active users | 100,000 | Analytics |
+| Premium conversion | 6% | Stripe subscriptions |
+| Chatbot engagement | > 25% of users | Chat analytics |
+| NPS score | > 50 | User surveys |
+| Path to profitability | Clear | Financial projections |
 
 ---
 
@@ -153,33 +182,54 @@ Public Launch (W36) ⭐
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| **AI processing delays** | High | Medium | Queue system, caching, progressive enhancement |
-| **High AI costs** | Medium | High | Cost optimization, in-house models, prompt efficiency |
-| **Low user adoption** | High | Medium | Beta testing, user feedback, strong GTM |
-| **Performance issues** | High | Medium | Load testing, caching, auto-scaling |
-| **App store rejection** | Medium | Low | Compliance review, testing, guidelines adherence |
+| **AI processing failures/delays** | High | Medium | Queue system with retries, user notifications, progressive enhancement |
+| **Content extraction failures** (paywalls, JS-heavy sites) | Medium | High | Multiple extraction strategies (Playwright + fallbacks), manual input option |
+| **High AI API costs** | Medium | High | Response caching, prompt optimization, tiered processing limits |
+| **Low user adoption** | High | Medium | Strong GTM strategy, beta feedback loops, Product Hunt launch |
+| **Low premium conversion** | High | Medium | Optimize free tier limits, demonstrate value early, A/B test pricing |
 
 ---
 
 ## Scope
 
-### In Scope (MVP)
-- ✅ Infrastructure (AWS, Kubernetes, CI/CD)
-- ✅ Authentication (JWT, OAuth)
-- ✅ Bookmark management (Projects, Links/Entities)
-- ✅ AI processing (Summaries, Flashcards, Quizzes)
-- ✅ Mobile apps (iOS, Android)
-- ✅ Browser extensions (Chrome, Firefox, Safari, Edge)
-- ✅ Gamification (Points, Streaks, Badges, Leaderboards)
-- ✅ Social features (Sharing, Groups, Collaboration)
-- ✅ Analytics (Learning progress, Reports)
+### MVP In Scope (Weeks 1-12)
+- ✅ User authentication (email/password, JWT)
+- ✅ Link capture (manual, Chrome extension)
+- ✅ Project management (create, organize, tag)
+- ✅ Per-link AI processing (summary + flashcards)
+- ✅ Per-project AI processing (course + quiz)
+- ✅ Flutter mobile app (iOS/Android)
+- ✅ Flutter web app
+- ✅ Chrome extension
+- ✅ Basic analytics (processing status, completion tracking)
 
-### Out of Scope (Post-Launch)
+### Phase 2 In Scope (Weeks 13-24)
+- ✅ AI-inferred categorization
+- ✅ Advanced search and filtering
+- ✅ Personal analytics dashboard
+- ✅ Consistency heatmap
+- ✅ Share links and projects
+- ✅ Public view-only project pages
+- ✅ Points, achievements, streaks
+- ✅ Stripe subscription (Free/Premium)
+- ✅ iOS/Android App Store launch
+
+### Phase 3 In Scope (Weeks 25-36)
+- ✅ Adaptive learning paths
+- ✅ Study schedules
+- ✅ Spaced repetition (SM-2) for flashcards
+- ✅ RAG-based source chatbot
+- ✅ Collaborative annotation
+- ✅ Group learning
+- ✅ Public courses
+
+### Out of Scope (Post-Year 1)
 - ❌ Desktop applications (macOS, Windows)
-- ❌ Offline mode for mobile
-- ❌ Custom AI model training
-- ❌ LMS platform integrations
-- ❌ White-label solutions
+- ❌ Native mobile optimizations (if Flutter suffices)
+- ❌ Custom AI model fine-tuning
+- ❌ LMS integrations (Canvas, Blackboard)
+- ❌ White-label / Enterprise customization
+- ❌ Team/Enterprise tier ($19.99/user/month)
 
 ---
 
@@ -187,130 +237,137 @@ Public Launch (W36) ⭐
 
 ### Phased Rollout
 
-1. **Alpha (Week 8):** Internal testing (10-20 people)
-2. **Closed Beta (Week 20):** Friends & family (100-200 people)
-3. **Public Beta (Week 32):** 5,000-10,000 users
-4. **Public Launch (Week 36):** 🚀 Full launch, 10K users Week 1
+| Phase | Week | Audience | Goal |
+|-------|------|----------|------|
+| **Internal Alpha** | 8 | Team (10-20 people) | Validate core flow |
+| **Closed Beta** | 12 | Early adopters (500-1K) | MVP validation, feedback |
+| **Public Beta** | 24 | Open registration | Public launch, 50K users |
+| **Full Release** | 36 | All users | All features complete |
 
-### Launch Checklist (Week 35)
+### Launch Checklists
 
+#### MVP Launch (Week 12)
+- [ ] Core APIs stable (99% uptime)
+- [ ] AI pipeline > 90% success rate
+- [ ] Flutter app crash-free (> 99%)
+- [ ] Chrome extension published
+- [ ] Closed beta waitlist (500+ signups)
+- [ ] Feedback mechanism in place
+
+#### Phase 2 Public Launch (Week 24)
 **Technical:**
 - [ ] All critical bugs resolved
 - [ ] Load testing complete (10K concurrent)
 - [ ] Security audit passed
 - [ ] Performance benchmarks met
-- [ ] 99.9% uptime sustained
 
 **App Stores:**
-- [ ] App Store, Play Store, extension stores approved
-- [ ] Listings complete (screenshots, descriptions, keywords)
+- [ ] App Store approved
+- [ ] Play Store approved
+- [ ] Listings complete (screenshots, descriptions)
 
 **Marketing:**
 - [ ] Marketing website live
 - [ ] Press kit ready
-- [ ] Social media profiles created
+- [ ] Product Hunt launch scheduled
 - [ ] Email campaigns prepared
 
 **Operational:**
-- [ ] Support team trained
-- [ ] Documentation complete
-- [ ] On-call rotation established
+- [ ] Support documentation complete
 - [ ] Incident response plan ready
+- [ ] Monitoring dashboards configured
 
 ---
 
 ## Communication Plan
 
 ### Internal
-- **Daily:** 15-min stand-up (Slack/Zoom)
-- **Weekly:** Sprint review & retrospective (1 hour)
-- **Monthly:** Stakeholder update (dashboard + email)
-- **Quarterly:** Planning workshop & roadmap review
+- **Daily:** 15-min standup (Slack/Zoom)
+- **Weekly:** Sprint review + retrospective (1 hour)
+- **Bi-weekly:** Stakeholder update (dashboard + email)
+- **Monthly:** Roadmap review and adjustment
 
 ### External
-- **Weekly:** Beta tester updates (newsletter)
-- **Monthly:** Investor updates (KPI dashboard)
-- **Quarterly:** Public blog posts (roadmap, milestones)
+- **Bi-weekly:** Beta tester newsletter
+- **Monthly:** Social media updates (Twitter, LinkedIn)
+- **Quarterly:** Public blog posts (milestones, roadmap)
 
 ---
 
 ## Quality Standards
 
 ### Code Quality
-- **Test Coverage:** >70% (backend & frontend)
+- **Test Coverage:** > 70% (backend + frontend)
 - **Code Reviews:** Mandatory, 1+ approval required
-- **Linting:** ESLint, Prettier, Dart Format
-- **CI/CD:** Automated tests on every commit
+- **Linting:** ESLint, Prettier, Dart Formatter
+- **CI/CD:** Automated tests on every PR
 
 ### Performance
-- **API Response:** P95 <500ms
-- **Page Load:** <2 seconds
-- **App Launch:** <3 seconds
-- **AI Processing:** <30 seconds per resource
+- **API Response:** P95 < 500ms
+- **Page Load:** < 2 seconds
+- **App Launch:** < 3 seconds
+- **AI Processing:** < 30 seconds per link
 
 ### Security
 - **OWASP Top 10:** No critical vulnerabilities
-- **Encryption:** TLS 1.3, AES-256
-- **Compliance:** GDPR, CCPA
-- **Audit:** Penetration testing before launch
+- **Encryption:** TLS 1.3, bcrypt passwords
+- **Compliance:** GDPR, CCPA ready
+- **Audit:** Security review before Phase 2 launch
 
 ---
 
 ## Post-Launch Roadmap
 
-### Weeks 1-4: Stabilization
-- Crash fixes, performance optimization
-- User feedback collection
-- High-touch support
-- Daily metrics reviews
+### Weeks 13-24 (Phase 2)
+- Deploy analytics dashboard
+- Launch sharing features
+- Integrate Stripe payments
+- Submit to App Stores
+- **Goal:** 50K users, 4% conversion
 
-### Months 2-3: Optimization
-- A/B testing key features
-- Funnel optimization
-- User interviews (10-20 users)
-- Performance tuning
+### Weeks 25-36 (Phase 3)
+- Deploy AI chatbot (RAG)
+- Launch spaced repetition
+- Enable collaboration features
+- **Goal:** 100K users, 6% conversion
 
-### Months 4-6: Growth
-- Marketing campaigns
-- Referral program
-- Community building
-- **Goal:** 100K active users
-
-### Months 7-12: Scale
-- Infrastructure scaling
-- Team expansion (hire 5-10 FTE)
-- Enterprise features launch
-- Public API launch
-- **Goal:** 1M users, $100K MRR
+### Months 10-12 (Stabilization)
+- Performance optimization
+- User feedback implementation
+- Technical debt reduction
+- **Goal:** Path to profitability clear
 
 ---
 
 ## Quick Reference
 
 ### Project Timeline
-- **Start:** January 2025
-- **Alpha:** March 2025 (W8)
-- **Beta:** June/August 2025 (W20, W32)
-- **Launch:** September 2025 (W36) 🎯
-- **Full Release:** December 2025 (W48)
+| Event | Week | Date |
+|-------|------|------|
+| **Project Start** | W1 | March 2026 |
+| **Internal Alpha** | W8 | April 2026 |
+| **Closed Beta (MVP)** | W12 | May 2026 |
+| **Public Launch (Phase 2)** | W24 | August 2026 |
+| **Full Release (Phase 3)** | W36 | November 2026 |
 
 ### Key Contacts
-- **Project Manager:** [TBD]
+- **Product Manager:** [TBD]
 - **Technical Lead:** [TBD]
-- **Product Lead:** [TBD]
+- **Design Lead:** [TBD]
 
 ### Key Documents
+- [Product Concept](product_concept.md)
 - [Product Specification](product_specification.md)
 - [Technical Specification](technical_specification.md)
 - [Work Breakdown Structure](WBS.md)
 
-### Budget at a Glance
-- **Total Year 1:** $925K
-- **Monthly Burn:** ~$77K
-- **Runway (at $1M funding):** 12+ months
+### Budget Summary
+- **Total Year 1:** ~$550K
+- **Monthly Burn:** $55K → $68K → $77.5K
+- **Runway ($1M funding):** ~18 months
 
 ---
 
 **End of Project Plan**
 
-*For detailed implementation guidance, see the [Work Breakdown Structure](WBS.md).*
+*For detailed work packages, see the [Work Breakdown Structure](WBS.md).*
