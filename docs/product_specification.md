@@ -1,7 +1,7 @@
 # L2L (Link to Learn) - Product Specification
 
 ## Document Information
-- **Version:** 2.0
+- **Version:** 3.0
 - **Date:** March 2026
 - **Status:** Draft
 - **Product:** L2L (Link to Learn)
@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-L2L is an AI-powered knowledge management platform that transforms passive bookmarking into an active, structured learning experience. The platform addresses the "read later" problem by converting scattered web resources into measurable knowledge paths through AI-driven content processing.
+L2L is a cross-platform AI-powered learning tool that transforms saved web links into structured knowledge — summaries, flashcards, courses, and quizzes. The platform addresses the "read later" problem by converting scattered web resources into measurable knowledge paths through AI-driven content processing.
 
 ### 1.1 Problem Statement
 - 80% of saved bookmarks are never revisited
@@ -19,7 +19,7 @@ L2L is an AI-powered knowledge management platform that transforms passive bookm
 - Time-consuming to create study materials from saved content
 
 ### 1.2 Solution Overview
-L2L leverages AI agents to automatically process saved links, generating summaries, flashcards, and quizzes. Users save links, AI processes them into learning materials, and users engage with the processed content to reinforce knowledge retention.
+L2L leverages AI agents to automatically process saved links, generating summaries, flashcards, courses, and quizzes. Users save links from anywhere (mobile share sheet, browser extension, manual input), AI processes them into learning materials organized by projects, and users engage with the processed content to reinforce knowledge retention.
 
 ---
 
@@ -28,14 +28,15 @@ L2L leverages AI agents to automatically process saved links, generating summari
 ### 2.1 Primary Goals
 1. **User Engagement:** Achieve 60% monthly active user retention
 2. **Learning Effectiveness:** 75% of users report improved knowledge retention
-3. **Content Processing:** 95% accuracy in AI-generated summaries and quizzes
+3. **Content Processing:** 95% accuracy in AI-generated summaries, flashcards, courses, and quizzes
 4. **Core Flow Completion:** 80% of saved links result in user engagement with processed content
 
 ### 2.2 Key Performance Indicators
 - Daily Active Users (DAU) / Monthly Active Users (MAU)
 - Links saved per user per week
-- AI content engagement rate (views of summaries, flashcards, quizzes)
+- AI content engagement rate (views of summaries, flashcards, courses, quizzes)
 - Quiz completion and success rates
+- Course completion rates
 - User return frequency
 
 ---
@@ -64,110 +65,124 @@ L2L leverages AI agents to automatically process saved links, generating summari
 ```
 User
 ├── Projects (Goal-Oriented Learning Collections)
+│   ├── Tags (Metadata for filtering and classification)
 │   └── Links/Entities (Individual Resources)
-└── Tags (Metadata for filtering and organization)
+│       ├── Summary (AI-generated)
+│       └── Flashcards (AI-generated)
+└── AI-Generated Outputs (Per Project)
+    ├── Course (Multi-lesson curriculum)
+    └── Quiz (Comprehension assessment)
 ```
 
 ### 4.2 Core Components
 1. **User Authentication System**
-2. **Link Capture & Storage**
+2. **Link Capture & Storage** (Multiple input methods)
 3. **AI Knowledge Engine (Agentic Processing)**
+   - Per-Link Processing: Summary + Flashcards
+   - Per-Project Processing: Course + Quiz
 4. **Processed Content Delivery**
-5. **Progress Analytics (Phase 2)**
+5. **Progress Analytics & Sharing (Phase 2)**
+6. **AI Learning Coach (Phase 3)**
 
 ---
 
 ## 5. Feature Specifications
 
-### 5.1 MVP Features
+### 5.1 MVP Features (Phase MVP)
 
 #### 5.1.1 User Authentication
 **Description:** Secure user authentication system
 **Acceptance Criteria:**
 - Email/password registration and login
-- Password reset functionality
-- Session management
-- Basic user profile (name, email, avatar)
+- JWT-based session management
+- Basic user profile (name, email)
 
 #### 5.1.2 Link Capture & Input
-**Description:** Users can save URLs for AI processing
+**Description:** Users can save URLs through multiple input methods
 **Acceptance Criteria:**
-- Manual URL input via web interface
-- Chrome browser extension for one-click saving
-- Support for text articles and video content
-- Automatic metadata extraction (title, description, thumbnail)
-- Assignment to Projects with tags
+- **Mobile share sheet** — share from any browser or app
+- **Chrome browser extension** — one-click saving
+- **Manual URL input** within the app
+- Optional assignment to Projects with Tags
 - Validation of URL accessibility
 
-#### 5.1.3 AI Knowledge Engine (Agentic Processing)
-**Description:** AI agents process saved links into learning materials
+#### 5.1.3 AI Knowledge Engine - Per Link
+**Description:** AI agents process each saved link into learning materials
 **Acceptance Criteria:**
 - Automatic content extraction and analysis
-- **Summary Generation:** Concise overview of key concepts
-- **Key Takeaways:** 3-5 bullet points of main ideas
-- **Flashcards:** 5-10 Q&A pairs for spaced repetition
-- **Quiz:** 3-5 question comprehension test
+- **Summary Generation:** Structured overview with key points, main argument, and takeaways
+- **Flashcards:** Core concepts as Q&A pairs for active recall and retention
 - Processing status indicator (pending/processing/complete)
 - Error handling for inaccessible content
 
-#### 5.1.4 Processed Content Access
+#### 5.1.4 AI Knowledge Engine - Per Project
+**Description:** AI synthesizes multiple links into comprehensive learning materials
+**Acceptance Criteria:**
+- **Course Generation:** Multi-lesson curriculum structured for progressive learning (introduction → concepts → application)
+- **Quiz Generation:** Practice questions covering comprehension and application
+- Triggered when user requests "Generate Course" on a project
+- Synthesizes content from all entity summaries within the project
+
+#### 5.1.5 Processed Content Access
 **Description:** Users consume AI-generated learning materials
 **Acceptance Criteria:**
-- View AI-generated summary and takeaways
-- Interactive flashcard review interface
-- Quiz taking with immediate feedback
-- Mark links as "completed" after review
-- Basic progress tracking per project
+- View AI-generated summary and flashcards per link
+- View AI-generated course with structured lessons per project
+- Take quizzes with immediate feedback
+- Mark links and courses as "completed" after review
 - Clean, readable content presentation
 
-### 5.2 Phase 2: Organization & Analytics
+### 5.2 Phase 2: Organization, Progress & Sharing
 
-#### 5.2.1 Project Organization
-**Description:** Enhanced project management capabilities
+#### 5.2.1 Enhanced Organization
+**Description:** Improved project and content management
 **Acceptance Criteria:**
-- Create, edit, delete unlimited projects
-- Tag-based filtering and search
-- Drag-and-drop organization within projects
+- **AI-inferred categorization** — automatic project and tag assignment when not manually set
+- Tag-based filtering and full-text search
+- Drag-and-drop reordering within projects
+- Import/export of projects and entities
 - Bulk operations on resources
-- Project templates for common learning goals
-- Import/export functionality
 
-#### 5.2.2 Progress Analytics
-**Description:** Detailed insights into learning patterns
+#### 5.2.2 Progress Reporting
+**Description:** Comprehensive learning analytics dashboard
 **Acceptance Criteria:**
-- Personal learning velocity metrics
+- Personal learning dashboard (links saved, courses completed, quizzes taken)
+- Consistency heatmap (daily/weekly activity visualization)
 - Project completion tracking
 - Quiz performance history
 - Study session analytics
-- Weekly/monthly progress reports
-- Knowledge retention metrics
 
-### 5.3 Phase 3: Social & Advanced AI
-
-#### 5.3.1 Project Sharing
-**Description:** Collaborative learning through shared projects
+#### 5.2.3 Sharing
+**Description:** Share learning content with others
 **Acceptance Criteria:**
-- Share projects via unique links
-- Permission levels (view/edit)
-- Comment and discussion threads
-- Version history for project updates
+- Share individual links (entities) with other users
+- Share full projects with other users
+- View-only shared project pages (public URLs)
+- Basic collaboration features
 
-#### 5.3.2 User Groups
-**Description:** Team-based learning environments
-**Acceptance Criteria:**
-- Create private/public groups
-- Group member management
-- Shared project libraries
-- Group leaderboards
+### 5.3 Phase 3: Advanced AI Learning Coach
 
-#### 5.3.3 AI Learning Coach
-**Description:** Personalized learning guidance
+#### 5.3.1 Adaptive Learning
+**Description:** Personalized learning guidance based on performance
 **Acceptance Criteria:**
-- Adaptive learning path recommendations
-- Difficulty adjustment based on performance
-- Personalized study schedules
-- Motivational messaging and reminders
-- Integration with calendar apps
+- Adaptive learning paths — personalized sequencing and difficulty adjustment
+- AI-generated study schedules based on user goals and availability
+- Spaced Repetition (SRS) for flashcards using algorithms like SM-2
+- Motivational messaging and progress reminders
+
+#### 5.3.2 Source Chatbot
+**Description:** Conversational AI for project-scoped Q&A
+**Acceptance Criteria:**
+- RAG-based chatbot that answers questions from saved sources
+- Project-scoped conversations
+- Citation of source materials in responses
+
+#### 5.3.3 Collaborative Features
+**Description:** Enhanced social learning capabilities
+**Acceptance Criteria:**
+- Collaborative annotation on shared content
+- Public course pages with shareable URLs
+- Group learning dynamics and leaderboards
 
 ---
 
@@ -178,31 +193,33 @@ User
 2. **Clarity:** Clean presentation of AI-generated content
 3. **Focus:** Distraction-free learning experience
 4. **Progress:** Visual indicators of learning completion
+5. **Cross-Platform:** Consistent experience across mobile, web, and extension
 
 ### 6.2 Key User Flows
 
 #### 6.2.1 MVP Core Flow
 1. User registers/logs in
-2. User inputs/saves a link
-3. AI processes the link (summary, flashcards, quiz)
+2. User saves a link (share sheet, extension, or manual input)
+3. AI processes the link (summary, flashcards)
 4. User accesses and reviews processed content
-5. User marks content as completed
+5. User triggers "Generate Course" on a project
+6. AI generates course and quiz from all link summaries
+7. User completes course and takes quiz
 
 #### 6.2.2 Save Link Flow
-1. User clicks browser extension or inputs URL manually
-2. Select or create Project
-3. Add optional tags
-4. Link saved and queued for AI processing
-5. Notification when processing complete
+1. User shares via mobile share sheet, clicks extension, or inputs URL manually
+2. Optionally select/create Project and add Tags
+3. Link saved and queued for AI processing
+4. Notification when processing complete (summary + flashcards ready)
 
 #### 6.2.3 Learning Session Flow
 1. User selects a Project
 2. View list of links with processing status
-3. Select a processed link
-4. Review AI summary and key takeaways
-5. Study flashcards
+3. Select a processed link → Review summary and flashcards
+4. Generate course from project (aggregates all link content)
+5. Study course lessons in structured order
 6. Take quiz and view score
-7. Mark as completed
+7. Mark content as completed
 
 ### 6.3 Accessibility Requirements
 - WCAG 2.1 AA compliance
@@ -216,15 +233,17 @@ User
 ## 7. Platforms & Devices
 
 ### 7.1 Supported Platforms
-- **Web Application:** Responsive design for all modern browsers
-- **Browser Extension:** Chrome,
-- **Mobile Apps:** iOS and Android native apps
+- **Mobile Apps:** iOS and Android native apps (Flutter)
+  - Includes share sheet integration
+- **Web Application:** Responsive design for all modern browsers (Flutter Web)
+- **Browser Extension:** Chrome extension for one-click saving
 
 ### 7.2 Performance Expectations
 - Fast page loads and smooth interactions
 - Quick AI processing with status updates
 - Reliable uptime for user access
 - Offline reading capability for saved content
+- Cross-platform synchronization
 
 ---
 
@@ -234,23 +253,24 @@ User
 
 #### Free Tier
 - 20 saved links per month
-- Basic AI summaries
-- 5 flashcards per link
+- Basic AI summaries and 5 flashcards per link
+- Limited course generation (1 project)
 - 3-question quizzes
 - Personal projects only
 - 7-day processing history
 
 #### Premium Tier ($9.99/month or $99/year)
 - Unlimited saved links
-- Full AI processing (summaries, takeaways, flashcards, quizzes)
-- Unlimited flashcards and quizzes
+- Full AI processing (summaries, flashcards, courses, quizzes)
+- Unlimited course and quiz generation
 - Advanced analytics and progress tracking
 - Priority AI processing
 - Unlimited processing history
+- Sharing capabilities
 
 #### Team/Enterprise ($19.99/user/month) - Phase 3
 - All Premium features
-- Project sharing and user groups
+- Collaborative annotation and group learning
 - Advanced admin controls
 - Team analytics
 - Custom integrations
@@ -268,25 +288,25 @@ User
 ### 9.1 Launch Phases
 
 #### Phase 1: MVP Launch (Months 1-3)
-- User authentication and core link saving
-- Basic AI processing (summaries, flashcards, quizzes)
+- User authentication and core link saving (share sheet, extension, manual)
+- Per-link AI processing (summaries, flashcards)
+- Per-project AI processing (courses, quizzes)
 - Closed beta with 500-1,000 users
 - Focus on individual learners and early adopters
-- Chrome extension launch
 
-#### Phase 2: Organization & Analytics (Months 4-6)
-- Enhanced project organization features
-- Progress tracking and analytics dashboard
+#### Phase 2: Organization, Progress & Sharing (Months 4-6)
+- AI-inferred categorization and enhanced organization
+- Progress analytics dashboard with consistency heatmap
+- Sharing features (links, projects, public pages)
 - Public launch
 - Marketing to knowledge workers and students
-- Firefox and Safari extensions
 
-#### Phase 3: Social & Advanced AI (Months 7-12)
-- Project sharing and user groups
-- AI Learning Coach features
+#### Phase 3: Advanced AI Learning Coach (Months 7-12)
+- Adaptive learning paths and study schedules
+- Source chatbot (RAG-based Q&A)
+- Spaced repetition for flashcards
+- Collaborative annotation and public courses
 - Team/Enterprise tier launch
-- Partnership with educational institutions
-- Mobile app launch (iOS, Android)
 
 ### 9.2 Marketing Channels
 - Content marketing (educational blogs, tutorials)
@@ -305,14 +325,14 @@ User
 |------|--------|-------------|------------|
 | AI processing delays or failures | High | Medium | Queue system, retry logic, fallback options |
 | Content scraping limitations (paywalls, JS-heavy sites) | Medium | High | Progressive enhancement, manual input fallback |
-| Data loss | High | Low | Regular backups, version control |
+| Cross-platform sync issues | Medium | Medium | Robust caching and conflict resolution |
 
 ### 10.2 Business Risks
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
 | Low user adoption | High | Medium | Strong GTM strategy, user feedback loops |
 | Low conversion to paid | High | Medium | Optimize free tier limits, demonstrate value early |
-| Competition from incumbents (Pocket, Notion) | Medium | High | Focus on AI differentiation, niche marketing |
+| Competition from incumbents (Pocket, Notion, Readwise) | Medium | High | Focus on AI differentiation, niche marketing |
 | High AI processing costs | Medium | Medium | Cost optimization, caching, tiered processing |
 
 ### 10.3 Legal & Compliance Risks
@@ -326,24 +346,24 @@ User
 ## 11. Development Roadmap
 
 ### 11.1 Q1 2026: MVP Foundation
-- Week 1-4: Core backend setup and AI processing pipeline
-- Week 5-8: User interface development and authentication
-- Week 9-12: Chrome extension, testing, closed beta launch
+- Week 1-4: Core backend setup and AI processing pipeline (per-link)
+- Week 5-8: Flutter app development (mobile + web) and authentication
+- Week 9-12: Chrome extension, per-project AI (courses/quizzes), closed beta launch
 
-### 11.2 Q2 2026: Organization & Analytics
-- Week 13-16: Enhanced project organization, tag management
-- Week 17-20: Progress analytics dashboard, learning metrics
-- Week 21-24: Public launch, performance optimization, bug fixes
+### 11.2 Q2 2026: Organization, Progress & Sharing
+- Week 13-16: AI-inferred categorization, enhanced organization features
+- Week 17-20: Progress analytics dashboard, consistency heatmap
+- Week 21-24: Sharing features, public launch, performance optimization
 
-### 11.3 Q3 2026: Social Features
-- Week 25-28: Project sharing functionality
-- Week 29-32: User groups and collaborative features
-- Week 33-36: Mobile app development (iOS, Android)
+### 11.3 Q3 2026: Advanced AI Features
+- Week 25-28: Adaptive learning paths and study schedules
+- Week 29-32: Source chatbot (RAG-based), spaced repetition
+- Week 33-36: Collaborative annotation, public course pages
 
-### 11.4 Q4 2026: Advanced AI
-- Week 37-40: AI Learning Coach integration
-- Week 41-44: Enterprise features and team analytics
-- Week 45-48: Third-party integrations, mobile app launch
+### 11.4 Q4 2026: Enterprise & Scale
+- Week 37-40: Enterprise features and team analytics
+- Week 41-44: Third-party integrations, planned microservices migration
+- Week 45-48: Scale optimization, mobile app enhancements
 
 ---
 
@@ -355,6 +375,7 @@ User
 - 60% week-over-week user retention
 - 70% of saved links processed successfully by AI
 - 50% of processed links viewed by users
+- 30% of projects with generated courses
 
 ### 12.2 Long-term Success Metrics
 - 100K active users within 12 months
@@ -367,25 +388,25 @@ User
 ## 13. Stakeholder Requirements
 
 ### 13.1 User Requirements
-- Simple and fast link saving experience
-- High-quality AI-generated summaries and learning materials
-- Clear progress tracking
+- Simple and fast link saving experience (share sheet, extension, manual)
+- High-quality AI-generated summaries, flashcards, courses, and quizzes
+- Clear progress tracking across links and courses
 - Cross-platform synchronization
 - Reliable content processing
 
 ### 13.2 Business Requirements
 - Scalable platform for growth
 - Clear path to profitability
-- Differentiation through AI quality
+- Differentiation through AI quality (courses, quizzes, chatbot)
 - Strong brand positioning
 - Sustainable unit economics
 
 ### 13.3 Platform Requirements
-- Reliable AI processing
+- Reliable AI processing pipeline (per-link and per-project)
 - Secure data handling and authentication
 - High performance and availability
 - Easy maintenance and updates
-- Modular design for phased feature rollout
+- Modular design for phased feature rollout and future microservices
 
 ---
 
@@ -393,26 +414,28 @@ User
 
 ### 14.1 Key Assumptions
 - Users want AI assistance in learning and content processing
-- Users are willing to pay for unlimited AI processing
+- Users value structured courses synthesized from multiple sources
+- Users are willing to pay for unlimited AI processing and advanced features
+- Cross-platform accessibility (mobile share sheet) is critical for adoption
 - AI costs will decrease over time or stabilize
-- Web-first approach is appropriate for MVP
 
 ### 14.2 External Dependencies
 - Third-party AI providers (OpenAI)
-- Cloud infrastructure providers (AWS)
+- Cloud infrastructure providers
 - Payment processing services (Stripe)
 - Browser extension stores (Chrome Web Store)
 - OAuth providers (Google, GitHub)
+- App stores (iOS App Store, Google Play)
 
 ---
 
 ## 15. Next Steps
 
-1. **Product Validation:** Prototype AI processing with sample content
+1. **Product Validation:** Prototype AI processing pipeline with sample content (link-level and project-level)
 2. **User Research:** Conduct interviews with 10-20 target users (Alex persona)
 3. **Competitive Analysis:** Deep dive into Pocket, Notion, Readwise, and AI note-taking tools
-4. **Design:** Finalize user experience and visual design
-5. **Team:** Assemble core engineering team
+4. **Design:** Finalize user experience and visual design for cross-platform consistency
+5. **Team:** Assemble core engineering team (Flutter, Node.js, AI/ML)
 6. **Development:** Begin 12-week sprint toward closed beta
 
 ---
