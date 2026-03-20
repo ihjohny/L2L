@@ -350,6 +350,3 @@ export_data             →  export_data       →  30-120 seconds     →  Emai
 
 *[← Back to Index](README.md)* | [Next: Implementation Details →](./02_implementation_details.md)*
 
----
-
-*[← Back to Index](README.md)* | [Next: Implementation Details →](./02_implementation_details.md)*

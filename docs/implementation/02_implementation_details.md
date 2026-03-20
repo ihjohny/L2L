@@ -153,202 +153,50 @@ backend/
 
 #### ESLint + Prettier Config
 
-```javascript
-// .eslintrc.js
-module.exports = {
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: 'tsconfig.json',
-    tsconfigRootDir: __dirname,
-    sourceType: 'module',
-  },
-  plugins: ['@typescript-eslint', 'prettier'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'prettier',
-  ],
-  root: true,
-  env: {
-    node: true,
-    jest: true,
-  },
-  ignorePatterns: ['.eslintrc.js', 'dist', 'coverage'],
-  rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    'prettier/prettier': 'error',
-  },
-};
-```
+**Instruction:** Configure ESLint with TypeScript parser and Prettier integration.
 
-```javascript
-// .prettierrc
-module.exports = {
-  semi: true,
-  trailingComma: 'all',
-  singleQuote: true,
-  printWidth: 100,
-  tabWidth: 2,
-  useTabs: false,
-  arrowParens: 'avoid',
-};
-```
+**Key rules:**
+- `@typescript-eslint/no-unused-vars`: allow args starting with `_`
+- `@typescript-eslint/no-explicit-any`: warn only
+- Prettier: semicolons, single quotes, 100 char width, 2-space tabs
 
 #### BullMQ Queue Config
 
+**Instruction:** Configure Redis connection and BullMQ queue/worker options.
+
+**Pattern:**
 ```typescript
 // src/config/redis.config.ts
-import { QueueOptions, WorkerOptions } from 'bullmq';
-
-export const redisConfig = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
-  maxRetriesPerRequest: null, // Required for BullMQ
-};
-
-export const queueOptions: QueueOptions = {
-  connection: redisConfig,
-  defaultJobOptions: {
-    attempts: 3,
-    removeOnComplete: 100,
-    removeOnFail: 1000,
-    backoff: {
-      type: 'exponential',
-      delay: 2000,
-    },
-  },
-};
-
-export const workerOptions: WorkerOptions = {
-  connection: redisConfig,
-  concurrency: 5,
-};
-
-// Queue names (use FF_ prefix for feature flags)
-export const QUEUES = {
-  PROCESS_LINK: 'l2l:process_link',
-  GENERATE_COURSE: 'l2l:generate_course',
-  NOTIFY_USER: 'l2l:notify_user',
-  DLQ: 'l2l:failed_jobs',
-} as const;
+// redisConfig: host, port, password, maxRetriesPerRequest: null
+// queueOptions: attempts: 3, exponential backoff (2s delay), removeOnComplete: 100
+// workerOptions: concurrency: 5
+// Queue names: l2l:process_link, l2l:generate_course, l2l:notify_user, l2l:failed_jobs
 ```
 
 #### Error Class Hierarchy → HTTP Status Mapping
 
+**Instruction:** Create custom error class hierarchy extending from `AppError` base class. Each error type maps to specific HTTP status code.
+
+**Pattern:**
 ```typescript
 // src/utils/error.ts
-import { HttpStatus } from '@nestjs/common';
-
-export abstract class AppError extends Error {
-  constructor(
-    public readonly statusCode: HttpStatus,
-    public readonly code: string,
-    message: string,
-    public readonly isOperational: boolean = true,
-  ) {
-    super(message);
-    Object.setPrototypeOf(this, new.target.prototype);
-    Error.captureStackTrace(this);
-  }
-}
-
-export class ValidationError extends AppError {
-  constructor(message: string, public readonly details?: any) {
-    super(HttpStatus.BAD_REQUEST, 'VALIDATION_ERROR', message);
-  }
-}
-
-export class AuthenticationError extends AppError {
-  constructor(message: string = 'Authentication required') {
-    super(HttpStatus.UNAUTHORIZED, 'AUTH_ERROR', message);
-  }
-}
-
-export class AuthorizationError extends AppError {
-  constructor(message: string = 'Access denied') {
-    super(HttpStatus.FORBIDDEN, 'FORBIDDEN', message);
-  }
-}
-
-export class NotFoundError extends AppError {
-  constructor(resource: string) {
-    super(HttpStatus.NOT_FOUND, 'NOT_FOUND', `${resource} not found`);
-  }
-}
-
-export class ConflictError extends AppError {
-  constructor(message: string) {
-    super(HttpStatus.CONFLICT, 'CONFLICT', message);
-  }
-}
-
-export class AIProcessingError extends AppError {
-  constructor(message: string) {
-    super(HttpStatus.INTERNAL_SERVER_ERROR, 'AI_ERROR', message);
-  }
-}
-
-export class RateLimitError extends AppError {
-  constructor(message: string = 'Rate limit exceeded') {
-    super(HttpStatus.TOO_MANY_REQUESTS, 'RATE_LIMIT', message);
-  }
-}
-
-// HTTP Error Filter mapping
-export const ERROR_STATUS_MAP: Record<string, HttpStatus> = {
-  ValidationError: HttpStatus.BAD_REQUEST,
-  AuthenticationError: HttpStatus.UNAUTHORIZED,
-  AuthorizationError: HttpStatus.FORBIDDEN,
-  NotFoundError: HttpStatus.NOT_FOUND,
-  ConflictError: HttpStatus.CONFLICT,
-  AIProcessingError: HttpStatus.INTERNAL_SERVER_ERROR,
-  RateLimitError: HttpStatus.TOO_MANY_REQUESTS,
-};
+// AppError base class: statusCode, code, message, isOperational
+// Concrete errors: ValidationError (400), AuthenticationError (401),
+// AuthorizationError (403), NotFoundError (404), ConflictError (409),
+// AIProcessingError (500), RateLimitError (429)
+// ERROR_STATUS_MAP for filter mapping
 ```
 
 #### Logging Conventions (pino)
 
+**Instruction:** Configure Pino logger with request tracing via UUID, ISO timestamps, and structured context.
+
+**Pattern:**
 ```typescript
 // src/utils/logger.ts
-import pino from 'pino';
-import { v4 as uuidv4 } from 'uuid';
-
-const baseLogger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  formatters: {
-    level: (label) => ({ level: label }),
-  },
-  timestamp: pino.stdTimeFunctions.isoTime,
-});
-
-export interface LogContext {
-  requestId: string;
-  userId?: string;
-  jobId?: string;
-  duration?: number;
-  error?: Error;
-  [key: string]: any;
-}
-
-export function createLogger(context: Partial<LogContext> = {}) {
-  return baseLogger.child({
-    requestId: context.requestId || uuidv4(),
-    userId: context.userId,
-    jobId: context.jobId,
-    duration: context.duration,
-    ...context,
-  });
-}
-
-// Usage example:
-// const logger = createLogger({ requestId, userId: user.id });
-// logger.info({ duration: Date.now() - start }, 'Request completed');
+// createLogger(context): adds requestId, userId, jobId, duration to logs
+// Auto-generates UUID if requestId not provided
+// Usage: logger.info({ duration }, 'message')
 ```
 
 > ⚠️ **ASSUMPTIONS:**
@@ -504,436 +352,89 @@ mobile_app/
 
 #### Riverpod Provider Patterns
 
+**Instruction:** Use Riverpod StateNotifier pattern for state management. Each feature gets a provider with state class, notifier, and provider declaration.
+
+**Auth Provider Pattern:**
 ```dart
 // lib/providers/auth_provider.dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-enum AuthStatus { initial, loading, authenticated, unauthenticated }
-
-class AuthState {
-  final AuthStatus status;
-  final User? user;
-  final String? error;
-
-  AuthState({this.status = AuthStatus.initial, this.user, this.error});
-
-  AuthState copyWith({AuthStatus? status, User? user, String? error}) {
-    return AuthState(
-      status: status ?? this.status,
-      user: user ?? this.user,
-      error: error ?? this.error,
-    );
-  }
-}
-
-class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _repository;
-
-  AuthNotifier(this._repository) : super(AuthState());
-
-  Future<void> login(String email, String password) async {
-    state = state.copyWith(status: AuthStatus.loading);
-    try {
-      final user = await _repository.login(email, password);
-      state = state.copyWith(status: AuthStatus.authenticated, user: user);
-    } catch (e) {
-      state = state.copyWith(
-        status: AuthStatus.unauthenticated,
-        error: e.toString(),
-      );
-    }
-  }
-
-  Future<void> logout() async {
-    await _repository.logout();
-    state = AuthState(status: AuthStatus.unauthenticated);
-  }
-}
-
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.read(authRepositoryProvider));
-});
-
-// Usage in widget:
-// final authState = ref.watch(authProvider);
-// ref.read(authProvider.notifier).login(email, password);
+// AuthState: status (enum), user?, error?
+// AuthNotifier: login(), logout()
+// State transitions: initial → loading → authenticated/unauthenticated
 ```
 
+**Link Provider Pattern:**
 ```dart
 // lib/providers/link_provider.dart
-class LinkState {
-  final List<Link> links;
-  final bool isLoading;
-  final String? error;
-  final String? nextCursor;
-
-  LinkState({this.links = const [], this.isLoading = false, this.error, this.nextCursor});
-
-  LinkState copyWith({List<Link>? links, bool? isLoading, String? error, String? nextCursor}) {
-    return LinkState(
-      links: links ?? this.links,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
-      nextCursor: nextCursor ?? this.nextCursor,
-    );
-  }
-}
-
-class LinkNotifier extends StateNotifier<LinkState> {
-  final LinkRepository _repository;
-
-  LinkNotifier(this._repository) : super(LinkState());
-
-  Future<void> fetchLinks({String? projectId, String? cursor}) async {
-    if (state.isLoading) return;
-
-    state = state.copyWith(isLoading: true);
-    try {
-      final result = await _repository.getLinks(projectId: projectId, cursor: cursor);
-      state = state.copyWith(
-        links: cursor != null ? [...state.links, ...result.links] : result.links,
-        nextCursor: result.nextCursor,
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
-    }
-  }
-
-  Future<void> saveLink({required String url, String? projectId, List<String>? tags}) async {
-    await _repository.createLink(url: url, projectId: projectId, tags: tags);
-    // Optimistic update
-    state = state.copyWith(
-      links: [
-        Link.temp(url: url, status: LinkStatus.pending),
-        ...state.links,
-      ],
-    );
-  }
-}
+// LinkState: links[], isLoading, error?, nextCursor?
+// LinkNotifier: fetchLinks({projectId, cursor}), saveLink()
+// Supports pagination and optimistic updates
 ```
 
+**Job Polling Pattern:**
 ```dart
 // lib/providers/job_polling_provider.dart
-class JobPollingNotifier extends StateNotifier<JobState> {
-  JobPollingNotifier() : super(JobState());
-
-  void startPolling(String jobId) {
-    // Poll every 2 seconds
-    Timer.periodic(Duration(seconds: 2), (timer) async {
-      final job = await _repository.getJob(jobId);
-
-      if (job.status == JobStatus.completed || job.status == JobStatus.failed) {
-        timer.cancel();
-        state = state.copyWith(job: job, status: job.status);
-
-        // Show notification
-        if (job.status == JobStatus.completed) {
-          _showCompletionNotification(job);
-        }
-      } else {
-        state = state.copyWith(job: job, status: job.status);
-      }
-    });
-  }
-}
+// Poll every 2 seconds, cancel on completed/failed
+// Show notification on job completion
 ```
 
 #### GoRouter Configuration
 
+**Instruction:** Configure GoRouter with auth redirect logic, ShellRoute for main scaffold, and nested routes for projects/links.
+
+**Pattern:**
 ```dart
 // lib/routing/app_router.dart
-import 'package:go_router/go_router.dart';
-
-final appRouter = GoRouter(
-  initialLocation: '/login',
-  redirect: (context, state) {
-    final authState = context.read(authProvider);
-    final isAuthRoute = state.matchedLocation.startsWith('/login') ||
-                        state.matchedLocation.startsWith('/register');
-
-    if (authState.status != AuthStatus.authenticated && !isAuthRoute) {
-      return '/login';
-    }
-
-    if (authState.status == AuthStatus.authenticated && isAuthRoute) {
-      return '/projects';
-    }
-
-    return null;
-  },
-  routes: [
-    // Auth routes
-    GoRoute(path: '/login', builder: (_, __) => LoginScreen()),
-    GoRoute(path: '/register', builder: (_, __) => RegisterScreen()),
-
-    // Main app routes
-    ShellRoute(
-      builder: (_, __, child) => MainScaffold(child: child),
-      routes: [
-        GoRoute(path: '/projects', builder: (_, __) => ProjectsListScreen()),
-        GoRoute(
-          path: '/projects/:id',
-          builder: (_, state) => ProjectDetailScreen(
-            projectId: state.pathParameters['id']!,
-          ),
-          routes: [
-            GoRoute(
-              path: 'links/:linkId',
-              builder: (_, state) => LinkDetailScreen(
-                linkId: state.pathParameters['linkId']!,
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-
-    // Deep links
-    GoRoute(
-      path: '/shared/project/:id',
-      builder: (_, state) => SharedProjectScreen(
-        projectId: state.pathParameters['id']!,
-      ),
-    ),
-  ],
-);
-
-// Usage: context.go('/projects'), context.go('/projects/${project.id}')
+// redirect: check auth status, redirect unauthenticated to /login
+// Routes: /login, /register, /projects, /projects/:id, /projects/:id/links/:linkId
+// Deep links: /shared/project/:id
+// Usage: context.go('/projects')
 ```
 
 #### Dio Client Configuration
 
+**Instruction:** Create Dio HTTP client with auth interceptor, token refresh logic, and error mapping.
+
+**Pattern:**
 ```dart
 // lib/core/network/dio_client.dart
-import 'package:dio/dio.dart';
-
-class DioClient {
-  late final Dio _dio;
-  final SecureStorage _storage;
-
-  DioClient(this._storage) {
-    _dio = Dio(BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
-      connectTimeout: Duration(seconds: 30),
-      receiveTimeout: Duration(seconds: 30),
-      headers: {'Content-Type': 'application/json'},
-    ));
-
-    _dio.interceptors.addAll([
-      AuthInterceptor(_storage),
-      LogInterceptor(requestBody: true, responseBody: true),
-    ]);
-  }
-
-  Dio get client => _dio;
-}
-
-class AuthInterceptor extends Interceptor {
-  final SecureStorage _storage;
-  bool _isRefreshing = false;
-
-  AuthInterceptor(this._storage);
-
-  @override
-  Future<void> onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
-    final tokens = await _storage.getTokens();
-    if (tokens != null) {
-      options.headers['Authorization'] = 'Bearer ${tokens.accessToken}';
-    }
-    handler.next(options);
-  }
-
-  @override
-  Future<void> onError(
-    DioError err,
-    ErrorInterceptorHandler handler,
-  ) async {
-    if (err.response?.statusCode == 401 && !_isRefreshing) {
-      _isRefreshing = true;
-      try {
-        final newTokens = await _refreshToken();
-        // Retry original request with new token
-        final response = await _dio.request(
-          err.requestOptions.path,
-          options: Options(
-            method: err.requestOptions.method,
-            headers: {'Authorization': 'Bearer ${newTokens.accessToken}'},
-          ),
-          data: err.requestOptions.data,
-        );
-        _isRefreshing = false;
-        handler.resolve(response);
-        return;
-      } catch (e) {
-        // Refresh failed, redirect to login
-        _isRefreshing = false;
-        // Trigger logout
-      }
-    }
-    handler.next(err);
-  }
-
-  Future<Tokens> _refreshToken() async {
-    final refreshToken = await _storage.getRefreshToken();
-    final response = await _dio.post('/auth/refresh', data: {'refreshToken': refreshToken});
-    final tokens = Tokens.fromMap(response.data);
-    await _storage.saveTokens(tokens);
-    return tokens;
-  }
-}
-
-// Error mapping
-sealed class AppNetworkException implements Exception {
-  final String message;
-  AppNetworkException(this.message);
-}
-
-class UnauthorizedException extends AppNetworkException {
-  UnauthorizedException() : super('Session expired');
-}
-
-class ValidationException extends AppNetworkException {
-  final Map<String, dynamic>? errors;
-  ValidationException(this.errors, String message) : super(message);
-}
-
-class ServerException extends AppNetworkException {
-  ServerException() : super('Server error, please try again');
-}
+// DioClient: baseUrl, 30s timeout, auth + log interceptors
+// AuthInterceptor: adds Bearer token, handles 401 with refresh
+// Token refresh: grabs refresh token, calls /auth/refresh, retries original request
+// Error classes: UnauthorizedException, ValidationException, ServerException
 ```
 
 #### Share Intent Setup
 
 **iOS Share Extension** (`ios/ShareExtension/ShareViewController.swift`):
 ```swift
-class ShareViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        guard let item = extensionContext?.inputItems.first as? NSExtensionItem,
-              let attachments = item.attachments,
-              let attachment = attachments.first else { return }
-
-        if attachment.hasItemConformingToTypeIdentifier("public.url") {
-            attachment.loadItem(forTypeIdentifier: "public.url", options: nil) { [weak self] url, _ in
-                if let shareUrl = url as? URL {
-                    self?.handleShareUrl(shareUrl)
-                }
-                self?.extensionContext?.completeRequest(returningItems: nil)
-            }
-        }
-    }
-
-    func handleShareUrl(_ url: URL) {
-        // Store URL in App Group container
-        let defaults = UserDefaults(suiteName: "group.com.l2l.app")
-        defaults?.set(url.absoluteString, forKey: "shared_url")
-
-        // Open main app
-        let selector = sel_registerName("openURL:")
-        let responder = self as UIResponder
-        var responderChain = responder.next
-        while responderChain != nil {
-            if responderChain!.responds(to: selector) {
-                responderChain!.perform(selector, with: url)
-                return
-            }
-            responderChain = responderChain!.next
-        }
-    }
-}
+// Load shared URL from extension context
+// Store URL in App Group container (group.com.l2l.app)
+// Open main app using openURL selector
 ```
 
 **Android Intent Filter** (`android/app/src/main/AndroidManifest.xml`):
 ```xml
-<activity android:name=".MainActivity">
-    <intent-filter>
-        <action android:name="android.intent.action.SEND" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <data android:mimeType="text/plain" />
-    </intent-filter>
-</activity>
+<!-- Add intent-filter for SEND action with text/plain mimeType -->
 ```
 
+**Flutter Share Handler**:
 ```dart
 // lib/share_extension/share_handler.dart
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-
-class ShareHandler {
-  final LinkNotifier _linkNotifier;
-
-  void init() {
-    // Handle when app is running
-    ReceiveSharingIntent.getInitialMedia().then(_handleSharedMedia);
-
-    // Handle when app is terminated
-    ReceiveSharingIntent.getMediaStream().listen(_handleSharedMedia);
-  }
-
-  void _handleSharedMedia(List<SharedMediaFile> media) {
-    if (media.isNotEmpty && media.first.type == SharedMediaType.TEXT) {
-      final url = media.first.path;
-      if (Uri.tryParse(url) != null) {
-        _linkNotifier.saveLink(url: url);
-        // Navigate to links list
-      }
-    }
-  }
-}
+// Use receive_sharing_intent plugin
+// Handle initial media (app running) and media stream (app terminated)
+// Extract URL from SharedMediaFile, call linkNotifier.saveLink()
 ```
 
 #### Offline Strategy (Hive)
 
+**Instruction:** Use Hive for local caching of links and projects. Cache content with timestamp, check staleness after 1 hour.
+
+**Pattern:**
 ```dart
 // lib/core/storage/local_cache.dart
-import 'package:hive/hive.dart';
-
-class LocalCache {
-  static const String linksBox = 'links';
-  static const String projectsBox = 'projects';
-
-  Future<void> init() async {
-    await Hive.initFlutter();
-    Hive.registerAdapter(LinkAdapter());
-    Hive.registerAdapter(ProjectAdapter());
-
-    await Hive.openBox(linksBox);
-    await Hive.openBox(projectsBox);
-  }
-
-  // Cache link with AI output
-  Future<void> cacheLink(Link link) async {
-    final box = Hive.box(linksBox);
-    await box.put(link.id, link);
-  }
-
-  // Get cached link
-  Link? getCachedLink(String id) {
-    final box = Hive.box(linksBox);
-    return box.get(id) as Link?;
-  }
-
-  // Get all cached links for project
-  List<Link> getCachedLinks(String? projectId) {
-    final box = Hive.box(linksBox);
-    return box.values
-        .whereType<Link>()
-        .where((l) => projectId == null || l.projectId == projectId)
-        .toList();
-  }
-
-  // Check if content is stale (older than 1 hour)
-  bool isStale(String key) {
-    final box = Hive.box(linksBox);
-    final lastUpdated = box.get('${key}_timestamp') as DateTime?;
-    if (lastUpdated == null) return true;
-    return DateTime.now().difference(lastUpdated).inHours > 1;
-  }
-}
+// LocalCache: init(), cacheLink(link), getCachedLink(id), getCachedLinks(projectId), isStale(key)
+// Links box, projects box
+// Staleness threshold: 1 hour
 ```
 
 > ⚠️ **ASSUMPTIONS:**
@@ -1007,327 +508,58 @@ class LocalCache {
 
 #### Background Service Worker
 
+**Instruction:** Implement service worker with context menu, message handling, and token refresh alarm.
+
+**Pattern:**
 ```typescript
 // background/index.ts
-import { ApiClient } from '../shared/api';
-import { TokenStorage } from '../shared/storage';
-
-const api = new ApiClient();
-const storage = new TokenStorage();
-
-// Context menu for right-click save
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: 'saveToL2L',
-    title: 'Save to L2L',
-    contexts: ['link', 'page'],
-  });
-});
-
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === 'saveToL2L') {
-    const url = info.linkUrl || info.pageUrl;
-    const title = tab?.title || 'Saved Page';
-
-    try {
-      await api.saveLink({ url, title, source: 'extension_context' });
-      showNotification('Link saved to L2L!');
-    } catch (error) {
-      if (isAuthError(error)) {
-        await handleAuthError();
-      }
-    }
-  }
-});
-
-// Message handler from popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'SAVE_LINK') {
-    api.saveLink(message.payload)
-      .then(sendResponse)
-      .catch(sendResponse);
-    return true; // Keep channel open for async response
-  }
-
-  if (message.type === 'GET_CURRENT_PAGE') {
-    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      sendResponse({ url: tab.url, title: tab.title });
-    });
-    return true;
-  }
-});
-
-// Token refresh alarm
-chrome.alarms.create('refreshToken', { periodInMinutes: 10 });
-chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === 'refreshToken') {
-    await api.refreshTokenIfNeeded();
-  }
-});
-
-function showNotification(message: string) {
-  chrome.notifications.create({
-    type: 'basic',
-    iconUrl: 'icons/icon48.png',
-    title: 'L2L',
-    message,
-  });
-}
+// OnInstalled: create context menu for link/page save
+// onContextMenuClicked: save URL, show notification, handle auth errors
+// onMessage: handle SAVE_LINK and GET_CURRENT_PAGE messages
+// Alarms: refresh token every 10 minutes
 ```
 
 #### Popup UI
 
+**Instruction:** Create React popup with form for URL, title, project selection, and tags.
+
+**Pattern:**
 ```typescript
 // popup/index.tsx
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-
-function App() {
-  const [url, setUrl] = useState('');
-  const [title, setTitle] = useState('');
-  const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('');
-  const [tags, setTags] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    // Get current page info
-    chrome.runtime.sendMessage({ type: 'GET_CURRENT_PAGE' }, (response) => {
-      setUrl(response.url);
-      setTitle(response.title);
-    });
-
-    // Fetch user projects
-    loadProjects();
-  }, []);
-
-  const handleSave = async () => {
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const result = await chrome.runtime.sendMessage({
-        type: 'SAVE_LINK',
-        payload: {
-          url,
-          title,
-          projectId: selectedProject || undefined,
-          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
-        },
-      });
-
-      if (result.success) {
-        window.close(); // Close popup
-      }
-    } catch (err) {
-      setError(err.message || 'Failed to save link');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="popup-container">
-      <header>
-        <img src="/icons/icon48.png" alt="L2L" />
-        <h1>Save to L2L</h1>
-      </header>
-
-      <form onSubmit={handleSave}>
-        <div className="form-group">
-          <label>URL</label>
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Project (optional)</label>
-          <select
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-          >
-            <option value="">No project</option>
-            {projects.map(p => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Tags (comma-separated)</label>
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="react, tutorial, frontend"
-          />
-        </div>
-
-        {error && <div className="error">{error}</div>}
-
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : 'Save Link'}
-        </button>
-      </form>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+// App component: url, title, projects[], selectedProject, tags state
+// useEffect: load current page info via GET_CURRENT_PAGE message, fetch projects
+// handleSave: send SAVE_LINK message with payload
+// UI: form groups for each field, error display, loading state
 ```
 
 #### Message Protocol (Type-Safe Schema)
 
+**Instruction:** Define type-safe message protocol for extension communication.
+
+**Pattern:**
 ```typescript
 // shared/protocol.ts
-export interface SaveLinkMessage {
-  type: 'SAVE_LINK';
-  payload: {
-    url: string;
-    title: string;
-    projectId?: string;
-    tags?: string[];
-  };
-}
-
-export interface GetCurrentPageMessage {
-  type: 'GET_CURRENT_PAGE';
-}
-
-export interface TokenUpdateMessage {
-  type: 'TOKEN_UPDATE';
-  payload: {
-    accessToken: string;
-    expiresAt: number;
-  };
-}
-
-export type ExtensionMessage =
-  | SaveLinkMessage
-  | GetCurrentPageMessage
-  | TokenUpdateMessage;
-
-export interface SaveLinkResponse {
-  success: boolean;
-  linkId?: string;
-  jobId?: string;
-  error?: string;
-}
-
-// Type-safe message sender
-export function sendMessage<T extends ExtensionMessage, R>(
-  message: T
-): Promise<R> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(message, (response) => {
-      if (response.error) {
-        reject(new Error(response.error));
-      } else {
-        resolve(response as R);
-      }
-    });
-  });
-}
+// Message types: SAVE_LINK, GET_CURRENT_PAGE, TOKEN_UPDATE
+// SaveLinkMessage: { url, title, projectId?, tags? }
+// sendMessage<T, R>: type-safe wrapper for chrome.runtime.sendMessage
 ```
 
 #### Auth: JWT Storage & Refresh Flow
 
+**Instruction:** Implement token storage in chrome.storage.local and auto-refresh logic.
+
+**Pattern:**
 ```typescript
 // shared/storage.ts
-export interface Tokens {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
-}
-
-export class TokenStorage {
-  private readonly STORAGE_KEY = 'l2l_tokens';
-
-  async getTokens(): Promise<Tokens | null> {
-    const result = await chrome.storage.local.get(this.STORAGE_KEY);
-    return result[this.STORAGE_KEY] || null;
-  }
-
-  async saveTokens(tokens: Tokens): Promise<void> {
-    await chrome.storage.local.set({ [this.STORAGE_KEY]: tokens });
-  }
-
-  async clearTokens(): Promise<void> {
-    await chrome.storage.local.remove(this.STORAGE_KEY);
-  }
-
-  async isTokenExpired(): Promise<boolean> {
-    const tokens = await this.getTokens();
-    if (!tokens) return true;
-    return Date.now() >= tokens.expiresAt;
-  }
-}
+// TokenStorage: getTokens(), saveTokens(), clearTokens(), isTokenExpired()
+// Tokens interface: accessToken, refreshToken, expiresAt
 ```
 
 ```typescript
 // shared/api.ts
-export class ApiClient {
-  private baseUrl = 'https://api.l2l.app/api/v1';
-  private storage = new TokenStorage();
-
-  async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const tokens = await this.storage.getTokens();
-
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(tokens && { Authorization: `Bearer ${tokens.accessToken}` }),
-        ...options.headers,
-      },
-    });
-
-    if (response.status === 401) {
-      throw new AuthError('Token expired');
-    }
-
-    if (!response.ok) {
-      throw new ApiError(await response.text());
-    }
-
-    return response.json();
-  }
-
-  async saveLink(payload: { url: string; title: string; projectId?: string; tags?: string[] }) {
-    return this.request<{ linkId: string; jobId: }>('/links', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-  }
-
-  async refreshTokenIfNeeded(): Promise<void> {
-    const tokens = await this.storage.getTokens();
-    if (!tokens) return;
-
-    // Refresh if expires within 5 minutes
-    if (Date.now() >= tokens.expiresAt - 5 * 60 * 1000) {
-      const response = await this.request<{ tokens: Tokens }>('/auth/refresh', {
-        method: 'POST',
-        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
-      });
-      await this.storage.saveTokens(response.tokens);
-    }
-  }
-}
+// ApiClient: request() with auth header, refreshTokenIfNeeded()
+// Refresh threshold: 5 minutes before expiry
+// saveLink(payload): POST /links
 ```
 
 #### Permissions Table
