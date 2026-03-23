@@ -1,6 +1,0 @@
-targets:
-  $default:
-    builders:
-      # Disable custom_lint during build
-      custom_lint:
-        enabled: false
