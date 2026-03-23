@@ -69,16 +69,10 @@ Per-Project (Manual):  Summaries → Synthesize → Course + Quiz → MongoDB
 - Technology stack table
 - Links to documentation
 
-### 3. `docker-compose.yml`
-**Services:**
-- `mongodb`: MongoDB 7.0 on port 27017
-- `redis`: Redis 7 on port 6379
-
-**Verification:**
-```bash
-docker-compose up -d
-docker-compose ps  # Both should be "healthy"
-```
+### 3. Docker Files
+- `docker-compose.yml` - Base infrastructure (MongoDB, Redis)
+- `docker-compose.dev.yml` - Development with hot-reload
+- `docker-compose.prod.yml` - Production with nginx SSL proxy
 
 ---
 
@@ -689,26 +683,20 @@ jobs:
 
 ## Phase 3.3: Docker Configuration
 
-**Backend Dockerfile (Multi-stage):**
-```dockerfile
-# Stage 1: Dependencies
-FROM node:20 AS deps
-COPY package*.json ./
-RUN npm ci
+| File | Purpose | Key Details |
+|------|---------|-------------|
+| `services/Dockerfile` | Backend image | Multi-stage build, non-root user, health check |
+| `docker-compose.dev.yml` | Development | MongoDB, Redis, API with hot-reload |
+| `docker-compose.prod.yml` | Production | Adds nginx SSL proxy, 3 API replicas, resource limits |
+| `nginx/nginx.conf` | Reverse proxy | Load balancing, rate limiting, SSL termination |
 
-# Stage 2: Build
-FROM node:20 AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
+**Commands:**
+```bash
+# Development
+docker-compose -f docker-compose.dev.yml up -d
 
-# Stage 3: Production
-FROM node:20-slim AS runner
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
-USER nodejs
-EXPOSE 8080
-CMD ["node", "dist/main.js"]
+# Production
+docker-compose -f docker-compose.prod.yml up -d --scale api=3
 ```
 
 ---
@@ -716,8 +704,7 @@ CMD ["node", "dist/main.js"]
 ## Verification Checklist
 
 ### Phase 1 (Foundation)
-- [ ] Docker Compose starts MongoDB and Redis
-- [ ] Backend `npm run dev` starts without errors
+- [ ] `docker-compose -f docker-compose.dev.yml up -d` starts all services
 - [ ] Backend `/health` returns 200
 - [ ] Flutter app launches in Chrome
 - [ ] Chrome extension loads in `chrome://extensions/`
@@ -790,6 +777,8 @@ CMD ["node", "dist/main.js"]
 | `JWT_SECRET` | Yes | - | JWT secret (32+ chars) |
 | `JWT_ACCESS_TTL` | No | `15m` | Access token expiry |
 | `JWT_REFRESH_TTL` | No | `7d` | Refresh token expiry |
+
+**Docker-specific:** `MONGO_INITDB_DATABASE`, `REDIS_PASSWORD`, `DEPLOY_REPLICAS`
 
 ---
 
