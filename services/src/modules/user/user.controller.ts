@@ -3,7 +3,7 @@ import { validationResult } from 'express-validator';
 import { userService } from './user.service';
 import { logger } from '../../utils/logger';
 import { successResponse, errorResponse, createdResponse } from '../../utils/response';
-import { CreateUserDto, LoginDto } from '../../shared/interfaces/user.interface';
+import { CreateUserDto, LoginDto } from '../../database/models/User.model';
 
 class UserController {
   async register(req: Request, res: Response, next: NextFunction) {

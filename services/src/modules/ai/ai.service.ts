@@ -6,7 +6,7 @@ import {
   FlashcardsContent,
   CourseContent,
   QuizContent
-} from '../../shared/interfaces/ai-output.interface';
+} from '../../database/models/AiOutput.model';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 

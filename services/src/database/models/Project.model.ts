@@ -1,5 +1,23 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { Project } from '../../shared/interfaces/project.interface';
+import { BaseEntity } from '../../shared/interfaces/base.interface';
+
+export interface Project extends BaseEntity {
+  userId: string;
+  name: string;
+  description?: string | null;
+  aiOutputId?: string | null;
+  deletedAt?: Date | null;
+}
+
+export interface CreateProjectDto {
+  name: string;
+  description?: string;
+}
+
+export interface UpdateProjectDto {
+  name?: string;
+  description?: string;
+}
 
 interface ProjectDocument extends Omit<Project, '_id'>, Document {}
 

@@ -1,5 +1,5 @@
 import User from '../../database/models/User.model';
-import { User as UserType, CreateUserDto, LoginDto, AuthResponse } from '../../shared/interfaces/user.interface';
+import { User as UserType, CreateUserDto, LoginDto, AuthResponse } from '../../database/models/User.model';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
 import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';

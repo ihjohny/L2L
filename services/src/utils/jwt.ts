@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/environment';
-import { JwtPayload } from '../shared/interfaces/user.interface';
+import { JwtPayload } from '../database/models/User.model';
 
 export function generateAccessToken(userId: string, email: string): string {
   const payload: JwtPayload = {
