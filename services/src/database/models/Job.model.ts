@@ -1,24 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-
-export type JobType = 'process_link' | 'generate_course';
-export type JobStatus = 'waiting' | 'active' | 'completed' | 'failed' | 'delayed';
-
-export interface Job {
-  _id: string;
-  userId: string;
-  type: JobType;
-  sourceType: 'link' | 'project';
-  sourceId: string;
-  status: JobStatus;
-  attempts: number;
-  maxAttempts: number;
-  progress: number;
-  data: Record<string, any>;
-  failedReason?: string | null;
-  processedAt?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Job } from '../../shared/interfaces/job.interface';
 
 interface JobDocument extends Omit<Job, '_id'>, Document {}
 

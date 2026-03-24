@@ -1,15 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-
-export interface Project {
-  _id: string;
-  userId: string;
-  name: string;
-  description?: string | null;
-  aiOutputId?: string | null;
-  deletedAt?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Project } from '../../shared/interfaces/project.interface';
 
 interface ProjectDocument extends Omit<Project, '_id'>, Document {}
 

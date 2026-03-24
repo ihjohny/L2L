@@ -4,3 +4,6 @@ export { default as Link } from './Link.model';
 export { default as Project } from './Project.model';
 export { default as AiOutput } from './AiOutput.model';
 export { default as Job } from './Job.model';
+
+// Re-export interfaces from shared
+export * from '../../shared/interfaces';

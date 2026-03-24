@@ -1,6 +1,5 @@
 import { BaseEntity } from './base.interface';
 
-// MVP User interface - simplified
 export interface User extends BaseEntity {
   email: string;
   passwordHash: string;

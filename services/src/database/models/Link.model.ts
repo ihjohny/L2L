@@ -1,21 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-
-export type LinkStatus = 'pending' | 'processing' | 'completed' | 'failed';
-
-export interface Link {
-  _id: string;
-  userId: string;
-  projectId?: string | null;
-  url: string;
-  title: string | null;
-  aiOutputId?: string | null;
-  tags: string[];
-  status: LinkStatus;
-  statusMessage?: string | null;
-  deletedAt?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Link } from '../../shared/interfaces/link.interface';
 
 interface LinkDocument extends Omit<Link, '_id'>, Document {}
 
