@@ -4,37 +4,55 @@
 
 **L2L** is an AI-powered knowledge management platform that transforms passive bookmarking into an active, structured learning experience. By utilizing AI agents, L2L converts scattered web resources into measurable knowledge paths.
 
+---
+
+## Table of Contents
+
+1. [Core Philosophy](#-core-philosophy)
+2. [Key Features](#-key-features)
+3. [Architecture](#-system-architecture)
+4. [Technology Stack](#-technology-stack)
+5. [Quick Start](#-quick-start)
+6. [Configuration](#-configuration)
+7. [API Reference](#-api-reference)
+8. [Development](#-development)
+9. [Documentation Index](#-documentation-index)
+10. [Troubleshooting](#-troubleshooting)
+11. [Contributing](#-contributing)
+12. [Roadmap](#-roadmap)
+
+---
+
 ## 🚀 Core Philosophy
 
 - **From Storage to Action:** Traditional bookmarks are static. L2L treats every saved link as raw material for learning.
 - **Structure over Chaos:** Users don't just "save" links; they build **Projects** with **Tags**, creating a personal curriculum.
 - **AI-Powered Learning:** Every link automatically generates summaries, flashcards, and quizzes.
 
+---
+
 ## ✨ Key Features
 
 ### 🤖 Two-Tier AI Processing
 
-**Per-Link (Automatic):**
-- **Summaries:** Key points, main arguments, and takeaways
-- **Flashcards:** 5-10 Q&A pairs generated from content
-- **Status Tracking:** pending → processing → completed/failed
-
-**Per-Project (Manual):**
-- **Course Generation:** Synthesize all link summaries into structured lessons
-- **Quiz Generation:** Create 5-15 questions with explanations
-- **Learning Paths:** Organized curriculum from multiple resources
+| Tier | Trigger | Output |
+|------|---------|--------|
+| **Per-Link** | Automatic on save | Summary, 5-10 flashcards, status tracking |
+| **Per-Project** | Manual trigger | Structured course, 5-15 question quiz, learning path |
 
 ### 📊 Project Management
 
-- **Organize Links:** Group related resources into projects
-- **Tag System:** Flexible metadata for cross-project organization
-- **Progress Tracking:** Monitor link processing status
+- Organize links into projects with flexible tagging
+- Track processing status: `pending` → `processing` → `completed/failed`
+- Cross-project organization via tags
 
 ### 🔌 Chrome Extension
 
-- **One-Click Save:** Save any webpage with a single click
-- **Project Selection:** Assign links to projects directly from browser
-- **Instant Feedback:** Confirmation notifications on successful save
+- One-click save from any webpage
+- Project selection directly from browser
+- Instant confirmation notifications
+
+---
 
 ## 🏗️ System Architecture
 
@@ -43,26 +61,21 @@
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                           │
-├─────────────────────────────────────────────────────────────────┤
 │         Flutter App (iOS/Android/Web) + Chrome Extension        │
 └─────────────────────────────────────────────────────────────────┘
                                 │
 ┌─────────────────────────────────────────────────────────────────┐
 │                      API Layer (Express)                        │
-├─────────────────────────────────────────────────────────────────┤
 │              JWT Authentication + Rate Limiting                 │
 └─────────────────────────────────────────────────────────────────┘
                                 │
 ┌─────────────────────────────────────────────────────────────────┐
 │                   Business Logic Layer                          │
-├─────────────────────────────────────────────────────────────────┤
-│   Auth Module │ Links Module │ Projects Module │ AI Module     │
-│                      Jobs Module (BullMQ)                       │
+│   Auth │ Links │ Projects │ AI │ Jobs (BullMQ)                 │
 └─────────────────────────────────────────────────────────────────┘
                                 │
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Data Layer                               │
-├─────────────────────────────────────────────────────────────────┤
 │     MongoDB (Primary) │ Redis (Cache/Queue) │ OpenAI API        │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -78,55 +91,36 @@ Projects (Learning Goals)
     └── Quiz
 ```
 
+---
+
 ## 🛠️ Technology Stack
 
-### Frontend
-- **Framework:** Flutter (cross-platform: iOS, Android, Web)
-- **State Management:** Riverpod
-- **Routing:** GoRouter
-- **HTTP Client:** Dio with interceptors
-
-### Backend
-- **Runtime:** Node.js 20 + TypeScript
-- **Framework:** Express
-- **Database:** MongoDB 7.0 with Mongoose ODM
-- **Queue:** BullMQ with Redis
-- **AI:** OpenAI API (GPT-4o) + Cheerio for web scraping
-
-### Infrastructure
-- **Database:** MongoDB (local or Atlas)
-- **Cache/Queue:** Redis 7
-- **Containerization:** Docker + Docker Compose
-- **CI/CD:** GitHub Actions (planned)
-
-## 📋 Project Status
-
-**Current Version:** 1.0.0 (MVP Complete ✅)
-
-All MVP features are implemented and ready for use. See the [Roadmap](#-roadmap) for upcoming phases.
+| Layer | Technologies |
+|-------|--------------|
+| **Frontend** | Flutter, Riverpod, GoRouter, Dio |
+| **Backend** | Node.js 20, TypeScript, Express |
+| **Database** | MongoDB 7.0, Mongoose ODM |
+| **Queue/Cache** | Redis 7, BullMQ |
+| **AI** | OpenAI API (GPT-4o), Cheerio |
+| **Infrastructure** | Docker, Docker Compose, GitHub Actions |
 
 ---
 
 ## 🚀 Quick Start
 
-### 🎯 Choose Your Setup Method
+### Choose Your Setup Method
 
-**Option A: Docker** (Recommended - Easiest)
-- Single command startup
-- Isolated environment
-- Consistent across machines
+| Method | Pros | Cons |
+|--------|------|------|
+| **Docker** (Recommended) | Single command, isolated, consistent | Docker overhead |
+| **Local** | Full control, no Docker | Manual setup of all services |
 
-**Option B: Local Setup** (No Docker)
-- Full control over services
-- No Docker overhead
-- Direct access to databases
+### Prerequisites
 
-### 📋 Prerequisites
+**Docker:**
+- Docker Desktop (Apple Silicon or Intel)
 
-**Option A: Docker**
-- Docker Desktop (see installation below)
-
-**Option B: Local**
+**Local:**
 - Node.js 18+
 - MongoDB 6.0+
 - Redis 7.0+
@@ -134,96 +128,50 @@ All MVP features are implemented and ready for use. See the [Roadmap](#-roadmap)
 
 ### Install Docker
 
-**Direct Download:**
-1. Download [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-2. Choose **Apple Silicon** (M1/M2/M3) or **Intel Chip**
-3. Drag to Applications folder and launch
-
-**Or via Homebrew:**
 ```bash
+# Via Homebrew
 brew install --cask docker
 open -a Docker
-```
 
-**Verify Installation:**
-```bash
-docker --version
-docker run hello-world
+# Or download from https://www.docker.com/products/docker-desktop/
 ```
 
 ### Start Services
 
-**Automated (Recommended):**
 ```bash
-cd /Users/bs0650/R&D/AI/L2L
+# Automated (Recommended)
 ./start-dev.sh
-```
 
-**Manual:**
-```bash
+# Manual Docker
 docker-compose -f docker-compose.dev.yml up -d
+
+# Manual Local
+./start-local.sh
 ```
 
-### 📍 Access Points
+### Access Points
 
-Once running:
-- **API**: http://localhost:3000
-- **Health Check**: http://localhost:3000/health
-- **MongoDB**: mongodb://localhost:27017
-- **Redis**: redis://localhost:6379
+| Service | URL |
+|---------|-----|
+| API | http://localhost:3000 |
+| Health Check | http://localhost:3000/health |
+| MongoDB | mongodb://localhost:27017 |
+| Redis | redis://localhost:6379 |
 
-### 🧪 Verify Installation
+### Verify Installation
 
 ```bash
-# Test the API
 curl http://localhost:3000/health
-
-# Expected response:
-# {
-#   "status": "ok",
-#   "database": "connected",
-#   "redis": "connected",
-#   "environment": "development"
-# }
 ```
 
----
-
-## 📁 Project Structure
-
-```
-L2L/
-├── docs/                          # Documentation
-│   ├── implementation/            # Implementation guides
-│   │   ├── mvp/                   # MVP implementation guide
-│   │   └── *.md                   # Architecture, database, API docs
-│   ├── product_concept.md         # Product vision
-│   ├── product_specification.md   # Requirements
-│   └── technical_specification.md # Architecture
-├── services/                      # Backend API
-│   ├── src/
-│   │   ├── modules/               # Feature modules
-│   │   │   ├── auth/              # Authentication
-│   │   │   ├── links/             # Link CRUD + AI processing
-│   │   │   ├── projects/          # Project CRUD + course generation
-│   │   │   ├── ai/                # OpenAI integration
-│   │   │   └── jobs/              # BullMQ job queues
-│   │   ├── database/              # Mongoose models
-│   │   ├── middleware/            # Express middleware
-│   │   └── utils/                 # Utilities (logger, errors)
-│   └── .env                       # Environment variables
-├── app/                           # Flutter application
-│   └── lib/
-│       ├── core/                  # Core setup (providers, router)
-│       ├── data/                  # Models and services
-│       └── presentation/          # UI screens
-├── extension/                     # Chrome extension
-│   ├── manifest.json              # Extension config
-│   ├── popup/                     # Popup UI
-│   └── background/                # Service worker
-├── docker-compose.dev.yml         # Development Docker
-├── start-dev.sh                   # Docker startup script
-└── start-local.sh                 # Local startup script
+Expected response:
+```json
+{
+  "status": "ok",
+  "database": "connected",
+  "redis": "connected",
+  "environment": "development"
+}
 ```
 
 ---
@@ -232,7 +180,7 @@ L2L/
 
 ### Environment Variables
 
-Create a `.env` file in `services/` directory:
+Create `services/.env`:
 
 ```env
 # Node.js
@@ -250,207 +198,297 @@ JWT_SECRET=your_jwt_secret_min_32_chars
 JWT_ACCESS_TTL=15m
 JWT_REFRESH_TTL=7d
 
-# AI Services (required for AI features)
+# AI Services
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=gpt-4o
 ```
 
+### Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `services/.env.example` | Environment template |
+| `docker-compose.dev.yml` | Development services |
+| `docker-compose.prod.yml` | Production services |
+| `services/Dockerfile` | API container |
+| `services/package.json` | Backend dependencies |
+| `app/pubspec.yaml` | Flutter dependencies |
+
 ---
 
-## 📊 API Endpoints
+## 📊 API Reference
 
 ### Authentication
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/v1/auth/register` | Register (email, password, name) |
 | POST | `/api/v1/auth/login` | Login |
-| POST | `/api/v1/auth/refresh` | Refresh token |
-| GET | `/api/v1/auth/me` | Current user |
+| POST | `/api/v1/auth/refresh` | Refresh access token |
+| GET | `/api/v1/auth/me` | Get current user |
 
 ### Projects
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/v1/projects` | List projects |
+| GET | `/api/v1/projects` | List user's projects |
 | POST | `/api/v1/projects` | Create project |
-| GET | `/api/v1/projects/:id` | Get project |
+| GET | `/api/v1/projects/:id` | Get project details |
 | PUT | `/api/v1/projects/:id` | Update project |
 | DELETE | `/api/v1/projects/:id` | Delete project |
 | POST | `/api/v1/projects/:id/generate-course` | Generate AI course |
 
 ### Links
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/v1/links` | List links |
-| POST | `/api/v1/links` | Create link (queues AI job) |
+| GET | `/api/v1/links` | List user's links |
+| POST | `/api/v1/links` | Create link (triggers AI processing) |
 | GET | `/api/v1/links/:id` | Get link with AI output |
 | PUT | `/api/v1/links/:id` | Update link |
 | DELETE | `/api/v1/links/:id` | Delete link |
 
 ### Jobs
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/v1/jobs/:jobId` | Get job status |
 
+Full API documentation: [docs/implementation/04_api_design.md](docs/implementation/04_api_design.md)
+
 ---
 
-## 🧪 Testing
+## 🛠️ Development
 
-### Backend Tests
+### Project Structure
+
+```
+L2L/
+├── docs/                              # Documentation
+│   ├── implementation/                # Implementation guides
+│   │   ├── mvp/                       # MVP implementation
+│   │   └── *.md                       # Architecture, database, API docs
+│   ├── product_concept.md             # Product vision
+│   ├── product_specification.md       # Requirements
+│   └── technical_specification.md     # Technical architecture
+│
+├── services/                          # Backend API
+│   └── src/
+│       ├── modules/                   # Feature modules
+│       │   ├── auth/                  # Authentication
+│       │   ├── links/                 # Link CRUD + AI processing
+│       │   ├── projects/              # Project CRUD + course generation
+│       │   ├── ai/                    # OpenAI integration
+│       │   └── jobs/                  # BullMQ job queues
+│       ├── database/                  # Mongoose models
+│       ├── middleware/                # Express middleware
+│       └── utils/                     # Utilities
+│
+├── app/                               # Flutter application
+│   └── lib/
+│       ├── core/                      # Core setup
+│       ├── data/                      # Models and services
+│       ├── domain/                    # Business logic
+│       └── presentation/              # UI screens and widgets
+│
+└── extension/                         # Chrome extension
+    ├── manifest.json                  # Extension config
+    ├── popup/                         # Popup UI
+    ├── content/                       # Content script
+    └── background/                    # Service worker
+```
+
+### Running the Application
+
+**Flutter App:**
+```bash
+cd app
+flutter pub get
+flutter run
+flutter run -d chrome  # Run on Chrome
+```
+
+**Browser Extension:**
+1. Open Chrome: `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select `extension/` directory
+
+### Testing
+
+**Backend:**
 ```bash
 cd services
-npm test              # Jest unit tests
+npm test              # Unit tests
 npm run test:integration  # Integration tests
 npm run test:watch    # Watch mode
 ```
 
-### Frontend Tests
+**Frontend:**
 ```bash
 cd app
 flutter test          # Unit and widget tests
 flutter test integration_test/  # Integration tests
 ```
 
----
+### Common Commands
 
-## 🚀 Running the App
-
-### Flutter App
+**Docker:**
 ```bash
-cd app
-flutter pub get
-flutter run
-
-# Or run on Chrome
-flutter run -d chrome
+docker-compose -f docker-compose.dev.yml logs -f     # View logs
+docker-compose -f docker-compose.dev.yml down        # Stop services
+docker-compose -f docker-compose.dev.yml restart     # Restart services
+docker-compose -f docker-compose.dev.yml up -d --build  # Rebuild
+docker-compose -f docker-compose.dev.yml ps          # Check status
 ```
 
-### Browser Extension
-1. Open Chrome/Edge: `chrome://extensions/`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
-4. Select `extension/` directory
-
----
-
-## 🔧 Common Commands
-
-### Docker Commands
-
+**Database Access:**
 ```bash
-# View logs
-docker-compose -f docker-compose.dev.yml logs -f
-
-# Stop services
-docker-compose -f docker-compose.dev.yml down
-
-# Restart services
-docker-compose -f docker-compose.dev.yml restart
-
-# Rebuild after changes
-docker-compose -f docker-compose.dev.yml up -d --build
-
-# Check container status
-docker-compose -f docker-compose.dev.yml ps
-```
-
-### Database Access
-
-```bash
-# MongoDB shell
 docker-compose -f docker-compose.dev.yml exec mongodb mongosh
-
-# Redis CLI
 docker-compose -f docker-compose.dev.yml exec redis redis-cli
-
-# Clear Redis cache
-docker-compose -f docker-compose.dev.yml exec redis redis-cli FLUSHALL
+docker-compose -f docker-compose.dev.yml exec redis redis-cli FLUSHALL  # Clear cache
 ```
+
+---
+
+## 📚 Documentation Index
+
+### Product Documentation
+
+| Document | Description |
+|----------|-------------|
+| [docs/product_concept.md](docs/product_concept.md) | Product vision, target audience, market analysis |
+| [docs/product_specification.md](docs/product_specification.md) | Feature specs, user flows, acceptance criteria |
+| [docs/technical_specification.md](docs/technical_specification.md) | System architecture, database design, security |
+| [docs/project_plan.md](docs/project_plan.md) | Project planning |
+| [docs/WBS.md](docs/WBS.md) | Work Breakdown Structure |
+| [docs/effort_estimation.md](docs/effort_estimation.md) | Effort estimation |
+
+### Implementation Guidelines
+
+| # | Document | Description |
+|---|----------|-------------|
+| 01 | [Architecture Overview](docs/implementation/01_architecture_overview.md) | System diagrams, component responsibilities, data flows |
+| 02 | [Implementation Details](docs/implementation/02_implementation_details.md) | Backend structure, Flutter patterns, extension spec |
+| 03 | [Database Schema](docs/implementation/03_database_schema.md) | MongoDB collections, indexes, migrations |
+| 04 | [API Design](docs/implementation/04_api_design.md) | REST endpoints, JWT flows, error handling, rate limiting |
+| 05 | [Configuration](docs/implementation/05_configuration.md) | Environment variables, secrets, feature flags |
+| 06 | [Dev Environment](docs/implementation/06_dev_environment.md) | Prerequisites, local setup, onboarding |
+| 07 | [Deployment & CI/CD](docs/implementation/07_deployment_cicd.md) | GitHub Actions, Docker, ECS, rollback |
+| 08 | [Microservices Migration](docs/implementation/08_microservices_migration.md) | Strangler Fig pattern, extraction roadmap |
+| 09 | [Security Guidelines](docs/implementation/09_security_guidelines.md) | Input validation, secrets hygiene, GDPR |
+| 10 | [Testing Strategy](docs/implementation/10_testing_strategy.md) | Testing pyramid, coverage, load testing |
+| 11 | [Observability & Operations](docs/implementation/11_observability_operations.md) | Logging, metrics, alerting, runbooks |
+| 12 | [Pre-Launch Checklist](docs/implementation/12_pre_launch_checklist.md) | Blocking/high/deferrable items by phase |
+
+### MVP Implementation
+
+- **[AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - Authoritative MVP implementation guide
+  - Database schema (users, projects, links, ai_outputs, jobs)
+  - Module structure and code patterns
+  - API endpoints reference
+  - Two-tier AI processing flow
+  - Verification checklist
+
+### Recommended Reading Order
+
+**New Developers:**
+1. This README (project overview)
+2. [06_dev_environment.md](docs/implementation/06_dev_environment.md) - Setup environment
+3. [product_concept.md](docs/product_concept.md) - Understand the product
+4. [technical_specification.md](docs/technical_specification.md) - Architecture overview
+5. [AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md) - Implementation details
+
+**DevOps & Deployment:**
+1. [06_dev_environment.md](docs/implementation/06_dev_environment.md) - Local setup
+2. [07_deployment_cicd.md](docs/implementation/07_deployment_cicd.md) - CI/CD pipelines
+3. [11_observability_operations.md](docs/implementation/11_observability_operations.md) - Monitoring
+4. [12_pre_launch_checklist.md](docs/implementation/12_pre_launch_checklist.md) - Launch prep
 
 ---
 
 ## 🆘 Troubleshooting
 
-### Port Already in Use
+### Port Conflicts
+
 ```bash
-# Check what's using the port
 lsof -i :3000    # API
 lsof -i :27017   # MongoDB
 lsof -i :6379    # Redis
-
-# Kill the process
 kill -9 <PID>
 ```
 
-### Docker Won't Start
+### Docker Issues
+
 ```bash
 # Restart Docker Desktop
 killall Docker
 sleep 5
 open -a Docker
-```
 
-### Database Connection Issues
-```bash
 # Check container logs
 docker-compose -f docker-compose.dev.yml logs mongodb
 
-# Restart MongoDB
+# Restart service
 docker-compose -f docker-compose.dev.yml restart mongodb
 ```
 
-### Reset Everything
+### Database Connection Issues
+
 ```bash
-# Stop and remove everything (WARNING: deletes data)
+# Check MongoDB (local)
+brew services list | grep mongodb
+mongosh
+
+# Check Redis (local)
+brew services list | grep redis
+redis-cli ping
+
+# Check container logs
+docker-compose -f docker-compose.dev.yml logs mongodb
+```
+
+### Reset Everything
+
+⚠️ **WARNING: Deletes all data**
+
+```bash
 docker-compose -f docker-compose.dev.yml down -v
 docker-compose -f docker-compose.dev.yml up -d
 ```
 
----
-
-## 📚 Documentation
-
-### Getting Started
-- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Detailed setup guide with Docker installation
-
-### Implementation Guidelines
-- **[docs/implementation/README.md](docs/implementation/README.md)** - Implementation guidelines index
-- **[docs/implementation/01_architecture_overview.md](docs/implementation/01_architecture_overview.md)** - System architecture
-- **[docs/implementation/06_dev_environment_setup.md](docs/implementation/06_dev_environment_setup.md)** - Development environment setup
-- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - MVP implementation guide
-
-### Product & Technical Docs
-- **[docs/product_concept.md](docs/product_concept.md)** - Product vision and philosophy
-- **[docs/product_specification.md](docs/product_specification.md)** - Detailed product requirements
-- **[docs/technical_specification.md](docs/technical_specification.md)** - Technical architecture
-- **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Complete documentation index
+For more troubleshooting, see [11_observability_operations.md](docs/implementation/11_observability_operations.md)
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions!
-
 ### Development Workflow
-1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Commit your changes (`git commit -m 'Add amazing feature'`)
-3. Push to the branch (`git push origin feature/amazing-feature`)
+
+1. Create a feature branch: `git checkout -b feature/amazing-feature`
+2. Commit your changes: `git commit -m 'Add amazing feature'`
+3. Push: `git push origin feature/amazing-feature`
 4. Open a Pull Request
 
 ### Code Style
-- **Backend:** ESLint + Prettier with TypeScript
-- **Frontend:** Dart Format + Flutter Lints
+
+| Layer | Tools |
+|-------|-------|
+| Backend | ESLint + Prettier with TypeScript |
+| Frontend | Dart Format + Flutter Lints |
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 ## 🗺️ Roadmap
 
-### Phase 1: MVP ✅
+### Phase 1: MVP ✅ (Complete)
+
 - [x] User authentication (JWT)
 - [x] Project management (CRUD)
 - [x] Link management with AI processing
@@ -461,12 +499,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Chrome extension
 
 ### Phase 2: Enhancement (Planned)
+
 - [ ] Spaced repetition (SM-2 algorithm)
 - [ ] Learning analytics dashboard
 - [ ] Social sharing features
 - [ ] Team collaboration
 
 ### Phase 3: Advanced (Future)
+
 - [ ] Stripe payments
 - [ ] RAG chatbot
 - [ ] Adaptive learning paths
@@ -476,20 +516,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📈 What's Included
 
-- ✅ **Backend API** - Node.js/TypeScript with RESTful endpoints (Auth, Projects, Links, AI processing)
+- ✅ **Backend API** - Node.js/TypeScript with RESTful endpoints
 - ✅ **Flutter App** - Cross-platform mobile/web application
-- ✅ **Browser Extension** - Chrome/Edge extension for saving content
-- ✅ **Database** - MongoDB for data persistence
-- ✅ **Cache/Queue** - Redis + BullMQ for async job processing
-- ✅ **Authentication** - JWT-based auth with refresh tokens
-- ✅ **Two-Tier AI Processing** - Per-link (summary+flashcards) and Per-project (course+quiz)
-- ✅ **Testing** - Jest testing infrastructure
+- ✅ **Browser Extension** - Chrome/Edge extension
+- ✅ **Database** - MongoDB with Mongoose
+- ✅ **Cache/Queue** - Redis + BullMQ
+- ✅ **Authentication** - JWT with refresh tokens
+- ✅ **Two-Tier AI Processing** - Per-link and per-project
+- ✅ **Testing** - Jest and Flutter test infrastructure
 
 ---
+
+**Version**: 1.0.0 (MVP)
+**Last Updated**: March 2026
 
 **Built with ❤️ for lifelong learners everywhere**
 
 *Turning passive bookmarks into active knowledge since 2025*
-
-**Last Updated**: March 2026
-**Version**: 1.0.0 (MVP)
