@@ -1,4 +1,4 @@
-import LinkModel, { LinkStatus } from '../../database/models/Link.model';
+import LinkModel from '../../database/models/Link.model';
 import AiOutputModel from '../../database/models/AiOutput.model';
 import JobModel from '../../database/models/Job.model';
 import { logger } from '../../utils/logger';

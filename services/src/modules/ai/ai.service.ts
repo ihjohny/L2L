@@ -4,11 +4,9 @@ import { config } from '../../config';
 import {
   SummaryContent,
   FlashcardsContent,
-  Flashcard,
   CourseContent,
-  QuizContent,
-  QuizQuestion
-} from '../../database/models/AiOutput.model';
+  QuizContent
+} from '../../shared/interfaces/ai-output.interface';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 
