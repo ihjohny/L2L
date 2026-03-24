@@ -11,7 +11,6 @@ declare global {
       user?: {
         sub: string;
         email: string;
-        tier: 'free' | 'premium' | 'enterprise';
         permissions: string[];
       };
     }
@@ -41,8 +40,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
       req.user = {
         sub: payload.sub,
         email: payload.email,
-        tier: payload.tier,
-        permissions: payload.permissions
+        permissions: payload.permissions || []
       };
 
       next();
@@ -81,25 +79,6 @@ export function authorize(...requiredPermissions: string[]) {
   };
 }
 
-export function requireTier(...allowedTiers: ('free' | 'premium' | 'enterprise')[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return unauthorizedResponse(res, 'User not authenticated');
-    }
-
-    if (!allowedTiers.includes(req.user.tier)) {
-      return errorResponse(
-        res,
-        'FORBIDDEN',
-        'This feature requires a higher subscription tier',
-        403
-      );
-    }
-
-    next();
-  };
-}
-
 // Optional authentication - doesn't fail if no token
 export async function optionalAuth(req: Request, res: Response, next: NextFunction) {
   try {
@@ -119,8 +98,7 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
         req.user = {
           sub: payload.sub,
           email: payload.email,
-          tier: payload.tier,
-          permissions: payload.permissions
+          permissions: payload.permissions || []
         };
       }
     } catch (error) {

@@ -1,13 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/environment';
-import { JwtPayload, UserTier } from '../shared/interfaces/user.interface';
+import { JwtPayload } from '../shared/interfaces/user.interface';
 
-export function generateAccessToken(userId: string, email: string, tier: UserTier): string {
+export function generateAccessToken(userId: string, email: string): string {
   const payload: JwtPayload = {
     sub: userId,
     email,
-    tier,
-    permissions: getPermissionsForTier(tier),
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60 // 7 days
   };
@@ -48,34 +46,4 @@ export function decodeToken(token: string): JwtPayload | null {
   } catch (error) {
     return null;
   }
-}
-
-function getPermissionsForTier(tier: UserTier): string[] {
-  const basePermissions = ['read:content', 'create:bookmark', 'update:profile'];
-
-  const tierPermissions: Record<UserTier, string[]> = {
-    free: [
-      ...basePermissions,
-      'create:project:limited',
-      'ai:process:limited'
-    ],
-    premium: [
-      ...basePermissions,
-      'create:project:unlimited',
-      'ai:process:unlimited',
-      'share:project',
-      'create:group'
-    ],
-    enterprise: [
-      ...basePermissions,
-      'create:project:unlimited',
-      'ai:process:unlimited',
-      'share:project',
-      'create:group',
-      'manage:team',
-      'access:analytics:advanced'
-    ]
-  };
-
-  return tierPermissions[tier] || tierPermissions.free;
 }

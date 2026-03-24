@@ -47,11 +47,6 @@ interface Config {
     webhookSecret: string;
   };
   rateLimit: {
-    tier: {
-      free: number;
-      premium: number;
-      enterprise: number;
-    };
     windowMs: number;
   };
   pagination: {
@@ -114,11 +109,6 @@ const config: Config = {
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || ''
   },
   rateLimit: {
-    tier: {
-      free: parseInt(process.env.RATE_LIMIT_TIER_FREE || '100', 10),
-      premium: parseInt(process.env.RATE_LIMIT_TIER_PREMIUM || '1000', 10),
-      enterprise: parseInt(process.env.RATE_LIMIT_TIER_ENTERPRISE || '10000', 10)
-    },
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10)
   },
   pagination: {

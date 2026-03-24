@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import { config } from './config';
 import { logger } from './utils/logger';
 import { corsMiddleware } from './middleware/cors.middleware';
-import { tierBasedRateLimit } from './middleware/rateLimit.middleware';
+import { defaultRateLimit } from './middleware/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { Database } from './database';
 import { initializeQueues, closeQueues } from './modules/jobs';
@@ -61,8 +61,8 @@ class App {
       }));
     }
 
-    // Rate limiting (will be applied dynamically based on user tier)
-    this.app.use(tierBasedRateLimit);
+    // Rate limiting
+    this.app.use(defaultRateLimit);
 
     // Health check
     this.app.get('/health', (req, res) => {

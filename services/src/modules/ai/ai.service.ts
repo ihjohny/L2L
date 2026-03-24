@@ -16,9 +16,9 @@ class AiService {
   private openai: OpenAI | null = null;
 
   constructor() {
-    if (config.openaiApiKey) {
+    if (config.openai.apiKey) {
       this.openai = new OpenAI({
-        apiKey: config.openaiApiKey
+        apiKey: config.openai.apiKey
       });
     } else {
       logger.warn('OpenAI API key not configured. AI features will use mock data.');

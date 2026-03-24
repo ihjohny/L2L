@@ -6,6 +6,7 @@ export interface User extends BaseEntity {
   passwordHash: string;
   name: string;
   deletedAt?: Date | null;
+  refreshToken?: string;
 }
 
 export interface CreateUserDto {
@@ -30,4 +31,5 @@ export interface JwtPayload {
   email: string;
   iat: number;
   exp: number;
+  permissions?: string[];
 }

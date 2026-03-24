@@ -55,14 +55,13 @@ userSchema.index({ deletedAt: 1 });
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function (next) {
-  const userDoc = this as UserDocument;
-  if (!userDoc.isModified('passwordHash')) {
+  if (!this.isModified('passwordHash')) {
     return next();
   }
 
   try {
-    const hashedPassword = await hashPassword(userDoc.get('passwordHash') as string);
-    userDoc.set('passwordHash', hashedPassword);
+    const hashedPassword = await hashPassword(this.get('passwordHash') as string);
+    this.set('passwordHash', hashedPassword);
     next();
   } catch (error: any) {
     next(error);
@@ -76,6 +75,9 @@ userSchema.methods.comparePassword = async function (password: string): Promise<
     this._id,
     { passwordHash: 1 }
   );
+  if (!user) {
+    return false;
+  }
   return comparePassword(password, user.passwordHash);
 };
 
