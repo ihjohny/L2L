@@ -7,6 +7,9 @@ import '../../presentation/pages/home/home_page.dart';
 import '../../presentation/pages/home/entities/entity_details_page.dart';
 import '../../presentation/pages/home/entities/add_entity_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
+import '../../presentation/pages/projects/projects_list_page.dart';
+import '../../presentation/pages/projects/project_detail_page.dart';
+import '../../presentation/pages/projects/create_project_page.dart';
 import '../providers/auth_providers.dart';
 
 // Router key for navigation
@@ -128,6 +131,35 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: const HomePage(initialIndex: 1),
+        ),
+      ),
+
+      // Projects Routes (Protected)
+      GoRoute(
+        path: '/projects',
+        name: 'projects',
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: const ProjectsListPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/projects/:projectId',
+        name: 'project_detail',
+        pageBuilder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          return MaterialPage(
+            key: state.pageKey,
+            child: ProjectDetailPage(projectId: projectId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/create-project',
+        name: 'create_project',
+        pageBuilder: (context, state) => const MaterialPage(
+          key: ValueKey('create_project'),
+          child: CreateProjectPage(),
         ),
       ),
     ],

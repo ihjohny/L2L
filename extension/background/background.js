@@ -1,5 +1,9 @@
 // Background service worker for L2L extension
 
+// API Configuration
+const API_BASE_URL = 'http://localhost:3000/api';
+const API_VERSION = 'v1';
+
 // Install event
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
@@ -29,6 +33,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;
   }
+
+  if (request.action === 'getProjects') {
+    getProjects()
+      .then(sendResponse)
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
 
 // Handle save page action
@@ -40,8 +51,8 @@ async function handleSavePage(pageData, tab) {
       throw new Error('Not authenticated');
     }
 
-    // Call API to save entity
-    const response = await fetch('http://localhost:3000/api/v1/content/entities', {
+    // Call API to save link
+    const response = await fetch(`${API_BASE_URL}/${API_VERSION}/links`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,13 +60,14 @@ async function handleSavePage(pageData, tab) {
       },
       body: JSON.stringify({
         url: pageData.url,
-        tags: pageData.tags || []
+        tags: pageData.tags || [],
+        projectId: pageData.projectId || null
       })
     });
 
     const data = await response.json();
 
-    if (data.success) {
+    if (data.success || data.data) {
       // Show notification
       chrome.notifications.create({
         type: 'basic',
@@ -70,6 +82,28 @@ async function handleSavePage(pageData, tab) {
     }
   } catch (error) {
     console.error('Error saving page:', error);
+    throw error;
+  }
+}
+
+// Get user's projects
+async function getProjects() {
+  try {
+    const session = await chrome.storage.local.get(['token']);
+    if (!session.token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/${API_VERSION}/projects`, {
+      headers: {
+        'Authorization': `Bearer ${session.token}`
+      }
+    });
+
+    const data = await response.json();
+    return { success: true, projects: data.data || [] };
+  } catch (error) {
+    console.error('Error fetching projects:', error);
     throw error;
   }
 }

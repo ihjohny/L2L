@@ -1,6 +1,6 @@
 import User from '../../database/models/User.model';
-import { User as UserType, CreateUserDto, UpdateUserDto, LoginDto, AuthResponse } from '../../shared/interfaces/user.interface';
-import { generateAccessToken, generateRefreshToken, verifyAccessToken } from '../../utils/jwt';
+import { User as UserType, CreateUserDto, LoginDto, AuthResponse } from '../../shared/interfaces/user.interface';
+import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
 import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';
 
@@ -13,56 +13,17 @@ class UserService {
         throw new AppError('User already exists with this email', 'CONFLICT', 409);
       }
 
-      const existingUsername = await User.findByUsername(dto.username);
-      if (existingUsername) {
-        throw new AppError('Username already taken', 'CONFLICT', 409);
-      }
-
       // Create new user
       const user = await User.create({
         email: dto.email.toLowerCase(),
-        username: dto.username.toLowerCase(),
-        password: dto.password, // Will be hashed by pre-save hook
-        profile: {
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-          preferences: {
-            theme: 'system',
-            language: 'en',
-            notifications: {
-              email: true,
-              push: true,
-              marketing: false,
-              learningReminders: true,
-              socialUpdates: true
-            },
-            privacy: {
-              profileVisibility: 'public',
-              activityVisibility: 'public',
-              showProgress: true
-            }
-          }
-        },
-        subscription: {
-          tier: 'free',
-          startDate: new Date()
-        },
-        stats: {
-          totalBookmarks: 0,
-          projectsCompleted: 0,
-          streakDays: 0,
-          totalPoints: 0,
-          currentLevel: 1,
-          quizzesCompleted: 0,
-          flashcardsReviewed: 0
-        },
-        isEmailVerified: false
+        passwordHash: dto.password, // Will be hashed by pre-save hook
+        name: dto.name
       });
 
       logger.info(`New user registered: ${user.email}`);
 
       // Generate tokens
-      const token = generateAccessToken(user._id.toString(), user.email, user.subscription.tier);
+      const accessToken = generateAccessToken(user._id.toString(), user.email);
       const refreshToken = generateRefreshToken(user._id.toString());
 
       // Save refresh token to user
@@ -71,7 +32,7 @@ class UserService {
 
       return {
         user: (user as any).toPublicJSON(),
-        token,
+        accessToken,
         refreshToken
       };
     } catch (error: any) {
@@ -94,14 +55,10 @@ class UserService {
         throw new AppError('Invalid email or password', 'UNAUTHORIZED', 401);
       }
 
-      // Update last login
-      user.lastLoginAt = new Date();
-      await user.save();
-
       logger.info(`User logged in: ${user.email}`);
 
       // Generate tokens
-      const token = generateAccessToken(user._id.toString(), user.email, user.subscription.tier);
+      const accessToken = generateAccessToken(user._id.toString(), user.email);
       const refreshToken = generateRefreshToken(user._id.toString());
 
       // Save refresh token to user
@@ -110,7 +67,7 @@ class UserService {
 
       return {
         user: (user as any).toPublicJSON(),
-        token,
+        accessToken,
         refreshToken
       };
     } catch (error: any) {
@@ -121,7 +78,7 @@ class UserService {
 
   async getUserById(userId: string): Promise<UserType> {
     try {
-      const user = await User.findById(userId);
+      const user = await User.findByIdActive(userId);
       if (!user) {
         throw new AppError('User not found', 'NOT_FOUND', 404);
       }
@@ -132,63 +89,16 @@ class UserService {
     }
   }
 
-  async updateUser(userId: string, dto: UpdateUserDto): Promise<UserType> {
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        throw new AppError('User not found', 'NOT_FOUND', 404);
-      }
-
-      // Update profile fields
-      if (dto.firstName) {
-        user.profile.firstName = dto.firstName;
-      }
-      if (dto.lastName) {
-        user.profile.lastName = dto.lastName;
-      }
-      if (dto.bio !== undefined) {
-        user.profile.bio = dto.bio;
-      }
-      if (dto.avatar !== undefined) {
-        user.profile.avatar = dto.avatar;
-      }
-      if (dto.preferences) {
-        user.profile.preferences = {
-          ...user.profile.preferences,
-          ...dto.preferences
-        };
-      }
-
-      await user.save();
-      logger.info(`User updated: ${user.email}`);
-
-      return (user as any).toPublicJSON();
-    } catch (error: any) {
-      logger.error('Error in updateUser:', error);
-      throw error;
-    }
-  }
-
-  async updateLastLogin(userId: string): Promise<void> {
-    try {
-      const user = await User.findById(userId);
-      if (user) {
-        user.lastLoginAt = new Date();
-        await user.save();
-      }
-    } catch (error: any) {
-      logger.error('Error in updateLastLogin:', error);
-    }
-  }
-
   async deleteUser(userId: string): Promise<void> {
     try {
-      const user = await User.findById(userId);
+      const user = await User.findByIdActive(userId);
       if (!user) {
         throw new AppError('User not found', 'NOT_FOUND', 404);
       }
 
-      await User.findByIdAndDelete(userId);
+      // Soft delete
+      user.deletedAt = new Date();
+      await user.save();
       logger.info(`User deleted: ${user.email}`);
     } catch (error: any) {
       logger.error('Error in deleteUser:', error);
@@ -196,18 +106,18 @@ class UserService {
     }
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<{ token: string; refreshToken: string }> {
+  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      // Verify refresh token
-      const payload = verifyAccessToken(refreshToken); // This should use refresh token verification
+      // Verify refresh token and get user ID
+      const { sub: userId } = await import('../../utils/jwt').then(m => m.verifyRefreshToken(refreshToken));
 
-      const user = await User.findById(payload.sub);
+      const user = await User.findByIdActive(userId);
       if (!user || user.refreshToken !== refreshToken) {
         throw new AppError('Invalid refresh token', 'UNAUTHORIZED', 401);
       }
 
       // Generate new tokens
-      const newToken = generateAccessToken(user._id.toString(), user.email, user.subscription.tier);
+      const newAccessToken = generateAccessToken(user._id.toString(), user.email);
       const newRefreshToken = generateRefreshToken(user._id.toString());
 
       // Update refresh token
@@ -215,50 +125,12 @@ class UserService {
       await user.save();
 
       return {
-        token: newToken,
+        accessToken: newAccessToken,
         refreshToken: newRefreshToken
       };
     } catch (error: any) {
       logger.error('Error in refreshAccessToken:', error);
       throw new AppError('Invalid refresh token', 'UNAUTHORIZED', 401);
-    }
-  }
-
-  async updateSubscriptionTier(userId: string, tier: 'free' | 'premium' | 'enterprise'): Promise<UserType> {
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        throw new AppError('User not found', 'NOT_FOUND', 404);
-      }
-
-      user.subscription.tier = tier;
-      if (tier !== 'free') {
-        user.subscription.startDate = new Date();
-        user.subscription.endDate = undefined;
-      }
-
-      await user.save();
-      logger.info(`User subscription updated: ${user.email} -> ${tier}`);
-
-      return (user as any).toPublicJSON();
-    } catch (error: any) {
-      logger.error('Error in updateSubscriptionTier:', error);
-      throw error;
-    }
-  }
-
-  async updateUserStats(userId: string, statsUpdate: Partial<UserType['stats']>): Promise<void> {
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        throw new AppError('User not found', 'NOT_FOUND', 404);
-      }
-
-      Object.assign(user.stats, statsUpdate);
-      await user.save();
-    } catch (error: any) {
-      logger.error('Error in updateUserStats:', error);
-      throw error;
     }
   }
 }

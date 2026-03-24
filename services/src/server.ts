@@ -19,6 +19,9 @@ class Server {
       // Initialize database
       await this.app.initializeDatabase();
 
+      // Initialize job queues
+      await this.app.initializeQueues();
+
       // Start server
       this.server.listen(this.port, () => {
         logger.info(`
@@ -30,6 +33,7 @@ class Server {
 ║   ✓ Port: ${this.port.toString().padEnd(45)}║
 ║   ✓ API Version: ${config.apiVersion.padEnd(39)}║
 ║   ✓ Database: Connected                                  ║
+║   ✓ Job Queues: Initialized                              ║
 ║                                                           ║
 ║   📍 Server running at: http://localhost:${this.port}        ║
 ║   📚 API Documentation: http://localhost:${this.port}/api/${config.apiVersion}/docs  ║
@@ -78,6 +82,9 @@ class Server {
       logger.info('HTTP server closed');
 
       try {
+        await this.app.closeQueues();
+        logger.info('Job queues closed');
+
         await this.app.closeDatabase();
         logger.info('Database connection closed');
 

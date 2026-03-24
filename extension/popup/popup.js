@@ -1,10 +1,12 @@
 // Configuration
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+const API_BASE_URL = 'http://localhost:3000/api';
+const API_VERSION = 'v1';
 
 // State
 let currentUser = null;
 let authToken = null;
 let currentTab = null;
+let projects = [];
 
 // DOM Elements
 const views = {
@@ -31,9 +33,9 @@ async function init() {
   // Setup event listeners
   setupEventListeners();
 
-  // Load page info if authenticated
+  // Load page info and projects if authenticated
   if (currentUser && authToken) {
-    loadPageInfo();
+    await Promise.all([loadPageInfo(), loadProjects()]);
   }
 }
 
@@ -51,7 +53,7 @@ function updateUI() {
     logoutBtn.classList.remove('hidden');
 
     // Update user info
-    userInfo.querySelector('.username').textContent = currentUser.username;
+    userInfo.querySelector('.username').textContent = currentUser.email || currentUser.username || 'User';
 
     // Update status badge
     statusBadge.querySelector('.status-text').textContent = 'Connected';
@@ -87,6 +89,81 @@ async function loadPageInfo() {
     pageIcon.textContent = '🎵';
   } else {
     pageIcon.textContent = '📚';
+  }
+}
+
+async function loadProjects() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${API_VERSION}/projects`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      projects = data.data || [];
+      populateProjectSelect();
+    } else {
+      console.error('Failed to load projects');
+      projects = [];
+    }
+  } catch (error) {
+    console.error('Error loading projects:', error);
+    projects = [];
+  }
+}
+
+function populateProjectSelect() {
+  const select = document.getElementById('projectSelect');
+  select.innerHTML = '<option value="">Select a project</option>';
+
+  projects.forEach(project => {
+    const option = document.createElement('option');
+    option.value = project.id;
+    option.textContent = project.name;
+    select.appendChild(option);
+  });
+
+  // Add option to create new project
+  const newOption = document.createElement('option');
+  newOption.value = '__new__';
+  newOption.textContent = '+ Create New Project';
+  select.appendChild(newOption);
+
+  // Handle project selection change
+  select.addEventListener('change', async (e) => {
+    if (e.target.value === '__new__') {
+      const newProjectName = prompt('Enter project name:');
+      if (newProjectName) {
+        await createProject(newProjectName);
+      } else {
+        select.value = '';
+      }
+    }
+  });
+}
+
+async function createProject(name) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${API_VERSION}/projects`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ name })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      projects.push(data.data);
+      populateProjectSelect();
+      document.getElementById('projectSelect').value = data.data.id;
+    }
+  } catch (error) {
+    console.error('Error creating project:', error);
+    alert('Failed to create project');
   }
 }
 
@@ -132,7 +209,7 @@ async function handleLogin() {
   document.getElementById('loadingMessage').textContent = 'Signing in...';
 
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/${API_VERSION}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -142,18 +219,22 @@ async function handleLogin() {
 
     const data = await response.json();
 
-    if (data.success) {
+    if (data.success || data.data) {
+      // Handle both API response formats
+      const userData = data.data?.user || data.data;
+      const token = data.data?.accessToken || data.data?.token;
+
       // Save session
       await chrome.storage.local.set({
-        user: data.data.user,
-        token: data.data.token
+        user: userData,
+        token: token
       });
 
-      currentUser = data.data.user;
-      authToken = data.data.token;
+      currentUser = userData;
+      authToken = token;
 
       updateUI();
-      await loadPageInfo();
+      await Promise.all([loadPageInfo(), loadProjects()]);
     } else {
       showView('login');
       alert('Login failed: ' + (data.message || 'Unknown error'));
@@ -166,26 +247,34 @@ async function handleLogin() {
 
 async function handleSave() {
   const tags = document.getElementById('tagsInput').value;
+  const projectId = document.getElementById('projectSelect').value;
 
   showView('loading');
   document.getElementById('loadingMessage').textContent = 'Saving to L2L...';
 
   try {
-    const response = await fetch(`${API_BASE_URL}/content/entities`, {
+    const requestBody = {
+      url: currentTab.url,
+      tags: tags ? tags.split(',').map(t => t.trim()) : []
+    };
+
+    // Include projectId if selected
+    if (projectId) {
+      requestBody.projectId = projectId;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/${API_VERSION}/links`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
       },
-      body: JSON.stringify({
-        url: currentTab.url,
-        tags: tags ? tags.split(',').map(t => t.trim()) : []
-      })
+      body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
 
-    if (data.success) {
+    if (data.success || data.data) {
       showView('success');
 
       // Show notification
@@ -209,6 +298,7 @@ async function handleLogout() {
   await chrome.storage.local.remove(['user', 'token']);
   currentUser = null;
   authToken = null;
+  projects = [];
   updateUI();
 }
 

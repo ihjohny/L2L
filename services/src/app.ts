@@ -8,10 +8,12 @@ import { corsMiddleware } from './middleware/cors.middleware';
 import { tierBasedRateLimit } from './middleware/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { Database } from './database';
+import { initializeQueues, closeQueues } from './modules/jobs';
 
 // Import routes
 import userRoutes from './modules/user/user.routes';
-import contentRoutes from './modules/content/content.routes';
+import linkRoutes from './modules/links/link.routes';
+import projectRoutes from './modules/project/project.routes';
 
 class App {
   public app: Application;
@@ -60,7 +62,6 @@ class App {
     }
 
     // Rate limiting (will be applied dynamically based on user tier)
-    // Apply basic rate limiting to all routes
     this.app.use(tierBasedRateLimit);
 
     // Health check
@@ -81,7 +82,11 @@ class App {
         name: config.appName,
         version: config.apiVersion,
         description: 'L2L (Link to Learn) API',
-        documentation: `/api/${config.apiVersion}/docs`
+        endpoints: {
+          auth: `/api/${config.apiVersion}/auth`,
+          links: `/api/${config.apiVersion}/links`,
+          projects: `/api/${config.apiVersion}/projects`
+        }
       });
     });
   }
@@ -89,13 +94,14 @@ class App {
   private initializeRoutes(): void {
     const apiPrefix = `/api/${config.apiVersion}`;
 
-    // Mount routes
+    // Mount MVP routes
     this.app.use(`${apiPrefix}/auth`, userRoutes);
-    this.app.use(`${apiPrefix}/content`, contentRoutes);
+    this.app.use(`${apiPrefix}/links`, linkRoutes);
+    this.app.use(`${apiPrefix}/projects`, projectRoutes);
 
     // API v1 prefix for backward compatibility
     this.app.use('/api/v1', (req, res, next) => {
-      req.url = req.url.replace('/api/v1', `/api/${config.apiVersion}`);
+      req.url = req.url.replace('/api/v1', apiPrefix);
       next();
     });
   }
@@ -118,6 +124,16 @@ class App {
     }
   }
 
+  public async initializeQueues(): Promise<void> {
+    try {
+      await initializeQueues();
+      logger.info('Job queues initialized successfully');
+    } catch (error) {
+      logger.error('Failed to initialize job queues:', error);
+      throw error;
+    }
+  }
+
   public async closeDatabase(): Promise<void> {
     try {
       await this.database.disconnect();
@@ -125,6 +141,10 @@ class App {
     } catch (error) {
       logger.error('Error closing database connection:', error);
     }
+  }
+
+  public async closeQueues(): Promise<void> {
+    await closeQueues();
   }
 
   public getApp(): Application {

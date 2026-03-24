@@ -1,302 +1,395 @@
+import OpenAI from 'openai';
 import { logger } from '../../utils/logger';
-import { ProcessedContent, LearningMaterials, DifficultyLevel, ContentType } from '../../shared/interfaces/content.interface';
+import { config } from '../../config';
+import {
+  SummaryContent,
+  FlashcardsContent,
+  Flashcard,
+  CourseContent,
+  QuizContent,
+  QuizQuestion
+} from '../../database/models/AiOutput.model';
+import * as cheerio from 'cheerio';
+import axios from 'axios';
 
-/**
- * Mock AI Processing Service
- *
- * This service simulates AI processing for content analysis.
- * In production, this would integrate with OpenAI GPT-4 or similar services.
- * For MVP, it provides realistic mock data for tags, summaries, flashcards, and quizzes.
- */
-class AIService {
-  /**
-   * Process content and generate AI-powered insights
-   * @param url - The URL of the content to process
-   * @param title - The title of the content
-   * @param description - The description/summary of the content
-   * @param type - The content type (article, video, podcast, etc.)
-   * @returns Processed content with tags, summary, key points, and concepts
-   */
-  async processContent(
-    url: string,
-    title: string,
-    description: string,
-    type: ContentType
-  ): Promise<ProcessedContent> {
-    try {
-      logger.info(`Processing content with AI: ${title}`);
+class AiService {
+  private openai: OpenAI | null = null;
 
-      // Simulate AI processing delay
-      await this.simulateProcessingDelay(500, 2000);
-
-      // Extract domain for context-aware tagging
-      const domain = this.extractDomain(url);
-
-      // Generate AI-processed content
-      const processedContent: ProcessedContent = {
-        summary: this.generateSummary(title, description, domain),
-        keyPoints: this.generateKeyPoints(title, description, domain),
-        tags: this.generateTags(url, title, description, type),
-        concepts: this.generateConcepts(title, description),
-        difficulty: this.assessDifficulty(title, description, type),
-        readingTime: this.estimateReadingTime(type)
-      };
-
-      logger.info(`AI processing complete for: ${title}`);
-      return processedContent;
-    } catch (error: any) {
-      logger.error('Error in AI processing:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Generate learning materials (flashcards and quizzes)
-   * @param title - Content title
-   * @param description - Content description
-   * @param difficulty - Content difficulty level
-   * @returns Learning materials with flashcards and quiz questions
-   */
-  async generateLearningMaterials(
-    title: string,
-    description: string,
-    difficulty: DifficultyLevel
-  ): Promise<LearningMaterials> {
-    try {
-      logger.info(`Generating learning materials for: ${title}`);
-
-      // Simulate processing delay
-      await this.simulateProcessingDelay(300, 1000);
-
-      const materials: LearningMaterials = {
-        flashcards: this.generateFlashcards(title, description, difficulty),
-        quiz: {
-          questions: this.generateQuizQuestions(title, description, difficulty),
-          attempts: []
-        },
-        learningPath: this.generateLearningPath(title, description)
-      };
-
-      logger.info(`Learning materials generated for: ${title}`);
-      return materials;
-    } catch (error: any) {
-      logger.error('Error generating learning materials:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Process tags with AI (can be used for manual tag editing)
-   * @param currentTags - Existing tags
-   * @param content - Content to analyze for new tags
-   * @returns Updated array of tags
-   */
-  async enhanceTags(currentTags: string[], content: string): Promise<string[]> {
-    try {
-      logger.info('Enhancing tags with AI');
-
-      await this.simulateProcessingDelay(200, 500);
-
-      // Add AI-suggested tags to existing tags
-      const suggestedTags = this.generateTagsFromContent(content);
-      const enhancedTags = [...new Set([...currentTags, ...suggestedTags])];
-
-      // Limit to 10 tags max
-      return enhancedTags.slice(0, 10);
-    } catch (error: any) {
-      logger.error('Error enhancing tags:', error);
-      return currentTags;
-    }
-  }
-
-  // Private helper methods
-
-  private generateSummary(title: string, description: string, domain: string): string {
-    const summaries = [
-      `This ${domain} resource explores key concepts related to ${title}. The content provides valuable insights and practical knowledge that can be applied in real-world scenarios.`,
-      `A comprehensive guide covering ${title}. This resource breaks down complex topics into manageable sections, making it easier to understand and retain the information.`,
-      `This content from ${domain} offers an in-depth analysis of ${title}. It presents well-researched information supported by examples and case studies.`,
-      `An informative piece discussing ${title} with clarity and depth. The material is structured to facilitate learning and provides actionable takeaways.`,
-    ];
-    return this.randomChoice(summaries);
-  }
-
-  private generateKeyPoints(title: string, description: string, domain: string): string[] {
-    const keyPointSets = [
-      [
-        `Understanding the core principles of ${title}`,
-        `Practical applications of the concepts discussed`,
-        `Key takeaways for immediate implementation`,
-        `Common misconceptions and clarifications`,
-        `Resources for further learning`
-      ],
-      [
-        `Main concepts and definitions from ${title}`,
-        `Step-by-step breakdown of the topic`,
-        `Real-world examples and use cases`,
-        `Best practices and recommendations`,
-        `Potential challenges and solutions`
-      ],
-      [
-        `Essential elements of ${title} explained`,
-        `Critical insights from ${domain} experts`,
-        `Actionable strategies discussed`,
-        `Tools and resources mentioned`,
-        `Future trends and considerations`
-      ]
-    ];
-    return this.randomChoice(keyPointSets);
-  }
-
-  private generateTags(url: string, title: string, description: string, type: ContentType): string[] {
-    const baseTags = [type, 'learning', 'educational'];
-
-    // Extract domain-based tags
-    const domain = this.extractDomain(url);
-    const domainTags = this.getDomainTags(domain);
-
-    // Extract keywords from title
-    const titleWords = title.toLowerCase()
-      .split(/\s+/)
-      .filter(word => word.length > 3)
-      .slice(0, 3);
-
-    return [...baseTags, ...domainTags, ...titleWords].slice(0, 8);
-  }
-
-  private generateConcepts(title: string, description: string): string[] {
-    const conceptSets = [
-      ['Core Principles', 'Best Practices', 'Common Patterns', 'Key Definitions'],
-      ['Fundamental Concepts', 'Advanced Techniques', 'Practical Applications', 'Theory'],
-      ['Introduction', 'Main Topics', 'Critical Insights', 'Future Directions']
-    ];
-    return this.randomChoice(conceptSets);
-  }
-
-  private assessDifficulty(title: string, description: string, type: ContentType): DifficultyLevel {
-    // Simple heuristic for difficulty assessment
-    const advancedKeywords = ['advanced', 'expert', 'master', 'architecture', 'deep dive'];
-    const beginnerKeywords = ['intro', 'beginner', 'basics', 'getting started', 'guide'];
-
-    const text = `${title} ${description}`.toLowerCase();
-
-    if (advancedKeywords.some(kw => text.includes(kw))) {
-      return 'advanced';
-    }
-    if (beginnerKeywords.some(kw => text.includes(kw))) {
-      return 'beginner';
-    }
-    return 'intermediate';
-  }
-
-  private estimateReadingTime(type: ContentType): number {
-    const readingTimes = {
-      article: Math.floor(Math.random() * 10) + 5, // 5-15 minutes
-      video: Math.floor(Math.random() * 20) + 10, // 10-30 minutes
-      podcast: Math.floor(Math.random() * 30) + 20, // 20-50 minutes
-      document: Math.floor(Math.random() * 15) + 10, // 10-25 minutes
-      book: Math.floor(Math.random() * 60) + 120 // 120-180 minutes
-    };
-    return readingTimes[type] || readingTimes.article;
-  }
-
-  private generateFlashcards(title: string, description: string, difficulty: DifficultyLevel) {
-    const count = difficulty === 'beginner' ? 3 : difficulty === 'intermediate' ? 5 : 7;
-    const flashcards = [];
-
-    for (let i = 0; i < count; i++) {
-      flashcards.push({
-        id: `fc-${Date.now()}-${i}`,
-        front: `Key concept ${i + 1} from ${title}`,
-        back: `Detailed explanation and answer for concept ${i + 1}. This helps reinforce learning through active recall.`,
-        difficulty,
-        reviewCount: 0,
-        easeFactor: 2.5
+  constructor() {
+    if (config.openaiApiKey) {
+      this.openai = new OpenAI({
+        apiKey: config.openaiApiKey
       });
+    } else {
+      logger.warn('OpenAI API key not configured. AI features will use mock data.');
     }
-
-    return flashcards;
   }
 
-  private generateQuizQuestions(title: string, description: string, difficulty: DifficultyLevel) {
-    const count = difficulty === 'beginner' ? 3 : difficulty === 'intermediate' ? 4 : 5;
-    const questions = [];
+  /**
+   * Fetch and extract content from URL
+   */
+  async fetchContent(url: string): Promise<string> {
+    try {
+      logger.info(`Fetching content from URL: ${url}`);
 
-    for (let i = 0; i < count; i++) {
-      questions.push({
-        id: `q-${Date.now()}-${i}`,
-        question: `Test your understanding: What is the main concept behind ${title} topic ${i + 1}?`,
-        options: [
-          'Option A: Correct answer with detailed explanation',
-          'Option B: Plausible but incorrect option',
-          'Option C: Another plausible option',
-          'Option D: Final option to consider'
+      const response = await axios.get(url, {
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; L2L/1.0)'
+        }
+      });
+
+      const $ = cheerio.load(response.data);
+
+      // Remove script, style, and nav elements
+      $('script').remove();
+      $('style').remove();
+      $('nav').remove();
+      $('header').remove();
+      $('footer').remove();
+
+      // Get main content (try common selectors first)
+      let content = '';
+      const mainSelectors = ['article', 'main', '.content', '.post', '.article', '#content'];
+
+      for (const selector of mainSelectors) {
+        const element = $(selector).first();
+        if (element.length > 0) {
+          content = element.text();
+          break;
+        }
+      }
+
+      // Fallback to body
+      if (!content) {
+        content = $('body').text();
+      }
+
+      // Clean up whitespace
+      content = content.replace(/\s+/g, ' ').trim();
+
+      // Limit content length for AI processing (token limit)
+      const maxContentLength = 8000;
+      return content.substring(0, maxContentLength);
+    } catch (error: any) {
+      logger.error(`Error fetching content from ${url}:`, error.message);
+      throw new Error(`Failed to fetch content: ${error.message}`);
+    }
+  }
+
+  /**
+   * Process a link: Generate summary and flashcards
+   */
+  async processLink(url: string): Promise<{ summary: SummaryContent; flashcards: FlashcardsContent }> {
+    try {
+      logger.info(`Processing link with AI: ${url}`);
+
+      // Fetch content
+      const content = await this.fetchContent(url);
+
+      if (!content || content.length < 50) {
+        throw new Error('Content too short or empty');
+      }
+
+      // Generate summary and flashcards in parallel
+      const [summary, flashcards] = await Promise.all([
+        this.generateSummary(content),
+        this.generateFlashcards(content)
+      ]);
+
+      return { summary, flashcards };
+    } catch (error: any) {
+      logger.error('Error in processLink:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate summary from content
+   */
+  async generateSummary(content: string): Promise<SummaryContent> {
+    try {
+      if (!this.openai) {
+        return this.mockSummary(content);
+      }
+
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert at summarizing educational content. Output JSON only.'
+          },
+          {
+            role: 'user',
+            content: `Summarize the following content in JSON format:
+{
+  "keyPoints": string[],  // 3-5 main points
+  "mainArgument": string,  // Central thesis in 1-2 sentences
+  "takeaways": string[]  // 3-5 practical takeaways
+}
+
+Content: ${content.substring(0, 4000)}`
+          }
         ],
-        correctAnswer: 0,
-        explanation: `Detailed explanation of why the correct answer is right and others are wrong.`,
-        difficulty,
-        points: 10
+        temperature: 0.7,
+        max_tokens: 500
       });
+
+      const contentText = response.choices[0].message.content;
+      if (!contentText) {
+        throw new Error('Empty response from OpenAI');
+      }
+
+      const parsed = JSON.parse(contentText) as SummaryContent;
+
+      // Validate structure
+      if (!parsed.keyPoints || !parsed.mainArgument || !parsed.takeaways) {
+        throw new Error('Invalid summary structure');
+      }
+
+      return parsed;
+    } catch (error: any) {
+      logger.error('Error generating summary:', error);
+      throw error;
     }
-
-    return questions;
   }
 
-  private generateLearningPath(title: string, description: string): string[] {
-    return [
-      `Step 1: Read and understand ${title}`,
-      'Step 2: Review flashcards for key concepts',
-      'Step 3: Take quiz to test knowledge',
-      'Step 4: Apply knowledge in practice',
-      'Step 5: Review and revisit as needed'
-    ];
-  }
-
-  private generateTagsFromContent(content: string): string[] {
-    const words = content.toLowerCase().split(/\s+/);
-    const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'];
-
-    return words
-      .filter(word => word.length > 4 && !commonWords.includes(word))
-      .slice(0, 5);
-  }
-
-  private extractDomain(url: string): string {
+  /**
+   * Generate flashcards from content
+   */
+  async generateFlashcards(content: string): Promise<FlashcardsContent> {
     try {
-      const urlObj = new URL(url);
-      return urlObj.hostname.replace('www.', '').split('.')[0];
-    } catch {
-      return 'unknown';
+      if (!this.openai) {
+        return this.mockFlashcards(content);
+      }
+
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert at creating educational flashcards. Output JSON only.'
+          },
+          {
+            role: 'user',
+            content: `Generate 5-10 flashcards in JSON format:
+{
+  "flashcards": [
+    {
+      "question": string,
+      "answer": string,
+      "difficulty": "easy" | "medium" | "hard"
+    }
+  ]
+}
+
+Content: ${content.substring(0, 4000)}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 800
+      });
+
+      const contentText = response.choices[0].message.content;
+      if (!contentText) {
+        throw new Error('Empty response from OpenAI');
+      }
+
+      const parsed = JSON.parse(contentText) as FlashcardsContent;
+
+      // Validate structure
+      if (!parsed.flashcards || parsed.flashcards.length < 3) {
+        throw new Error('Not enough flashcards generated');
+      }
+
+      return parsed;
+    } catch (error: any) {
+      logger.error('Error generating flashcards:', error);
+      throw error;
     }
   }
 
-  private getDomainTags(domain: string): string[] {
-    const domainTagMap: Record<string, string[]> = {
-      github: ['programming', 'code', 'development', 'opensource'],
-      stackoverflow: ['programming', 'qa', 'development'],
-      medium: ['blog', 'article', 'writing'],
-      youtube: ['video', 'tutorial', 'visual'],
-      coursera: ['course', 'education', 'certification'],
-      udemy: ['course', 'tutorial', 'learning'],
-      wikipedia: ['reference', 'encyclopedia', 'research'],
-      devto: ['programming', 'development', 'community'],
-      linkedin: ['professional', 'networking', 'career'],
-      twitter: ['social', 'news', 'updates']
+  /**
+   * Generate course from multiple summaries
+   */
+  async generateCourse(summaries: SummaryContent[]): Promise<CourseContent> {
+    try {
+      if (!this.openai) {
+        return this.mockCourse(summaries);
+      }
+
+      const summariesText = summaries
+        .map(s => `- Main: ${s.mainArgument}\n  Points: ${s.keyPoints.join(', ')}`)
+        .join('\n');
+
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert curriculum designer. Create structured courses from multiple summaries. Output JSON only.'
+          },
+          {
+            role: 'user',
+            content: `Synthesize a course from these summaries in JSON format:
+{
+  "title": string,
+  "description": string,
+  "lessons": [
+    {
+      "title": string,
+      "content": string,
+      "order": number
+    }
+  ]
+}
+
+Summaries:
+${summariesText}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500
+      });
+
+      const contentText = response.choices[0].message.content;
+      if (!contentText) {
+        throw new Error('Empty response from OpenAI');
+      }
+
+      const parsed = JSON.parse(contentText) as CourseContent;
+
+      // Validate structure
+      if (!parsed.title || !parsed.lessons || parsed.lessons.length < 2) {
+        throw new Error('Invalid course structure');
+      }
+
+      return parsed;
+    } catch (error: any) {
+      logger.error('Error generating course:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate quiz from course content
+   */
+  async generateQuiz(courseContent: CourseContent): Promise<QuizContent> {
+    try {
+      if (!this.openai) {
+        return this.mockQuiz(courseContent);
+      }
+
+      const lessonsText = courseContent.lessons
+        .map(l => `${l.title}: ${l.content.substring(0, 200)}`)
+        .join('\n');
+
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert at creating educational quizzes. Output JSON only.'
+          },
+          {
+            role: 'user',
+            content: `Generate a quiz (5-15 questions) in JSON format:
+{
+  "questions": [
+    {
+      "question": string,
+      "options": string[],
+      "correct": number,
+      "explanation": string
+    }
+  ]
+}
+
+Course content:
+${lessonsText.substring(0, 3000)}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      });
+
+      const contentText = response.choices[0].message.content;
+      if (!contentText) {
+        throw new Error('Empty response from OpenAI');
+      }
+
+      const parsed = JSON.parse(contentText) as QuizContent;
+
+      // Validate structure
+      if (!parsed.questions || parsed.questions.length < 3) {
+        throw new Error('Not enough quiz questions generated');
+      }
+
+      return parsed;
+    } catch (error: any) {
+      logger.error('Error generating quiz:', error);
+      throw error;
+    }
+  }
+
+  // Mock implementations for when OpenAI is not configured
+  private mockSummary(content: string): SummaryContent {
+    const words = content.split(' ').slice(0, 100);
+    return {
+      keyPoints: [
+        words.slice(0, 20).join(' ') + '...',
+        words.slice(20, 40).join(' ') + '...',
+        words.slice(40, 60).join(' ') + '...'
+      ],
+      mainArgument: 'This content provides educational information on the topic.',
+      takeaways: [
+        'Key takeaway from the content',
+        'Important concept to remember',
+        'Practical application of the knowledge'
+      ]
     };
-
-    return domainTagMap[domain] || ['web', 'content', 'resource'];
   }
 
-  private simulateProcessingDelay(min: number, max: number): Promise<void> {
-    const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-    return new Promise(resolve => setTimeout(resolve, delay));
+  private mockFlashcards(content: string): FlashcardsContent {
+    return {
+      flashcards: Array.from({ length: 5 }).map((_, i) => ({
+        question: `Question ${i + 1} about the content?`,
+        answer: `Answer ${i + 1} explaining the concept from the content.`,
+        difficulty: i < 2 ? 'easy' : i < 4 ? 'medium' : 'hard' as const
+      }))
+    };
   }
 
-  private randomChoice<T>(array: T[]): T {
-    return array[Math.floor(Math.random() * array.length)];
+  private mockCourse(summaries: SummaryContent[]): CourseContent {
+    return {
+      title: 'Course Generated from Your Links',
+      description: 'A comprehensive course synthesized from your saved resources.',
+      lessons: summaries.map((summary, index) => ({
+        title: `Lesson ${index + 1}: ${summary.mainArgument.substring(0, 50)}...`,
+        content: `${summary.mainArgument}\n\n${summary.keyPoints.join('\n')}`,
+        order: index + 1
+      }))
+    };
+  }
+
+  private mockQuiz(courseContent: CourseContent): QuizContent {
+    return {
+      questions: Array.from({ length: 5 }).map((_, i) => ({
+        question: `Question ${i + 1} about the course content?`,
+        options: [
+          'Correct answer with explanation',
+          'Plausible but incorrect option',
+          'Another incorrect option',
+          'Final incorrect option'
+        ],
+        correct: 0,
+        explanation: `Explanation for why option 0 is correct.`
+      }))
+    };
   }
 }
 
-const aiService = new AIService();
+const aiService = new AiService();
 export default aiService;
 export { aiService };

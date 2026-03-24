@@ -3,7 +3,7 @@ import { validationResult } from 'express-validator';
 import { userService } from './user.service';
 import { logger } from '../../utils/logger';
 import { successResponse, errorResponse, createdResponse } from '../../utils/response';
-import { CreateUserDto, UpdateUserDto, LoginDto } from '../../shared/interfaces/user.interface';
+import { CreateUserDto, LoginDto } from '../../shared/interfaces/user.interface';
 
 class UserController {
   async register(req: Request, res: Response, next: NextFunction) {
@@ -51,23 +51,6 @@ class UserController {
       return successResponse(res, user, 'Profile retrieved successfully');
     } catch (error: any) {
       logger.error('Error in getProfile controller:', error);
-      next(error);
-    }
-  }
-
-  async updateProfile(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userId = req.user?.sub;
-      if (!userId) {
-        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
-      }
-
-      const dto: UpdateUserDto = req.body;
-      const user = await userService.updateUser(userId, dto);
-
-      return successResponse(res, user, 'Profile updated successfully');
-    } catch (error: any) {
-      logger.error('Error in updateProfile controller:', error);
       next(error);
     }
   }
