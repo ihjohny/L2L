@@ -117,19 +117,28 @@ L2L/
 ## API Endpoints
 
 ### Authentication
-- `POST /api/v1/auth/register` - Register new user
+- `POST /api/v1/auth/register` - Register new user (email, password, name)
 - `POST /api/v1/auth/login` - Login user
-- `GET /api/v1/auth/profile` - Get user profile
-- `PUT /api/v1/auth/profile` - Update profile
-- `DELETE /api/v1/auth/account` - Delete account
+- `POST /api/v1/auth/refresh` - Refresh access token
+- `GET /api/v1/auth/me` - Get current user profile
 
-### Content Management
-- `POST /api/v1/content/topics` - Create topic
-- `GET /api/v1/content/topics` - List topics
-- `POST /api/v1/content/projects` - Create project
-- `GET /api/v1/content/projects` - List projects
-- `POST /api/v1/content/entities` - Create bookmark
-- `GET /api/v1/content/entities/:id` - Get bookmark
+### Projects
+- `GET /api/v1/projects` - List user's projects
+- `POST /api/v1/projects` - Create new project
+- `GET /api/v1/projects/:id` - Get project details (with links)
+- `PUT /api/v1/projects/:id` - Update project
+- `DELETE /api/v1/projects/:id` - Soft delete project
+- `POST /api/v1/projects/:id/generate-course` - Generate AI course from project links
+
+### Links
+- `GET /api/v1/links` - List user's links (optionally by project)
+- `POST /api/v1/links` - Save new link (queues AI processing)
+- `GET /api/v1/links/:id` - Get link with AI summary and flashcards
+- `PUT /api/v1/links/:id` - Update link
+- `DELETE /api/v1/links/:id` - Soft delete link
+
+### Jobs
+- `GET /api/v1/jobs/:jobId` - Get job status (processing, completed, failed)
 
 ---
 
@@ -251,10 +260,8 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
-    "username": "testuser",
     "password": "Password123",
-    "firstName": "Test",
-    "lastName": "User"
+    "name": "Test User"
   }'
 
 # Login
@@ -263,6 +270,24 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
   -d '{
     "email": "test@example.com",
     "password": "Password123"
+  }'
+
+# Create a project (requires auth token)
+curl -X POST http://localhost:3000/api/v1/projects \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{
+    "name": "My Learning Project",
+    "description": "Learning web development"
+  }'
+
+# Save a link (requires auth token)
+curl -X POST http://localhost:3000/api/v1/links \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{
+    "url": "https://example.com/article",
+    "projectId": "PROJECT_ID"
   }'
 ```
 
@@ -286,13 +311,13 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 
 ## What's Included
 
-- ✅ **Backend API** - Node.js/TypeScript with 20+ RESTful endpoints
+- ✅ **Backend API** - Node.js/TypeScript with RESTful endpoints (Auth, Projects, Links, AI processing)
 - ✅ **Flutter App** - Cross-platform mobile/web application
 - ✅ **Browser Extension** - Chrome/Edge extension for saving content
 - ✅ **Database** - MongoDB for data persistence
-- ✅ **Cache** - Redis for session management
+- ✅ **Cache/Queue** - Redis + BullMQ for async job processing
 - ✅ **Authentication** - JWT-based auth with refresh tokens
-- ✅ **Content Management** - Topics, Projects, and Bookmarks
+- ✅ **Two-Tier AI Processing** - Per-link (summary+flashcards) and Per-project (course+quiz)
 - ✅ **Testing** - Jest testing infrastructure
 
 ---
@@ -301,10 +326,11 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 
 - **[README.md](README.md)** - Project overview
 - **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local development without Docker
-- **[docs/MVP_OVERVIEW.md](docs/MVP_OVERVIEW.md)** - Project overview
-- **[docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - Technical details
+- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - MVP implementation guide
+- **[docs/MVP_OVERVIEW.md](docs/MVP_OVERVIEW.md)** - Quick project overview
+- **[docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
 
 ---
 
-**Last Updated**: January 2025
+**Last Updated**: March 2026
 **Version**: 1.0.0 (MVP)

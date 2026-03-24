@@ -2,111 +2,126 @@
 
 > The Intelligent Learning Bookmark Platform
 
-![L2L Logo](assets/logo.png)
-
-**L2L** is an AI-powered knowledge management platform that transforms passive bookmarking into an active, structured, and social learning experience. By utilizing AI agents, L2L converts scattered web resources into measurable knowledge paths.
+**L2L** is an AI-powered knowledge management platform that transforms passive bookmarking into an active, structured learning experience. By utilizing AI agents, L2L converts scattered web resources into measurable knowledge paths.
 
 ## 🚀 Core Philosophy
 
-- **From Storage to Action:** Traditional bookmarks are static. L2L treats every saved link as a raw material for a learning module.
-- **Structure over Chaos:** Users don't just "save" links; they build **Projects** with flexible **Tags**, creating a personal curriculum.
-- **Community & Competition:** Learning is amplified when shared. L2L integrates gamification to drive consistency and collaboration.
+- **From Storage to Action:** Traditional bookmarks are static. L2L treats every saved link as raw material for learning.
+- **Structure over Chaos:** Users don't just "save" links; they build **Projects** with **Tags**, creating a personal curriculum.
+- **AI-Powered Learning:** Every link automatically generates summaries, flashcards, and quizzes.
 
 ## ✨ Key Features
 
-### 🤖 AI Knowledge Engine
-- **Instant Synthesis:** Automatically generates highlighted summaries and key takeaways for every project
-- **Active Learning Tools:** Converts static content into flashcards, quizzes, and guided learning paths
-- **Smart Processing:** Extracts key concepts and terminology from articles, videos, and podcasts
+### 🤖 Two-Tier AI Processing
 
-### 🎮 Gamification & Social Learning
-- **Personal Achievement:** Earn points, maintain streaks, and unlock badges
-- **Collaborative Learning:** Share projects with individuals or user groups
-- **Healthy Competition:** Leaderboards based on quiz scores and progress completion
+**Per-Link (Automatic):**
+- **Summaries:** Key points, main arguments, and takeaways
+- **Flashcards:** 5-10 Q&A pairs generated from content
+- **Status Tracking:** pending → processing → completed/failed
 
-### 📊 Progress & Analytics
-- **Visual Dashboards:** Detailed reports on learning velocity
-- **Completion Tracking:** Track exactly how much of a Project has been consumed and understood
+**Per-Project (Manual):**
+- **Course Generation:** Synthesize all link summaries into structured lessons
+- **Quiz Generation:** Create 5-15 questions with explanations
+- **Learning Paths:** Organized curriculum from multiple resources
+
+### 📊 Project Management
+
+- **Organize Links:** Group related resources into projects
+- **Tag System:** Flexible metadata for cross-project organization
+- **Progress Tracking:** Monitor link processing status
+
+### 🔌 Chrome Extension
+
+- **One-Click Save:** Save any webpage with a single click
+- **Project Selection:** Assign links to projects directly from browser
+- **Instant Feedback:** Confirmation notifications on successful save
 
 ## 🏗️ System Architecture
 
 ### High-Level Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Presentation Layer                      │
+│                    Presentation Layer                           │
 ├─────────────────────────────────────────────────────────────────┤
-│  Web App (Flutter) │  Mobile Apps (Flutter) │ Browser Extension │
+│         Flutter App (iOS/Android/Web) + Chrome Extension        │
 └─────────────────────────────────────────────────────────────────┘
-                                  │
+                                │
 ┌─────────────────────────────────────────────────────────────────┐
-│                        API Gateway Layer                        │
+│                      API Layer (Express)                        │
 ├─────────────────────────────────────────────────────────────────┤
-│           Load Balancer │ Rate Limiting │ Authentication       │
+│              JWT Authentication + Rate Limiting                 │
 └─────────────────────────────────────────────────────────────────┘
-                                  │
+                                │
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Microservices Layer                     │
+│                   Business Logic Layer                          │
 ├─────────────────────────────────────────────────────────────────┤
-│ User Service │ Content Service │ AI Engine │ Social Service     │
-│ Analytics    │ Notification    │ Payment   │ Search             │
+│   Auth Module │ Links Module │ Projects Module │ AI Module     │
+│                      Jobs Module (BullMQ)                       │
 └─────────────────────────────────────────────────────────────────┘
-                                  │
+                                │
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Data Layer                             │
+│                        Data Layer                               │
 ├─────────────────────────────────────────────────────────────────┤
-│  MongoDB (Primary) │ Redis (Cache) │ S3 (Assets) │ Vector DB   │
+│     MongoDB (Primary) │ Redis (Cache/Queue) │ OpenAI API        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Information Hierarchy
+
 ```
-Projects (Goal-Oriented Learning)
-├── Entities (Individual Resources/Links)
-│   ├── AI-Generated Summaries
-│   ├── Flashcards
-│   └── Quizzes
-└── Tags (Metadata for flexible topic classification)
+Projects (Learning Goals)
+├── Links (Saved Resources)
+│   ├── AI Summary
+│   └── Flashcards
+└── AI Course (Generated from all links)
+    └── Quiz
 ```
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **Framework:** Flutter (cross-platform)
-- **State Management:** Provider + Riverpod
-- **Architecture:** Clean Architecture (Domain-Data-Presentation layers)
+- **Framework:** Flutter (cross-platform: iOS, Android, Web)
+- **State Management:** Riverpod
+- **Routing:** GoRouter
+- **HTTP Client:** Dio with interceptors
 
 ### Backend
-- **Runtime:** Node.js + Express
-- **Language:** TypeScript
-- **Architecture:** Microservices
-- **Authentication:** JWT + OAuth 2.0
-
-### Database
-- **Primary:** MongoDB (DocumentDB on AWS)
-- **Cache:** Redis (ElastiCache)
-- **Vector DB:** Pinecone/Weaviate for semantic search
-- **File Storage:** AWS S3
-
-### AI/ML
-- **Primary Model:** OpenAI GPT-4
-- **Embeddings:** OpenAI text-embedding-ada-002
-- **Custom Models:** Specialized NLP for educational content
+- **Runtime:** Node.js 20 + TypeScript
+- **Framework:** Express
+- **Database:** MongoDB 7.0 with Mongoose ODM
+- **Queue:** BullMQ with Redis
+- **AI:** OpenAI API (GPT-4o) + Cheerio for web scraping
 
 ### Infrastructure
-- **Cloud:** AWS
-- **Containerization:** Docker + Kubernetes (EKS)
-- **CI/CD:** GitHub Actions
-- **Monitoring:** Prometheus + Grafana + ELK Stack
+- **Database:** MongoDB (local or Atlas)
+- **Cache/Queue:** Redis 7
+- **Containerization:** Docker + Docker Compose
+- **CI/CD:** GitHub Actions (planned)
 
 ## 📋 Project Status
 
-**Current Version:** 1.0 (Development Phase)
+**Current Version:** 1.0.0 (MVP)
 
-### Development Phases
-- [x] **Phase 1: Foundation** (Q1 2025) - Backend architecture and user authentication
-- [ ] **Phase 2: Core Features** (Q2 2025) - AI processing and learning materials
-- [ ] **Phase 3: Social Features** (Q3 2025) - Project sharing and collaboration
-- [ ] **Phase 4: Advanced Features** (Q4 2025) - Analytics and enterprise features
+### MVP Scope ✅
+- [x] User authentication (JWT-based)
+- [x] Project CRUD operations
+- [x] Link CRUD with AI processing
+- [x] AI summary generation
+- [x] AI flashcard generation
+- [x] AI course generation
+- [x] AI quiz generation
+- [x] Job queue system (BullMQ)
+- [x] Flutter mobile/web app
+- [x] Chrome extension
+
+### Post-MVP (Planned)
+- [ ] Spaced repetition (SM-2 algorithm)
+- [ ] Learning analytics dashboard
+- [ ] Social sharing features
+- [ ] Team collaboration
+- [ ] Stripe payments
+- [ ] RAG chatbot
 
 ## 🚀 Quick Start
 
@@ -168,8 +183,23 @@ curl http://localhost:3000/health
 # {
 #   "status": "ok",
 #   "database": "connected",
+#   "redis": "connected",
 #   "environment": "development"
 # }
+```
+
+### Test API Endpoints
+
+```bash
+# Register a user
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "Password123", "name": "Test User"}'
+
+# Login
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "Password123"}'
 ```
 
 ### 📱 Additional Components
@@ -189,164 +219,154 @@ flutter run
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in `services/` directory:
 
 ```env
+# Node.js
+NODE_ENV=development
+PORT=3000
+
 # Database
 MONGODB_URI=mongodb://localhost:27017/l2l_dev
+
+# Redis
 REDIS_URL=redis://localhost:6379
 
-# AI Services
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4
-
 # Authentication
-JWT_SECRET=your_jwt_secret
-REFRESH_TOKEN_SECRET=your_refresh_token_secret
+JWT_SECRET=your_jwt_secret_min_32_chars
+JWT_ACCESS_TTL=15m
+JWT_REFRESH_TTL=7d
 
-# AWS Services
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_REGION=us-east-1
-S3_BUCKET=l2l-assets
-
-# External Services
-STRIPE_SECRET_KEY=your_stripe_secret
-EMAIL_SERVICE_API_KEY=your_email_api_key
+# AI Services (required for AI features)
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o
 ```
 
 ## 📁 Project Structure
 
 ```
 L2L/
-├── docs/                      # Documentation
-│   ├── product_concept.md     # Product vision and philosophy
-│   ├── product_specification.md # Detailed product requirements
-│   └── technical_specification.md # Technical architecture
-├── services/                  # Backend microservices
-│   ├── user-service/          # User management & auth
-│   ├── content-service/       # Content CRUD operations
-│   ├── ai-service/            # AI processing pipeline
-│   ├── social-service/        # Collaboration features
-│   ├── analytics-service/     # User analytics
-│   └── notification-service/  # Email & push notifications
-├── app/                       # Flutter mobile/web app
-│   ├── lib/
-│   │   ├── core/              # Core utilities
-│   │   ├── data/              # Data layer
-│   │   ├── domain/            # Business logic
-│   │   └── presentation/      # UI components
-│   ├── test/                  # Tests
-│   └── assets/                # Images, fonts, etc.
-├── extension/                 # Browser extension
-│   ├── popup/                 # Extension UI
-│   ├── content-script/        # Page interaction
-│   ├── background/            # Service worker
-│   └── manifest.json          # Extension manifest
-├── infrastructure/            # DevOps & IaC
-│   ├── terraform/             # AWS infrastructure
-│   ├── kubernetes/            # K8s manifests
-│   └── docker/                # Docker files
-├── scripts/                   # Build & deployment scripts
-└── tests/                     # E2E and integration tests
+├── docs/                          # Documentation
+│   ├── implementation/            # Implementation guides
+│   │   ├── mvp/                   # MVP implementation guide
+│   │   └── *.md                   # Architecture, database, API docs
+│   ├── product_concept.md         # Product vision
+│   ├── product_specification.md   # Requirements
+│   └── technical_specification.md # Architecture
+├── services/                      # Backend API
+│   ├── src/
+│   │   ├── modules/               # Feature modules
+│   │   │   ├── auth/              # Authentication
+│   │   │   ├── links/             # Link CRUD + AI processing
+│   │   │   ├── projects/          # Project CRUD + course generation
+│   │   │   ├── ai/                # OpenAI integration
+│   │   │   └── jobs/              # BullMQ job queues
+│   │   ├── database/              # Mongoose models
+│   │   ├── middleware/            # Express middleware
+│   │   └── utils/                 # Utilities (logger, errors)
+│   └── .env                       # Environment variables
+├── app/                           # Flutter application
+│   └── lib/
+│       ├── core/                  # Core setup (providers, router)
+│       ├── data/                  # Models and services
+│       └── presentation/          # UI screens
+├── extension/                     # Chrome extension
+│   ├── manifest.json              # Extension config
+│   ├── popup/                     # Popup UI
+│   └── background/                # Service worker
+├── docker-compose.dev.yml         # Development Docker
+├── start-dev.sh                   # Docker startup script
+└── start-local.sh                 # Local startup script
 ```
 
 ## 🧪 Testing
 
-### Running Tests
-
 ```bash
 # Backend unit tests
 cd services
-npm run test
-
-# Backend integration tests
-npm run test:integration
+npm test              # Jest unit tests
+npm run test:integration  # Integration tests
 
 # Flutter widget tests
 cd app
 flutter test
-
-# E2E tests
-npm run test:e2e
 ```
 
-### Test Coverage
-- **Backend:** Jest + Supertest
-- **Frontend:** Flutter Test + Golden Tests
-- **E2E:** Detox (mobile) + Playwright (web)
+## 📊 API Endpoints
 
-## 📊 API Documentation
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register (email, password, name) |
+| POST | `/api/v1/auth/login` | Login |
+| POST | `/api/v1/auth/refresh` | Refresh token |
+| GET | `/api/v1/auth/me` | Current user |
 
-The REST API documentation is available at:
-- **Development:** `http://localhost:3000/api-docs`
-- **Production:** `https://api.l2l.com/api-docs`
+### Projects
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/projects` | List projects |
+| POST | `/api/v1/projects` | Create project |
+| GET | `/api/v1/projects/:id` | Get project |
+| PUT | `/api/v1/projects/:id` | Update project |
+| DELETE | `/api/v1/projects/:id` | Delete project |
+| POST | `/api/v1/projects/:id/generate-course` | Generate AI course |
 
-### Key Endpoints
+### Links
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/links` | List links |
+| POST | `/api/v1/links` | Create link (queues AI job) |
+| GET | `/api/v1/links/:id` | Get link with AI output |
+| PUT | `/api/v1/links/:id` | Update link |
+| DELETE | `/api/v1/links/:id` | Delete link |
 
-#### Authentication
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh` - Refresh access token
-
-#### Bookmarks
-- `POST /api/v1/bookmarks` - Create new bookmark
-- `GET /api/v1/bookmarks` - List user bookmarks
-- `PUT /api/v1/bookmarks/:id` - Update bookmark
-- `DELETE /api/v1/bookmarks/:id` - Delete bookmark
-
-#### AI Processing
-- `POST /api/v1/ai/process` - Process content with AI
-- `GET /api/v1/ai/status/:jobId` - Check processing status
+### Jobs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/jobs/:jobId` | Get job status |
 
 ## 🚀 Deployment
 
 ### Development Environment
 ```bash
+# With Docker
+./start-dev.sh
+
+# Or manually
 docker-compose -f docker-compose.dev.yml up -d
 ```
 
-### Production Environment
+### Local Environment (No Docker)
 ```bash
-# Deploy to Kubernetes
-kubectl apply -f infrastructure/kubernetes/
-
-# Monitor deployment
-kubectl get pods -n l2l
+./start-local.sh
 ```
 
-### Environment-Specific Configurations
-- **Development:** Local services with hot reload
-- **Staging:** AWS staging environment with reduced resources
-- **Production:** Full AWS infrastructure with auto-scaling
+See [GETTING_STARTED.md](GETTING_STARTED.md) for detailed setup instructions.
 
 ## 🔧 Configuration
 
-### User Tiers
+### User Tiers (Planned)
 - **Free:** 50 saved links/month, basic AI features
 - **Premium ($9.99/month):** Unlimited links, advanced AI, team features
-- **Enterprise ($19.99/user/month):** All Premium + admin controls
 
-### Rate Limiting
+### Rate Limiting (Planned)
 - **Free Tier:** 100 requests per 15 minutes
 - **Premium Tier:** 1,000 requests per 15 minutes
-- **Enterprise Tier:** 10,000 requests per 15 minutes
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions!
 
 ### Development Workflow
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Create a feature branch (`git checkout -b feature/amazing-feature`)
+2. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Push to the branch (`git push origin feature/amazing-feature`)
+4. Open a Pull Request
 
 ### Code Style
 - **Backend:** ESLint + Prettier with TypeScript
 - **Frontend:** Dart Format + Flutter Lints
-- **Git Hooks:** Pre-commit hooks for linting and formatting
 
 ## 📄 License
 
@@ -354,61 +374,39 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **Documentation:** [docs.l2l.com](https://docs.l2l.com)
-- **API Reference:** [api.l2l.com/docs](https://api.l2l.com/docs)
-- **Community:** [Discord Server](https://discord.gg/l2l)
+- **Documentation:** See [docs/](docs/) directory
+- **Getting Started:** [GETTING_STARTED.md](GETTING_STARTED.md)
 - **Issues:** [GitHub Issues](https://github.com/your-org/L2L/issues)
 
 ## 🗺️ Roadmap
 
-### Q1 2025: Foundation
-- [x] User authentication system
-- [x] Basic bookmark management
-- [x] Browser extension MVP
-- [ ] Mobile app core features
+### Phase 1: MVP ✅
+- [x] User authentication (JWT)
+- [x] Project management (CRUD)
+- [x] Link management with AI processing
+- [x] AI summaries and flashcards per link
+- [x] AI course and quiz generation per project
+- [x] Job queue system (BullMQ)
+- [x] Flutter mobile/web app
+- [x] Chrome extension
 
-### Q2 2025: AI Integration
-- [ ] AI content processing pipeline
-- [ ] Flashcard and quiz generation
-- [ ] Learning path recommendations
-- [ ] Beta testing program
-
-### Q3 2025: Social Features
-- [ ] Project sharing functionality
-- [ ] User groups and collaboration
-- [ ] Leaderboards and competitions
-- [ ] Public launch
-
-### Q4 2025: Advanced Features
+### Phase 2: Enhancement (Planned)
+- [ ] Spaced repetition (SM-2 algorithm)
 - [ ] Learning analytics dashboard
-- [ ] AI learning coach
+- [ ] Social sharing features
+- [ ] Team collaboration
+
+### Phase 3: Advanced (Future)
+- [ ] Stripe payments
+- [ ] RAG chatbot
+- [ ] Adaptive learning paths
 - [ ] Enterprise features
-- [ ] API for third-party integrations
 
 ## 📈 Success Metrics
 
-### Key Performance Indicators
-- **User Engagement:** 60% monthly active user retention
-- **Learning Effectiveness:** 75% of users report improved knowledge retention
-- **Content Processing:** 95% accuracy in AI-generated materials
-- **Social Features:** 40% of projects shared among users
-
-### Launch Goals
-- 10,000 registered users in first month
-- 4.0+ app store rating
-- 70% user retention after first week
-- 50% bookmark-to-learning conversion rate
-
-## 👥 Team
-
-### Core Team
-- **Product Lead:** [Name] - Product strategy and user experience
-- **Tech Lead:** [Name] - Technical architecture and development
-- **AI/ML Lead:** [Name] - AI/ML pipeline and models
-- **Design Lead:** [Name] - UI/UX design and user research
-
-### Contributors
-This project is made possible by our amazing contributors. Thank you for your support!
+- **AI Processing:** Summaries and flashcards generated for each saved link
+- **Course Generation:** Synthesized lessons from multiple project links
+- **User Experience:** Streamlined MVP with focused feature set
 
 ---
 

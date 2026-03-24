@@ -488,15 +488,13 @@ exit
 # Health check
 curl http://localhost:3000/health
 
-# Register user
+### Register user
 curl -X POST http://localhost:3000/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
-    "username": "testuser",
     "password": "Password123",
-    "firstName": "Test",
-    "lastName": "User"
+    "name": "Test User"
   }'
 
 # Login
@@ -505,6 +503,24 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
   -d '{
     "email": "test@example.com",
     "password": "Password123"
+  }'
+
+# Create a project
+curl -X POST http://localhost:3000/api/v1/projects \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{
+    "name": "My Learning Project",
+    "description": "Learning web development"
+  }'
+
+# Save a link
+curl -X POST http://localhost:3000/api/v1/links \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{
+    "url": "https://example.com/article",
+    "projectId": "PROJECT_ID"
   }'
 ```
 
@@ -600,3 +616,8 @@ Once all services are running:
 - ✅ Browser extension loaded
 
 You're ready to start building features! 🚀
+
+---
+
+**Last Updated**: March 2026
+**Version**: 1.0.0 (MVP)

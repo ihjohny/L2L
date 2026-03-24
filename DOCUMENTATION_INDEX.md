@@ -49,6 +49,14 @@ Complete guide to all L2L documentation and how to use it.
   - Requirements
   - Acceptance criteria
 
+### MVP Implementation
+- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - **Authoritative MVP implementation guide**
+  - Database schema (users, projects, links, ai_outputs, jobs)
+  - Module structure and code patterns
+  - API endpoints reference
+  - Two-tier AI processing flow
+  - Verification checklist
+
 ### Technical Documentation
 - **[docs/technical_specification.md](docs/technical_specification.md)** - Technical architecture
   - System architecture
@@ -76,13 +84,13 @@ Complete guide to all L2L documentation and how to use it.
 ## 🛠️ Developer Guides
 
 ### Backend Development
-- **Technology**: Node.js, TypeScript, Express, MongoDB, Redis
+- **Technology**: Node.js, TypeScript, Express, MongoDB, Redis, BullMQ
 - **Location**: `services/` directory
 - **Key Files**:
-  - `services/src/modules/` - Feature modules (user, content, ai, social)
-  - `services/src/database/` - Database models and connection
-  - `services/src/middleware/` - Express middleware
-  - `services/src/utils/` - Utilities and helpers
+  - `services/src/modules/` - Feature modules (auth, links, projects, ai, jobs)
+  - `services/src/database/` - MongoDB models (User, Project, Link, AiOutput, Job)
+  - `services/src/middleware/` - Express middleware (auth, validation, error handling)
+  - `services/src/utils/` - Utilities (logger, error classes)
 
 ### Frontend Development
 - **Technology**: Flutter, Dart, Riverpod, go_router
@@ -150,17 +158,25 @@ flutter test integration_test/  # Integration tests
 - `POST /api/v1/auth/register` - Register new user
 - `POST /api/v1/auth/login` - Login user
 - `POST /api/v1/auth/refresh` - Refresh access token
-- `GET /api/v1/auth/profile` - Get user profile
-- `PUT /api/v1/auth/profile` - Update profile
-- `DELETE /api/v1/auth/account` - Delete account
+- `GET /api/v1/auth/me` - Get current user profile
 
-#### Content Management
-- `POST /api/v1/content/topics` - Create topic
-- `GET /api/v1/content/topics` - List topics
-- `POST /api/v1/content/projects` - Create project
-- `GET /api/v1/content/projects` - List projects
-- `POST /api/v1/content/entities` - Create bookmark
-- `GET /api/v1/content/entities/:id` - Get bookmark
+#### Projects
+- `GET /api/v1/projects` - List user's projects
+- `POST /api/v1/projects` - Create new project
+- `GET /api/v1/projects/:id` - Get project details
+- `PUT /api/v1/projects/:id` - Update project
+- `DELETE /api/v1/projects/:id` - Delete project
+- `POST /api/v1/projects/:id/generate-course` - Generate AI course
+
+#### Links
+- `GET /api/v1/links` - List user's links
+- `POST /api/v1/links` - Create new link (triggers AI processing)
+- `GET /api/v1/links/:id` - Get link with AI output
+- `PUT /api/v1/links/:id` - Update link
+- `DELETE /api/v1/links/:id` - Delete link
+
+#### Jobs
+- `GET /api/v1/jobs/:jobId` - Get job status
 
 **Full API documentation**: See [IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)
 
@@ -270,7 +286,7 @@ L2L/
 2. GETTING_STARTED.md - Get it running
 3. docs/product_concept.md - Understand the product
 4. docs/technical_specification.md - Understand the architecture
-5. docs/IMPLEMENTATION_SUMMARY.md - See what was built
+5. docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md - MVP implementation
 
 ### For Setup & Installation
 1. GETTING_STARTED.md - Complete setup guide (Docker + Local)
@@ -280,7 +296,7 @@ L2L/
 1. docs/product_concept.md - Product vision
 2. docs/product_specification.md - Requirements
 3. docs/technical_specification.md - Architecture
-4. docs/IMPLEMENTATION_SUMMARY.md - Implementation details
+4. docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md - Implementation details
 
 ---
 
@@ -330,7 +346,7 @@ L2L/
 ### Intermediate
 - Read product_concept.md
 - Read technical_specification.md
-- Review IMPLEMENTATION_SUMMARY.md
+- Review docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md
 - Start making changes
 
 ### Advanced
@@ -352,9 +368,10 @@ L2L/
 - docs/product_specification.md
 - docs/technical_specification.md
 
-### Implementation Documentation (2 files)
-- docs/IMPLEMENTATION_SUMMARY.md
-- docs/MVP_OVERVIEW.md
+### Implementation Documentation
+- **[docs/implementation/README.md](docs/implementation/README.md)** - Implementation guidelines index
+- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - **MVP implementation guide (authoritative)**
+- **[docs/MVP_OVERVIEW.md](docs/MVP_OVERVIEW.md)** - Quick project overview
 
 ### Scripts (2 files)
 - start-dev.sh
@@ -369,8 +386,8 @@ L2L/
 
 ---
 
-**Last Updated**: January 2025
-**Version**: 1.0.0
+**Last Updated**: March 2026
+**Version**: 1.0.0 (MVP)
 
 ---
 
