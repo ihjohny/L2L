@@ -5,32 +5,9 @@ Complete guide to all L2L documentation and how to use it.
 ## 🚀 Getting Started (Start Here!)
 
 ### New to L2L? Start with these:
-1. **[README.md](README.md)** - Project overview and introduction
-2. **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide (Docker + Local setup)
-3. **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Local setup without Docker (detailed)
-
----
-
-## 📖 Setup & Installation Guides
-
-### Getting Started
-- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete getting started guide
-  - Docker installation and setup (recommended)
-  - Local setup instructions
-  - Common commands for both methods
-  - Troubleshooting
-  - Testing and verification
-
-### Local Setup (Without Docker)
-- **[RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md)** - Detailed local development guide
-  - Installing MongoDB, Redis, Node.js, Flutter
-  - Service management with Homebrew
-  - Manual service startup
-  - Troubleshooting
-
-### Startup Scripts
-- **[start-dev.sh](start-dev.sh)** - One-command Docker startup
-- **[start-local.sh](start-local.sh)** - One-command local startup
+1. **[README.md](README.md)** - Complete project overview, setup guide, and quick start
+2. **[docs/implementation/06_dev_environment.md](docs/implementation/06_dev_environment.md)** - Detailed development environment setup
+3. **[docs/implementation/README.md](docs/implementation/README.md)** - Implementation guidelines index
 
 ---
 
@@ -49,13 +26,10 @@ Complete guide to all L2L documentation and how to use it.
   - Requirements
   - Acceptance criteria
 
-### MVP Implementation
-- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - **Authoritative MVP implementation guide**
-  - Database schema (users, projects, links, ai_outputs, jobs)
-  - Module structure and code patterns
-  - API endpoints reference
-  - Two-tier AI processing flow
-  - Verification checklist
+### Project Planning
+- **[docs/project_plan.md](docs/project_plan.md)** - Project planning documentation
+- **[docs/WBS.md](docs/WBS.md)** - Work Breakdown Structure
+- **[docs/effort_estimation.md](docs/effort_estimation.md)** - Effort estimation details
 
 ### Technical Documentation
 - **[docs/technical_specification.md](docs/technical_specification.md)** - Technical architecture
@@ -65,19 +39,35 @@ Complete guide to all L2L documentation and how to use it.
   - API specifications
   - Security considerations
 
-- **[docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - Complete implementation details
-  - What was built
-  - Architecture patterns
-  - Database schema
-  - API endpoints
-  - Testing infrastructure
-  - Migration path to microservices
+---
 
-- **[docs/MVP_OVERVIEW.md](docs/MVP_OVERVIEW.md)** - Quick project overview
-  - What's included
-  - Key statistics
-  - Design patterns
-  - Next steps
+## 🛠️ Implementation Guidelines
+
+Complete implementation reference organized by topic. See **[docs/implementation/README.md](docs/implementation/README.md)** for the full index.
+
+### Core Implementation
+| # | Document | Description |
+|---|----------|-------------|
+| 01 | [Architecture Overview](docs/implementation/01_architecture_overview.md) | System diagrams, component responsibilities, data flows |
+| 02 | [Implementation Details](docs/implementation/02_implementation_details.md) | Backend structure, Flutter patterns, extension spec |
+| 03 | [Database Schema](docs/implementation/03_database_schema.md) | MongoDB collections, indexes, migrations |
+| 04 | [API Design](docs/implementation/04_api_design.md) | REST endpoints, JWT flows, error handling, rate limiting |
+| 05 | [Configuration](docs/implementation/05_configuration.md) | Environment variables, secrets, feature flags |
+| 06 | [Dev Environment](docs/implementation/06_dev_environment.md) | Prerequisites, local setup, onboarding |
+| 07 | [Deployment & CI/CD](docs/implementation/07_deployment_cicd.md) | GitHub Actions, Docker, ECS, rollback |
+| 08 | [Microservices Migration](docs/implementation/08_microservices_migration.md) | Strangler Fig pattern, extraction roadmap |
+| 09 | [Security Guidelines](docs/implementation/09_security_guidelines.md) | Input validation, secrets hygiene, GDPR |
+| 10 | [Testing Strategy](docs/implementation/10_testing_strategy.md) | Testing pyramid, coverage, load testing |
+| 11 | [Observability & Operations](docs/implementation/11_observability_operations.md) | Logging, metrics, alerting, runbooks |
+| 12 | [Pre-Launch Checklist](docs/implementation/12_pre_launch_checklist.md) | Blocking/high/deferrable items by phase |
+
+### MVP Implementation
+- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - **Authoritative MVP implementation guide**
+  - Database schema (users, projects, links, ai_outputs, jobs)
+  - Module structure and code patterns
+  - API endpoints reference
+  - Two-tier AI processing flow
+  - Verification checklist
 
 ---
 
@@ -178,7 +168,7 @@ flutter test integration_test/  # Integration tests
 #### Jobs
 - `GET /api/v1/jobs/:jobId` - Get job status
 
-**Full API documentation**: See [IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)
+**Full API documentation**: See [docs/implementation/04_api_design.md](docs/implementation/04_api_design.md)
 
 ---
 
@@ -208,9 +198,6 @@ kubectl apply -f infrastructure/kubernetes/
 
 ### Common Issues
 
-#### Docker won't start
-- **Solution**: [GETTING_STARTED.md](GETTING_STARTED.md)
-
 #### Port conflicts
 ```bash
 # Check what's using the port
@@ -233,6 +220,8 @@ brew services list | grep redis
 redis-cli ping
 ```
 
+For more troubleshooting, see [docs/implementation/11_observability_operations.md](docs/implementation/11_observability_operations.md)
+
 ---
 
 ## 📈 Project Structure
@@ -240,37 +229,52 @@ redis-cli ping
 ```
 L2L/
 ├── README.md                    # Start here!
-├── GETTING_STARTED.md           # Complete getting started guide
-├── RUN_WITHOUT_DOCKER.md        # Local setup guide (detailed)
 ├── DOCUMENTATION_INDEX.md       # This file!
 ├── start-dev.sh                 # Docker startup script
 ├── start-local.sh               # Local startup script
 │
-├── docs/                       # Product & technical docs
+├── docs/                        # Product & technical docs
 │   ├── product_concept.md
 │   ├── product_specification.md
 │   ├── technical_specification.md
-│   ├── IMPLEMENTATION_SUMMARY.md
-│   └── MVP_OVERVIEW.md
+│   ├── project_plan.md
+│   ├── WBS.md
+│   ├── effort_estimation.md
+│   └── implementation/          # Implementation guides
+│       ├── README.md            # Implementation index
+│       ├── 01_architecture_overview.md
+│       ├── 02_implementation_details.md
+│       ├── 03_database_schema.md
+│       ├── 04_api_design.md
+│       ├── 05_configuration.md
+│       ├── 06_dev_environment.md
+│       ├── 07_deployment_cicd.md
+│       ├── 08_microservices_migration.md
+│       ├── 09_security_guidelines.md
+│       ├── 10_testing_strategy.md
+│       ├── 11_observability_operations.md
+│       ├── 12_pre_launch_checklist.md
+│       └── mvp/
+│           └── AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md
 │
-├── services/                   # Backend API
+├── services/                    # Backend API
 │   ├── src/
-│   │   ├── modules/           # Feature modules
-│   │   ├── database/          # MongoDB models
-│   │   ├── middleware/        # Express middleware
-│   │   └── utils/             # Utilities
+│   │   ├── modules/            # Feature modules
+│   │   ├── database/           # MongoDB models
+│   │   ├── middleware/         # Express middleware
+│   │   └── utils/              # Utilities
 │   ├── .env.example
 │   ├── package.json
 │   └── Dockerfile
 │
-├── app/                        # Flutter app
+├── app/                         # Flutter application
 │   └── lib/
 │       ├── core/
 │       ├── data/
 │       ├── domain/
 │       └── presentation/
 │
-└── extension/                  # Browser extension
+└── extension/                   # Browser extension
     ├── manifest.json
     ├── popup/
     ├── content/
@@ -283,34 +287,33 @@ L2L/
 
 ### For New Developers
 1. README.md - Project overview
-2. GETTING_STARTED.md - Get it running
+2. docs/implementation/06_dev_environment.md - Get environment running
 3. docs/product_concept.md - Understand the product
 4. docs/technical_specification.md - Understand the architecture
-5. docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md - MVP implementation
-
-### For Setup & Installation
-1. GETTING_STARTED.md - Complete setup guide (Docker + Local)
-2. RUN_WITHOUT_DOCKER.md - Detailed local setup guide
+5. docs/implementation/01_architecture_overview.md - System architecture details
+6. docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md - MVP implementation
 
 ### For Understanding the System
 1. docs/product_concept.md - Product vision
 2. docs/product_specification.md - Requirements
-3. docs/technical_specification.md - Architecture
-4. docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md - Implementation details
+3. docs/technical_specification.md - High-level architecture
+4. docs/implementation/01_architecture_overview.md - Detailed architecture
+5. docs/implementation/ - Implementation guidelines by topic
+
+### For DevOps & Deployment
+1. docs/implementation/06_dev_environment.md - Local setup
+2. docs/implementation/07_deployment_cicd.md - CI/CD pipelines
+3. docs/implementation/11_observability_operations.md - Monitoring and alerting
+4. docs/implementation/12_pre_launch_checklist.md - Launch preparation
 
 ---
 
 ## 🆘 Getting Help
 
 ### Documentation
-- Start with [GETTING_STARTED.md](GETTING_STARTED.md)
-- Check relevant setup guide
-- Review [README.md](README.md)
-
-### Troubleshooting
-- Check [GETTING_STARTED.md](GETTING_STARTED.md) for common issues
-- Check [RUN_WITHOUT_DOCKER.md](RUN_WITHOUT_DOCKER.md) for local setup issues
-- Review troubleshooting sections in each guide
+- Start with [README.md](README.md)
+- Check [docs/implementation/README.md](docs/implementation/README.md) for implementation guides
+- Review troubleshooting sections in relevant guides
 
 ### Community
 - Open a GitHub issue
@@ -322,7 +325,7 @@ L2L/
 ## 📝 Documentation Maintenance
 
 ### Adding New Documentation
-1. Create the markdown file
+1. Create the markdown file in appropriate directory
 2. Add to this index (DOCUMENTATION_INDEX.md)
 3. Update README.md if needed
 4. Commit and push
@@ -339,14 +342,14 @@ L2L/
 
 ### Beginner
 - Read README.md
-- Follow GETTING_STARTED.md
+- Follow docs/implementation/06_dev_environment.md
 - Get the system running
 - Explore the codebase
 
 ### Intermediate
-- Read product_concept.md
-- Read technical_specification.md
-- Review docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md
+- Read docs/product_concept.md
+- Read docs/technical_specification.md
+- Review implementation guidelines (01-12)
 - Start making changes
 
 ### Advanced
@@ -359,19 +362,19 @@ L2L/
 
 ## 📊 File Categories
 
-### Setup & Installation (2 files)
-- GETTING_STARTED.md
-- RUN_WITHOUT_DOCKER.md
-
 ### Product Documentation (3 files)
 - docs/product_concept.md
 - docs/product_specification.md
 - docs/technical_specification.md
 
-### Implementation Documentation
-- **[docs/implementation/README.md](docs/implementation/README.md)** - Implementation guidelines index
-- **[docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md](docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md)** - **MVP implementation guide (authoritative)**
-- **[docs/MVP_OVERVIEW.md](docs/MVP_OVERVIEW.md)** - Quick project overview
+### Project Planning (3 files)
+- docs/project_plan.md
+- docs/WBS.md
+- docs/effort_estimation.md
+
+### Implementation Guidelines (12 files + MVP)
+- docs/implementation/01_architecture_overview.md through 12_pre_launch_checklist.md
+- docs/implementation/mvp/AI_AGENT_MVP_IMPLEMENTATION_GUIDE.md
 
 ### Scripts (2 files)
 - start-dev.sh
@@ -391,4 +394,4 @@ L2L/
 
 ---
 
-*This index serves as your navigation hub for all L2L documentation. Start with GETTING_STARTED.md if you're new!*
+*This index serves as your navigation hub for all L2L documentation. Start with [README.md](README.md) if you're new!*
