@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'project_model.freezed.dart';
-part 'project_model.g.dart';
 
 @freezed
 class ProjectModel with _$ProjectModel {
