@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/link_model.dart';
-import '../../data/services/link_service.dart';
+import '../../data/repositories/link_repository.dart';
 
-// Link Service Provider
-final linkServiceProvider = Provider<LinkService>((ref) {
-  return LinkService();
+// Link Repository Provider
+final linkRepositoryProvider = Provider<LinkRepository>((ref) {
+  return LinkRepository();
 });
 
 // Links State
@@ -82,9 +82,9 @@ class LinksState {
 
 // Links StateNotifier
 class LinksNotifier extends StateNotifier<LinksState> {
-  final LinkService _linkService;
+  final LinkRepository _linkRepository;
 
-  LinksNotifier(this._linkService) : super(LinksState()) {
+  LinksNotifier(this._linkRepository) : super(LinksState()) {
     loadLinks();
   }
 
@@ -96,7 +96,7 @@ class LinksNotifier extends StateNotifier<LinksState> {
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final links = await _linkService.getLinks(
+      final links = await _linkRepository.getLinks(
         projectId: projectId,
         tags: tags,
         search: search,
@@ -128,11 +128,11 @@ class LinksNotifier extends StateNotifier<LinksState> {
     List<String>? tags,
   }) async {
     try {
-      final newLink = await _linkService.createLink(
+      final newLink = await _linkRepository.createLink(
         url: url,
-        title: title,
         projectId: projectId,
         tags: tags,
+        title: title,
       );
       state = state.copyWith(
         links: [...state.links, newLink],
@@ -151,7 +151,7 @@ class LinksNotifier extends StateNotifier<LinksState> {
     List<String>? tags,
   }) async {
     try {
-      final updatedLink = await _linkService.updateLink(
+      final updatedLink = await _linkRepository.updateLink(
         linkId: linkId,
         title: title,
         tags: tags,
@@ -169,7 +169,7 @@ class LinksNotifier extends StateNotifier<LinksState> {
   // Delete link
   Future<void> deleteLink(String linkId) async {
     try {
-      await _linkService.deleteLink(linkId);
+      await _linkRepository.deleteLink(linkId);
       state = state.copyWith(
         links: state.links.where((l) => l.id != linkId).toList(),
       );
@@ -217,8 +217,8 @@ class LinksNotifier extends StateNotifier<LinksState> {
 
 // Links Provider
 final linksProvider = StateNotifierProvider<LinksNotifier, LinksState>((ref) {
-  final service = ref.watch(linkServiceProvider);
-  return LinksNotifier(service);
+  final repository = ref.watch(linkRepositoryProvider);
+  return LinksNotifier(repository);
 });
 
 // Get link by id

@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/project_model.dart';
-import '../../data/services/project_service.dart';
+import '../../data/repositories/project_repository.dart';
 
-// Project Service Provider
-final projectServiceProvider = Provider<ProjectService>((ref) {
-  return ProjectService();
+// Project Repository Provider
+final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
+  return ProjectRepository();
 });
 
 // Projects State
@@ -38,9 +38,9 @@ class ProjectsState {
 
 // Projects StateNotifier
 class ProjectsNotifier extends StateNotifier<ProjectsState> {
-  final ProjectService _projectService;
+  final ProjectRepository _projectRepository;
 
-  ProjectsNotifier(this._projectService) : super(ProjectsState()) {
+  ProjectsNotifier(this._projectRepository) : super(ProjectsState()) {
     loadProjects();
   }
 
@@ -48,7 +48,7 @@ class ProjectsNotifier extends StateNotifier<ProjectsState> {
   Future<void> loadProjects() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final projects = await _projectService.getProjects();
+      final projects = await _projectRepository.getProjects();
       state = ProjectsState(projects: projects, isLoading: false);
     } catch (e) {
       state = ProjectsState(
@@ -65,7 +65,7 @@ class ProjectsNotifier extends StateNotifier<ProjectsState> {
     String? description,
   }) async {
     try {
-      final newProject = await _projectService.createProject(
+      final newProject = await _projectRepository.createProject(
         name: name,
         description: description,
       );
@@ -86,7 +86,7 @@ class ProjectsNotifier extends StateNotifier<ProjectsState> {
     String? description,
   }) async {
     try {
-      final updatedProject = await _projectService.updateProject(
+      final updatedProject = await _projectRepository.updateProject(
         projectId: projectId,
         name: name,
         description: description,
@@ -104,7 +104,7 @@ class ProjectsNotifier extends StateNotifier<ProjectsState> {
   // Delete project
   Future<void> deleteProject(String projectId) async {
     try {
-      await _projectService.deleteProject(projectId);
+      await _projectRepository.deleteProject(projectId);
       state = state.copyWith(
         projects: state.projects.where((p) => p.id != projectId).toList(),
       );
@@ -126,8 +126,8 @@ class ProjectsNotifier extends StateNotifier<ProjectsState> {
 
 // Projects Provider
 final projectsProvider = StateNotifierProvider<ProjectsNotifier, ProjectsState>((ref) {
-  final service = ref.watch(projectServiceProvider);
-  return ProjectsNotifier(service);
+  final repository = ref.watch(projectRepositoryProvider);
+  return ProjectsNotifier(repository);
 });
 
 // Get project by id

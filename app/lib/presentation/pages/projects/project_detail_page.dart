@@ -247,7 +247,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
     try {
       final result = await ref
-          .read(projectServiceProvider)
+          .read(projectRepositoryProvider)
           .generateCourse(widget.projectId);
 
       if (mounted) {
