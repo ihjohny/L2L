@@ -9,8 +9,8 @@ import JobModel from '../../database/models/Job.model';
 
 // Queue name constants
 export const QUEUE_NAMES = {
-  PROCESS_LINK: 'l2l:process_link',
-  GENERATE_COURSE: 'l2l:generate_course'
+  PROCESS_LINK: 'l2l_process_link',
+  GENERATE_COURSE: 'l2l_generate_course'
 } as const;
 
 // Connection options
