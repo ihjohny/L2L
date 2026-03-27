@@ -57,19 +57,6 @@ class DioClient {
 
   Dio get dio => _dio;
 
-  /// Set authentication token (for in-memory caching)
-  /// Note: Tokens should be persisted via SecureStorage directly
-  void setAuthToken(String? token) {
-    // Token is now managed directly by SecureStorage
-    // This method is kept for backward compatibility
-  }
-
-  /// Clear authentication token
-  void clearAuthToken() {
-    // Tokens are now cleared via SecureStorage directly
-    // This method is kept for backward compatibility
-  }
-
   /// Called when token expires - triggers cleanup
   void _onTokenExpired() {
     // Clear stored tokens - auth repository will handle logout
