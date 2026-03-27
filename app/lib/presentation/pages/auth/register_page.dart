@@ -106,8 +106,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your name';
                     }
-                    if (value.split(' ').length < 2) {
-                      return 'Please enter your full name';
+                    if (value.trim().length < 2 || value.trim().length > 50) {
+                      return 'Name must be between 2 and 50 characters';
                     }
                     return null;
                   },
@@ -162,8 +162,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a password';
                     }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
                     }
                     return null;
                   },
