@@ -9,6 +9,7 @@ class LinkService {
     required String url,
     String? projectId,
     List<String>? tags,
+    String? title,
   }) async {
     try {
       final response = await _dioClient.dio.post(
@@ -17,6 +18,7 @@ class LinkService {
           'url': url,
           if (projectId != null) 'projectId': projectId,
           if (tags != null) 'tags': tags,
+          if (title != null) 'title': title,
         },
       );
 

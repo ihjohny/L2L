@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/auth_providers.dart';
+import '../../../providers/auth_providers.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -19,24 +19,22 @@ class ProfilePage extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: 50,
-            backgroundImage: user?.profile.avatar != null
-                ? NetworkImage(user!.profile.avatar!)
-                : null,
-            child: user?.profile.avatar == null
-                ? const Icon(Icons.person, size: 50)
-                : null,
+            child: user != null
+                ? Text(
+                    user.name.substring(0, 1).toUpperCase(),
+                    style: const TextStyle(fontSize: 40),
+                  )
+                : const Icon(Icons.person, size: 50),
           ),
           const SizedBox(height: 16),
           Text(
-            user?.profile.firstName != null && user?.profile.lastName != null
-                ? '${user!.profile.firstName} ${user.profile.lastName}'
-                : user?.username ?? 'User',
+            user?.name ?? 'User',
             style: Theme.of(context).textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            '@${user?.username ?? 'user'}',
+            user?.email ?? 'user@example.com',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                 ),

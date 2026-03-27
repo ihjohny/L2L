@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../config/env_config.dart';
+import '../storage/secure_storage.dart';
 
 class DioClient {
   static DioClient? _instance;
   late final Dio _dio;
-  String? _accessToken;
+  final SecureStorage _secureStorage = SecureStorage();
 
   DioClient._internal() {
     _dio = Dio(BaseOptions(
@@ -31,16 +32,18 @@ class DioClient {
 
     // Add auth interceptor
     _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        if (_accessToken != null) {
-          options.headers['Authorization'] = 'Bearer $_accessToken';
+      onRequest: (options, handler) async {
+        // Try to get token from secure storage
+        final token = await _secureStorage.getAccessToken();
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
         }
         return handler.next(options);
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
         if (error.response?.statusCode == 401) {
-          // Handle unauthorized - token expired
-          // Could trigger token refresh here
+          // Token expired or invalid - will be handled by repository
+          _onTokenExpired();
         }
         return handler.next(error);
       },
@@ -54,14 +57,23 @@ class DioClient {
 
   Dio get dio => _dio;
 
-  /// Set authentication token
+  /// Set authentication token (for in-memory caching)
+  /// Note: Tokens should be persisted via SecureStorage directly
   void setAuthToken(String? token) {
-    _accessToken = token;
+    // Token is now managed directly by SecureStorage
+    // This method is kept for backward compatibility
   }
 
   /// Clear authentication token
   void clearAuthToken() {
-    _accessToken = null;
+    // Tokens are now cleared via SecureStorage directly
+    // This method is kept for backward compatibility
+  }
+
+  /// Called when token expires - triggers cleanup
+  void _onTokenExpired() {
+    // Clear stored tokens - auth repository will handle logout
+    _secureStorage.clearTokens();
   }
 
   /// Handle Dio errors and convert to Exception
@@ -90,8 +102,12 @@ class DioClient {
             } else {
               message = errorData?['message'] ?? 'Invalid request';
             }
+          } else if (statusCode == 404) {
+            message = errorData?['message'] ?? 'Resource not found';
+          } else if (statusCode == 500) {
+            message = errorData?['message'] ?? 'Server error. Please try again later.';
           } else {
-            message = errorData?['message'] ?? 'An error occurred';
+            message = errorData?['message'] ?? 'An error occurred (Status: $statusCode)';
           }
           break;
         case DioExceptionType.cancel:

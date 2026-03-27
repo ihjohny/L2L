@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'entities/entities_list_page.dart';
+import 'links/links_list_page.dart';
 import 'profile_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -31,7 +31,10 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -53,7 +56,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   static final List<Widget> _pages = [
-    const EntitiesListPage(),
+    const LinksListPage(),
     const ProfilePage(),
   ];
 }

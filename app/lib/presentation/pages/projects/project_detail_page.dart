@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/providers/project_providers.dart';
-import '../../../core/providers/link_providers.dart';
+import '../../../providers/project_providers.dart';
+import '../../../providers/link_providers.dart';
 import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
 import '../../widgets/common/app_button.dart';
 
 class ProjectDetailPage extends ConsumerStatefulWidget {

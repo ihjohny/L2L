@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../presentation/pages/auth/login_page.dart';
 import '../../presentation/pages/auth/register_page.dart';
 import '../../presentation/pages/home/home_page.dart';
-import '../../presentation/pages/home/entities/entity_details_page.dart';
-import '../../presentation/pages/home/entities/add_entity_page.dart';
+import '../../presentation/pages/home/links/link_details_page.dart';
+import '../../presentation/pages/home/links/add_link_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/projects_list_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/create_project_page.dart';
-import '../providers/auth_providers.dart';
+import '../../providers/auth_providers.dart';
 
 // Router key for navigation
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -91,36 +91,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
 
-      // Entities Routes (Protected)
+      // Links Routes (Protected)
       GoRoute(
-        path: '/entities',
-        name: 'entities',
+        path: '/links',
+        name: 'links',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: const HomePage(initialIndex: 0),
         ),
       ),
 
-      // Entity Details Route (Protected)
+      // Link Details Route (Protected)
       GoRoute(
-        path: '/entities/:entityId',
-        name: 'entity_details',
+        path: '/links/:linkId',
+        name: 'link_details',
         pageBuilder: (context, state) {
-          final entityId = state.pathParameters['entityId'] ?? '';
+          final linkId = state.pathParameters['linkId'] ?? '';
           return MaterialPage(
             key: state.pageKey,
-            child: EntityDetailsPage(entityId: entityId),
+            child: LinkDetailsPage(linkId: linkId),
           );
         },
       ),
 
-      // Add Entity Route (Protected)
+      // Add Link Route (Protected)
       GoRoute(
-        path: '/add-entity',
-        name: 'add_entity',
+        path: '/add-link',
+        name: 'add_link',
         pageBuilder: (context, state) => const MaterialPage(
-          key: ValueKey('add_entity'),
-          child: AddEntityPage(),
+          key: ValueKey('add_link'),
+          child: AddLinkPage(),
         ),
       ),
 

@@ -80,19 +80,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Register
   Future<bool> register({
     required String email,
-    required String username,
+    required String name,
     required String password,
-    required String firstName,
-    required String lastName,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final result = await _authRepository.register(
         email: email,
-        username: username,
+        name: name,
         password: password,
-        firstName: firstName,
-        lastName: lastName,
       );
       if (result.success && result.user != null) {
         state = AuthState(user: result.user, isLoading: false);
@@ -115,35 +111,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Logout
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
-    try {
-      await _authRepository.logout();
-      state = AuthState(isLoading: false);
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-    }
-  }
-
-  // Refresh user data
-  Future<void> refreshUser() async {
-    try {
-      final user = await _authRepository.getProfile();
-      state = state.copyWith(user: user);
-    } catch (e) {
-      // If refresh fails, try to refresh token
-      final refreshed = await _authRepository.refreshAuthToken();
-      if (refreshed) {
-        try {
-          final user = await _authRepository.getProfile();
-          state = state.copyWith(user: user);
-        } catch (e2) {
-          // Token refresh didn't help, logout
-          await logout();
-        }
-      } else {
-        await logout();
-      }
-    }
+    await _authRepository.logout();
+    state = AuthState(isLoading: false);
   }
 
   // Clear error
@@ -165,12 +134,4 @@ final isAuthenticatedProvider = Provider<bool>((ref) {
 
 final currentUserProvider = Provider<UserModel?>((ref) {
   return ref.watch(authProvider).user;
-});
-
-final authLoadingProvider = Provider<bool>((ref) {
-  return ref.watch(authProvider).isLoading;
-});
-
-final authErrorProvider = Provider<String?>((ref) {
-  return ref.watch(authProvider).error;
 });

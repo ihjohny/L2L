@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/providers/entity_providers.dart';
-import '../../../../data/models/entity_model.dart';
+import '../../../../providers/link_providers.dart';
+import '../../../../data/models/link_model.dart';
 
-class EntitiesListPage extends ConsumerStatefulWidget {
-  const EntitiesListPage({super.key});
+class LinksListPage extends ConsumerStatefulWidget {
+  const LinksListPage({super.key});
 
   @override
-  ConsumerState<EntitiesListPage> createState() => _EntitiesListPageState();
+  ConsumerState<LinksListPage> createState() => _LinksListPageState();
 }
 
-class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
+class _LinksListPageState extends ConsumerState<LinksListPage> {
   @override
   void initState() {
     super.initState();
-    // Load entities when page initializes
+    // Load links when page initializes
     Future.microtask(() {
-      ref.read(entitiesProvider.notifier).loadEntities();
+      ref.read(linksProvider.notifier).loadLinks();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final entitiesState = ref.watch(entitiesProvider);
-    final filteredEntities = entitiesState.filteredEntities;
+    final linksState = ref.watch(linksProvider);
+    final filteredLinks = linksState.filteredLinks;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,7 +35,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: EntitySearchDelegate(ref),
+                delegate: LinkSearchDelegate(ref),
               );
             },
           ),
@@ -44,18 +44,18 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
       body: Column(
         children: [
           // Tags filter chips
-          if (entitiesState.allTags.isNotEmpty)
-            _buildTagsFilter(entitiesState),
+          if (linksState.allTags.isNotEmpty)
+            _buildTagsFilter(linksState),
 
-          // Entities list
+          // Links list
           Expanded(
-            child: _buildEntitiesList(entitiesState, filteredEntities),
+            child: _buildLinksList(linksState, filteredLinks),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          context.push('/add-entity');
+          context.push('/add-link');
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Link'),
@@ -63,7 +63,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
     );
   }
 
-  Widget _buildTagsFilter(EntitiesState state) {
+  Widget _buildTagsFilter(LinksState state) {
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -79,7 +79,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
                 label: const Text('Clear'),
                 selected: false,
                 onSelected: (_) {
-                  ref.read(entitiesProvider.notifier).clearTagFilters();
+                  ref.read(linksProvider.notifier).clearTagFilters();
                 },
                 avatar: const Icon(Icons.clear, size: 18),
               ),
@@ -93,9 +93,10 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
                 label: Text(tag),
                 selected: isSelected,
                 onSelected: (_) {
-                  ref.read(entitiesProvider.notifier).toggleTagFilter(tag);
+                  ref.read(linksProvider.notifier).toggleTagFilter(tag);
                 },
-                selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                selectedColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.2),
                 checkmarkColor: Theme.of(context).colorScheme.primary,
               ),
             );
@@ -105,7 +106,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
     );
   }
 
-  Widget _buildEntitiesList(EntitiesState state, List<EntityModel> entities) {
+  Widget _buildLinksList(LinksState state, List<LinkModel> links) {
     if (state.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -127,7 +128,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                ref.read(entitiesProvider.notifier).loadEntities();
+                ref.read(linksProvider.notifier).loadLinks();
               },
               child: const Text('Retry'),
             ),
@@ -136,8 +137,9 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
       );
     }
 
-    if (entities.isEmpty) {
-      final hasFilters = state.selectedTags.isNotEmpty || state.searchQuery.isNotEmpty;
+    if (links.isEmpty) {
+      final hasFilters =
+          state.selectedTags.isNotEmpty || state.searchQuery.isNotEmpty;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -157,7 +159,7 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
             const SizedBox(height: 8),
             if (!hasFilters)
               Text(
-                'Tap + to add your first link',
+                'Tap + to save your first link',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
@@ -169,24 +171,24 @@ class _EntitiesListPageState extends ConsumerState<EntitiesListPage> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(entitiesProvider.notifier).loadEntities();
+        await ref.read(linksProvider.notifier).loadLinks();
       },
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: entities.length,
+        itemCount: links.length,
         itemBuilder: (context, index) {
-          final entity = entities[index];
-          return _EntityCard(entity: entity);
+          final link = links[index];
+          return _LinkCard(link: link);
         },
       ),
     );
   }
 }
 
-class _EntityCard extends ConsumerWidget {
-  final EntityModel entity;
+class _LinkCard extends ConsumerWidget {
+  final LinkModel link;
 
-  const _EntityCard({required this.entity});
+  const _LinkCard({required this.link});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -194,7 +196,7 @@ class _EntityCard extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () {
-          context.push('/entities/${entity.id}');
+          context.push('/links/${link.id}');
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -205,22 +207,22 @@ class _EntityCard extends ConsumerWidget {
               Row(
                 children: [
                   Icon(
-                    entity.isProcessed
+                    link.isProcessed
                         ? Icons.check_circle
-                        : entity.isProcessing
+                        : link.isProcessing
                             ? Icons.pending
                             : Icons.error_outline,
                     size: 20,
-                    color: entity.isProcessed
+                    color: link.isProcessed
                         ? Colors.green
-                        : entity.isProcessing
+                        : link.isProcessing
                             ? Colors.orange
                             : Colors.red,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      entity.title,
+                      link.displayTitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -234,7 +236,7 @@ class _EntityCard extends ConsumerWidget {
 
               // URL
               Text(
-                entity.url,
+                link.url,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.blue,
                     ),
@@ -245,7 +247,7 @@ class _EntityCard extends ConsumerWidget {
 
               // Description or summary
               Text(
-                entity.displaySummary,
+                link.displaySummary,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey.shade700,
                     ),
@@ -255,11 +257,11 @@ class _EntityCard extends ConsumerWidget {
               const SizedBox(height: 12),
 
               // Tags
-              if (entity.displayTags.isNotEmpty)
+              if (link.displayTags.isNotEmpty)
                 Wrap(
                   spacing: 6,
                   runSpacing: 6,
-                  children: entity.displayTags.take(3).map((tag) {
+                  children: link.displayTags.take(3).map((tag) {
                     return Chip(
                       label: Text(
                         tag,
@@ -281,10 +283,10 @@ class _EntityCard extends ConsumerWidget {
   }
 }
 
-class EntitySearchDelegate extends SearchDelegate<String> {
+class LinkSearchDelegate extends SearchDelegate<String> {
   final WidgetRef ref;
 
-  EntitySearchDelegate(this.ref);
+  LinkSearchDelegate(this.ref);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -293,7 +295,7 @@ class EntitySearchDelegate extends SearchDelegate<String> {
         icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
-          ref.read(entitiesProvider.notifier).clearSearchQuery();
+          ref.read(linksProvider.notifier).clearSearchQuery();
         },
       ),
     ];
@@ -313,10 +315,10 @@ class EntitySearchDelegate extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     // Delay state update to avoid modifying provider during build
     Future.microtask(() {
-      ref.read(entitiesProvider.notifier).setSearchQuery(query);
+      ref.read(linksProvider.notifier).setSearchQuery(query);
     });
-    final entitiesState = ref.watch(entitiesProvider);
-    final results = entitiesState.filteredEntities;
+    final linksState = ref.watch(linksProvider);
+    final results = linksState.filteredLinks;
 
     if (results.isEmpty) {
       return const Center(
@@ -327,8 +329,8 @@ class EntitySearchDelegate extends SearchDelegate<String> {
     return ListView.builder(
       itemCount: results.length,
       itemBuilder: (context, index) {
-        final entity = results[index];
-        return _EntityCard(entity: entity);
+        final link = results[index];
+        return _LinkCard(link: link);
       },
     );
   }
@@ -337,10 +339,10 @@ class EntitySearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     // Delay state update to avoid modifying provider during build
     Future.microtask(() {
-      ref.read(entitiesProvider.notifier).setSearchQuery(query);
+      ref.read(linksProvider.notifier).setSearchQuery(query);
     });
-    final entitiesState = ref.watch(entitiesProvider);
-    final suggestions = entitiesState.filteredEntities;
+    final linksState = ref.watch(linksProvider);
+    final suggestions = linksState.filteredLinks;
 
     if (suggestions.isEmpty) {
       return const Center(
@@ -351,8 +353,8 @@ class EntitySearchDelegate extends SearchDelegate<String> {
     return ListView.builder(
       itemCount: suggestions.length,
       itemBuilder: (context, index) {
-        final entity = suggestions[index];
-        return _EntityCard(entity: entity);
+        final link = suggestions[index];
+        return _LinkCard(link: link);
       },
     );
   }

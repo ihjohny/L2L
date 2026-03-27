@@ -123,12 +123,14 @@ class LinksNotifier extends StateNotifier<LinksState> {
   // Add link
   Future<LinkModel?> addLink({
     required String url,
+    String? title,
     String? projectId,
     List<String>? tags,
   }) async {
     try {
       final newLink = await _linkService.createLink(
         url: url,
+        title: title,
         projectId: projectId,
         tags: tags,
       );

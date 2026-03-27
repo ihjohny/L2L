@@ -1,49 +1,53 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/auth_request.dart';
-import '../models/auth_response.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import '../../core/storage/secure_storage.dart';
 
 class AuthRepository {
-  final ApiService _apiService;
-  static const String _tokenKey = 'auth_token';
-  static const String _refreshTokenKey = 'refresh_token';
+  final AuthService _authService;
+  final SecureStorage _secureStorage;
 
-  AuthRepository({ApiService? apiService})
-      : _apiService = apiService ?? ApiService();
+  AuthRepository({
+    AuthService? authService,
+    SecureStorage? secureStorage,
+  })  : _authService = authService ?? AuthService(),
+        _secureStorage = secureStorage ?? SecureStorage();
 
-  // Check if user is logged in
-  Future<bool> isAuthenticated() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(_tokenKey);
-    return token != null && token.isNotEmpty;
+  /// Initialize auth - check for existing session
+  Future<UserModel?> initializeAuth() async {
+    final accessToken = await _secureStorage.getAccessToken();
+    if (accessToken != null) {
+      try {
+        // Validate token by fetching current user
+        final user = await _authService.getCurrentUser();
+        return user;
+      } catch (e) {
+        // Token expired, try refresh
+        final refreshed = await refreshAuthToken();
+        if (refreshed) {
+          try {
+            return await _authService.getCurrentUser();
+          } catch (e2) {
+            // Refresh didn't help, return null
+            return null;
+          }
+        }
+      }
+    }
+    return null;
   }
 
-  // Get stored token
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
-  }
-
-  // Get stored refresh token
-  Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_refreshTokenKey);
-  }
-
-  // Login
+  /// Login
   Future<AuthResult> login(String email, String password) async {
     try {
-      final request = LoginRequest(email: email, password: password);
-      final response = await _apiService.login(request);
+      final response = await _authService.login(email, password);
 
-      // Save credentials
-      await _saveAuthData(response);
+      // Save tokens
+      await _secureStorage.saveTokens(
+        response.token,
+        response.refreshToken,
+      );
 
-      // Update API service with token
-      _apiService.setAuthToken(response.token);
-
-      return AuthResult(user: response.user, success: true);
+      return AuthResult(success: true, user: response.user);
     } catch (e) {
       return AuthResult(
         success: false,
@@ -52,31 +56,26 @@ class AuthRepository {
     }
   }
 
-  // Register
+  /// Register
   Future<AuthResult> register({
     required String email,
-    required String username,
+    required String name,
     required String password,
-    required String firstName,
-    required String lastName,
   }) async {
     try {
-      final request = RegisterRequest(
+      final response = await _authService.register(
         email: email,
-        username: username,
+        name: name,
         password: password,
-        firstName: firstName,
-        lastName: lastName,
       );
-      final response = await _apiService.register(request);
 
-      // Save credentials
-      await _saveAuthData(response);
+      // Save tokens
+      await _secureStorage.saveTokens(
+        response.token,
+        response.refreshToken,
+      );
 
-      // Update API service with token
-      _apiService.setAuthToken(response.token);
-
-      return AuthResult(user: response.user, success: true);
+      return AuthResult(success: true, user: response.user);
     } catch (e) {
       return AuthResult(
         success: false,
@@ -85,73 +84,34 @@ class AuthRepository {
     }
   }
 
-  // Logout
+  /// Logout
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-    await prefs.remove(_refreshTokenKey);
-    _apiService.clearAuthToken();
+    await _secureStorage.clearTokens();
   }
 
-  // Get profile from API
+  /// Get user profile
   Future<UserModel> getProfile() async {
-    return await _apiService.getProfile();
+    return await _authService.getCurrentUser();
   }
 
-  // Update profile
-  Future<UserModel> updateProfile(Map<String, dynamic> data) async {
-    return await _apiService.updateProfile(data);
-  }
-
-  // Delete account
-  Future<void> deleteAccount() async {
-    await _apiService.deleteAccount();
-    await logout();
-  }
-
-  // Refresh token
+  /// Refresh auth token
   Future<bool> refreshAuthToken() async {
     try {
-      final refreshToken = await getRefreshToken();
+      final refreshToken = await _secureStorage.getRefreshToken();
       if (refreshToken == null) return false;
 
-      final response = await _apiService.refreshToken(refreshToken);
+      final response = await _authService.refreshToken(refreshToken);
 
-      // Save new credentials
-      await _saveAuthData(response);
-
-      // Update API service with new token
-      _apiService.setAuthToken(response.token);
+      // Save new tokens
+      await _secureStorage.saveTokens(
+        response.token,
+        response.refreshToken,
+      );
 
       return true;
     } catch (e) {
       return false;
     }
-  }
-
-  // Save auth data locally - simplified to only store tokens
-  Future<void> _saveAuthData(AuthResponse response) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, response.token);
-    await prefs.setString(_refreshTokenKey, response.refreshToken);
-    // Note: User data will be fetched from API when needed
-  }
-
-  // Initialize - restore session if exists
-  Future<UserModel?> initializeAuth() async {
-    final token = await getToken();
-    if (token != null && token.isNotEmpty) {
-      _apiService.setAuthToken(token);
-      // Fetch fresh user data from API
-      try {
-        return await getProfile();
-      } catch (e) {
-        // Token might be expired, clear auth
-        await logout();
-        return null;
-      }
-    }
-    return null;
   }
 }
 

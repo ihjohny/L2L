@@ -3,19 +3,13 @@ import '../models/user_model.dart';
 import '../models/auth_request.dart';
 import '../models/auth_response.dart';
 
-class ApiService {
+class AuthService {
   final DioClient _dioClient = DioClient.instance;
 
-  void setAuthToken(String token) {
-    _dioClient.setAuthToken(token);
-  }
-
-  void clearAuthToken() {
-    _dioClient.clearAuthToken();
-  }
-
-  Future<AuthResponse> login(LoginRequest request) async {
+  /// Login user
+  Future<AuthResponse> login(String email, String password) async {
     try {
+      final request = LoginRequest(email: email, password: password);
       final response = await _dioClient.dio.post(
         '/auth/login',
         data: request.toJson(),
@@ -30,8 +24,18 @@ class ApiService {
     }
   }
 
-  Future<AuthResponse> register(RegisterRequest request) async {
+  /// Register new user
+  Future<AuthResponse> register({
+    required String email,
+    required String name,
+    required String password,
+  }) async {
     try {
+      final request = RegisterRequest(
+        email: email,
+        name: name,
+        password: password,
+      );
       final response = await _dioClient.dio.post(
         '/auth/register',
         data: request.toJson(),
@@ -46,9 +50,10 @@ class ApiService {
     }
   }
 
-  Future<UserModel> getProfile() async {
+  /// Get current user profile
+  Future<UserModel> getCurrentUser() async {
     try {
-      final response = await _dioClient.dio.get('/auth/profile');
+      final response = await _dioClient.dio.get('/auth/me');
 
       if (response.statusCode == 200) {
         return UserModel.fromJson(response.data['data']);
@@ -59,36 +64,13 @@ class ApiService {
     }
   }
 
-  Future<UserModel> updateProfile(Map<String, dynamic> data) async {
-    try {
-      final response = await _dioClient.dio.put('/auth/profile', data: data);
-
-      if (response.statusCode == 200) {
-        return UserModel.fromJson(response.data['data']);
-      }
-      throw Exception('Failed to update profile');
-    } catch (e) {
-      throw _dioClient.handleError(e);
-    }
-  }
-
-  Future<void> deleteAccount() async {
-    try {
-      final response = await _dioClient.dio.delete('/auth/account');
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to delete account');
-      }
-    } catch (e) {
-      throw _dioClient.handleError(e);
-    }
-  }
-
+  /// Refresh access token
   Future<AuthResponse> refreshToken(String refreshToken) async {
     try {
-      final response = await _dioClient.dio.post('/auth/refresh', data: {
-        'refreshToken': refreshToken,
-      });
+      final response = await _dioClient.dio.post(
+        '/auth/refresh',
+        data: {'refreshToken': refreshToken},
+      );
 
       if (response.statusCode == 200) {
         return AuthResponse.fromJson(response.data['data']);
