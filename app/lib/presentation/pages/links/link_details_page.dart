@@ -70,7 +70,8 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
   Widget _buildContent(LinkModel link, BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.invalidate(singleLinkProvider(widget.linkId)).future;
+        ref.invalidate(singleLinkProvider(widget.linkId));
+        await ref.read(singleLinkProvider(widget.linkId).future);
       },
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
