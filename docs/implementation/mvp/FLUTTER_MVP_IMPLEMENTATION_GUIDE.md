@@ -52,12 +52,13 @@ This document provides step-by-step implementation instructions for the L2L Flut
 | Login | P0 | POST /auth/login |
 | Signup | P0 | POST /auth/register |
 | Profile | P1 | GET /auth/me |
-| Home (Tab Navigation) | P0 | N/A |
+| Home (Tab Navigation - Feed, Projects, Profile) | P0 | N/A |
+| Feed (Home Tab) | P0 | N/A |
 | Projects List | P0 | GET /projects |
 | Create Project | P0 | POST /projects |
 | Project Details | P0 | GET /projects/:id, POST /projects/:id/generate-course |
 | Links List | P0 | GET /links |
-| Add Link (Modal) | P0 | POST /links |
+| Add Link (FAB from Feed) | P0 | POST /links |
 | Link Details | P0 | GET /links/:id |
 
 ### 1.3 Out of Scope (Phase 2+)
@@ -150,11 +151,13 @@ lib/
     │   │   ├── login_page.dart        # Login screen
     │   │   └── register_page.dart     # Registration screen
     │   ├── home/
-    │   │   ├── home_page.dart         # Main tab navigation
+    │   │   ├── home_page.dart         # Main tab navigation (Feed, Projects, Profile)
+    │   │   ├── feed/
+    │   │   │   └── feed_screen.dart   # Feed screen (default home tab)
     │   │   ├── links/
     │   │   │   ├── links_list_page.dart  # Links list
     │   │   │   ├── link_details_page.dart # Link details
-    │   │   │   └── add_link_page.dart     # Add link modal
+    │   │   │   └── add_link_page.dart     # Add link (from Feed FAB)
     │   │   └── profile_page.dart      # User profile
     │   └── projects/
     │       ├── projects_list_page.dart      # Projects list
@@ -167,6 +170,9 @@ lib/
         │   ├── app_text_field.dart    # Input field component
         │   ├── loading_widget.dart    # Loading indicator
         │   └── error_widget.dart      # Error display component
+        ├── feed/
+        │   ├── recent_projects_section.dart  # Horizontal project list for Feed
+        │   └── recent_links_section.dart     # Vertical links list for Feed
         ├── auth/
         │   └── [auth-specific widgets]
         ├── projects/
@@ -1240,14 +1246,21 @@ throw Exception(error['message'] ?? 'Unknown error');
 | /splash | splash | SplashPage | No |
 | /login | login | LoginPage | No |
 | /register | register | RegisterPage | No |
-| / | home | HomePage | Yes |
-| /links | links | LinksListPage | Yes |
+| / | home | HomePage (Feed tab) | Yes |
+| /links | links | HomePage (Feed tab) | Yes |
 | /links/:id | link_details | LinkDetailsPage | Yes |
 | /add-link | add_link | AddLinkPage | Yes |
-| /profile | profile | ProfilePage | Yes |
-| /projects | projects | ProjectsListPage | Yes |
+| /profile | profile | HomePage (Profile tab) | Yes |
+| /projects | projects | HomePage (Projects tab) | Yes |
 | /projects/:id | project_detail | ProjectDetailPage | Yes |
 | /create-project | create_project | CreateProjectPage | Yes |
+
+**Bottom Navigation Structure:**
+```
+┌─────────────────────────────────────────────┐
+│  Feed  │  Projects  │  Profile             │
+├─────────────────────────────────────────────┤
+```
 
 ### 8.2 Auth Redirect Logic
 

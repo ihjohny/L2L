@@ -7,7 +7,6 @@ import '../../presentation/pages/home/home_page.dart';
 import '../../presentation/pages/home/links/link_details_page.dart';
 import '../../presentation/pages/home/links/add_link_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
-import '../../presentation/pages/projects/projects_list_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/create_project_page.dart';
 import '../../providers/auth_providers.dart';
@@ -130,7 +129,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 1),
+          child: const HomePage(initialIndex: 2),
         ),
       ),
 
@@ -140,7 +139,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'projects',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const ProjectsListPage(),
+          child: const HomePage(initialIndex: 1),
         ),
       ),
       GoRoute(

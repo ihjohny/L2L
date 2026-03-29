@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'links/links_list_page.dart';
+import 'feed/feed_screen.dart';
+import '../projects/projects_list_page.dart';
 import 'profile_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -41,9 +42,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_outline),
-            activeIcon: Icon(Icons.bookmark),
-            label: 'Links',
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Feed',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.folder_outlined),
+            activeIcon: Icon(Icons.folder),
+            label: 'Projects',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -56,7 +62,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   static final List<Widget> _pages = [
-    const LinksListPage(),
+    const FeedScreen(),
+    const ProjectsListPage(),
     const ProfilePage(),
   ];
 }
