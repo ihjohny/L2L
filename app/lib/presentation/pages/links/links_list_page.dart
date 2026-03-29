@@ -53,13 +53,6 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          context.push('/add-link');
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Link'),
-      ),
     );
   }
 

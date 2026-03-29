@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../providers/link_providers.dart';
-import '../../../../providers/project_providers.dart';
-import '../../../widgets/feed/recent_projects_section.dart';
-import '../../../widgets/feed/recent_links_section.dart';
+import '../../../providers/link_providers.dart';
+import '../../../providers/project_providers.dart';
+import '../../widgets/feed/recent_projects_section.dart';
+import '../../widgets/feed/recent_links_section.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
