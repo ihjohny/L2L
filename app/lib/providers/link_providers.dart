@@ -91,19 +91,16 @@ class LinksNotifier extends StateNotifier<LinksState> {
   // Load all links for the user
   Future<void> loadLinks({
     String? projectId,
-    List<String>? tags,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final links = await _linkRepository.getLinks(
         projectId: projectId,
-        tags: tags,
       );
       state = LinksState(
         links: links,
         isLoading: false,
         selectedProjectId: projectId,
-        selectedTags: tags?.toSet() ?? state.selectedTags,
       );
     } catch (e) {
       state = LinksState(
@@ -111,7 +108,6 @@ class LinksNotifier extends StateNotifier<LinksState> {
         isLoading: false,
         error: e.toString().replaceAll('Exception: ', ''),
         selectedProjectId: state.selectedProjectId,
-        selectedTags: state.selectedTags,
       );
     }
   }

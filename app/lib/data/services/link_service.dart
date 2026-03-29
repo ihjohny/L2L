@@ -36,15 +36,11 @@ class LinkService {
     int page = 1,
     int limit = 50,
     String? projectId,
-    List<String>? tags,
   }) async {
     try {
       final queryParams = <String, dynamic>{'page': page, 'limit': limit};
       if (projectId != null) {
         queryParams['projectId'] = projectId;
-      }
-      if (tags != null && tags.isNotEmpty) {
-        queryParams['tags'] = tags.join(',');
       }
 
       final response = await _dioClient.dio.get(
