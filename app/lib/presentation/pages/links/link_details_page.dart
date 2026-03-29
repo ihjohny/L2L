@@ -16,68 +16,85 @@ class LinkDetailsPage extends ConsumerStatefulWidget {
 
 class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
   @override
-  void initState() {
-    super.initState();
-    // Load link details
-    Future.microtask(() {
-      ref.read(linksProvider.notifier).loadLinks();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final linksState = ref.watch(linksProvider);
-    final link = linksState.links.firstWhere(
-      (l) => l.id == widget.linkId,
-      orElse: () => LinkModel.empty(),
-    );
-
-    if (link.id.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Link Details')),
-        body: const Center(child: Text('Link not found')),
-      );
-    }
+    final linkAsync = ref.watch(singleLinkProvider(widget.linkId));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(link.displayTitle),
+        title: linkAsync.when(
+          data: (link) => Text(link.displayTitle),
+          loading: () => const Text('Loading...'),
+          error: (_, __) => const Text('Link Details'),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.open_in_new),
-            onPressed: () => _launchUrl(link.url),
+            onPressed: () {
+              final link = linkAsync.value;
+              if (link != null) {
+                _launchUrl(link.url);
+              }
+            },
             tooltip: 'Open original link',
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await ref.read(linksProvider.notifier).loadLinks();
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+      body: linkAsync.when(
+        data: (link) => _buildContent(link, context),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Link Info Card
-              _buildLinkInfoCard(link, context),
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-
-              // Status Card
-              _buildStatusCard(link, context),
+              Text(
+                error.toString().replaceAll('Exception: ', ''),
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 16),
-
-              // Summary Card (when completed)
-              if (link.isProcessed && link.summary != null) ...[
-                _buildSummaryCard(link, context),
-                const SizedBox(height: 16),
-              ],
-
-              // Flashcards Card (when completed)
-              if (link.isProcessed && link.flashcards != null)
-                _buildFlashcardsCard(link, context),
+              ElevatedButton(
+                onPressed: () {
+                  ref.invalidate(singleLinkProvider(widget.linkId));
+                },
+                child: const Text('Retry'),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(LinkModel link, BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await ref.invalidate(singleLinkProvider(widget.linkId)).future;
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Link Info Card
+            _buildLinkInfoCard(link, context),
+            const SizedBox(height: 16),
+
+            // Status Card
+            _buildStatusCard(link, context),
+            const SizedBox(height: 16),
+
+            // Summary Card (when completed)
+            if (link.isProcessed && link.summary != null) ...[
+              _buildSummaryCard(link, context),
+              const SizedBox(height: 16),
+            ],
+
+            // Flashcards Card (when completed)
+            if (link.isProcessed && link.flashcards != null)
+              _buildFlashcardsCard(link, context),
+          ],
         ),
       ),
     );

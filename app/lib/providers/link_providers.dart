@@ -221,7 +221,7 @@ final linksProvider = StateNotifierProvider<LinksNotifier, LinksState>((ref) {
   return LinksNotifier(repository);
 });
 
-// Get link by id
+// Get link by id from cached state
 final linkByIdProvider = Provider.family<LinkModel?, String>((ref, linkId) {
   final linksState = ref.watch(linksProvider);
   try {
@@ -229,4 +229,10 @@ final linkByIdProvider = Provider.family<LinkModel?, String>((ref, linkId) {
   } catch (_) {
     return null;
   }
+});
+
+// Provider to fetch a single link by ID
+final singleLinkProvider = FutureProvider.family<LinkModel, String>((ref, linkId) async {
+  final repository = ref.watch(linkRepositoryProvider);
+  return await repository.getLinkById(linkId);
 });
