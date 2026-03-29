@@ -27,14 +27,12 @@ class LinkRepository {
     int limit = 50,
     String? projectId,
     List<String>? tags,
-    String? search,
   }) async {
     return await _linkService.getLinks(
       page: page,
       limit: limit,
       projectId: projectId,
       tags: tags,
-      search: search,
     );
   }
 

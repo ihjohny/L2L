@@ -37,7 +37,6 @@ class LinkService {
     int limit = 50,
     String? projectId,
     List<String>? tags,
-    String? search,
   }) async {
     try {
       final queryParams = <String, dynamic>{'page': page, 'limit': limit};
@@ -46,9 +45,6 @@ class LinkService {
       }
       if (tags != null && tags.isNotEmpty) {
         queryParams['tags'] = tags.join(',');
-      }
-      if (search != null && search.isNotEmpty) {
-        queryParams['search'] = search;
       }
 
       final response = await _dioClient.dio.get(
