@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../providers/link_providers.dart';
-import '../../../../data/models/link_model.dart';
+import '../../../providers/link_providers.dart';
+import '../../../data/models/link_model.dart';
 
 class LinksListPage extends ConsumerStatefulWidget {
   const LinksListPage({super.key});
@@ -245,7 +245,7 @@ class _LinkCard extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
 
-              // Description or summary
+              // Summary or description
               Text(
                 link.displaySummary,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(

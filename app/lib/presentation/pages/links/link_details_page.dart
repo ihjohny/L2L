@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import '../../../../providers/link_providers.dart';
-import '../../../../data/models/link_model.dart';
+import '../../../providers/link_providers.dart';
+import '../../../data/models/link_model.dart';
 
 class LinkDetailsPage extends ConsumerStatefulWidget {
   final String linkId;

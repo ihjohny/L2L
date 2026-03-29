@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../providers/link_providers.dart';
-import '../../../../providers/project_providers.dart';
+import '../../../providers/link_providers.dart';
+import '../../../providers/project_providers.dart';
 
 class AddLinkPage extends ConsumerStatefulWidget {
   const AddLinkPage({super.key});

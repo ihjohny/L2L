@@ -6,14 +6,14 @@ import '../../../../providers/project_providers.dart';
 import '../../../widgets/feed/recent_projects_section.dart';
 import '../../../widgets/feed/recent_links_section.dart';
 
-class FeedScreen extends ConsumerStatefulWidget {
-  const FeedScreen({super.key});
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({super.key});
 
   @override
-  ConsumerState<FeedScreen> createState() => _FeedScreenState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _FeedScreenState extends ConsumerState<FeedScreen> {
+class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
@@ -28,7 +28,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Feed'),
+        title: const Text('Home'),
       ),
       body: const SingleChildScrollView(
         padding: EdgeInsets.all(16),

@@ -3,9 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../presentation/pages/auth/login_page.dart';
 import '../../presentation/pages/auth/register_page.dart';
-import '../../presentation/pages/home/home_page.dart';
-import '../../presentation/pages/home/links/link_details_page.dart';
-import '../../presentation/pages/home/links/add_link_page.dart';
+import '../../presentation/pages/main_container/main_container_page.dart';
+import '../../presentation/pages/links/link_details_page.dart';
+import '../../presentation/pages/links/add_link_page.dart';
+import '../../presentation/pages/links/links_list_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/create_project_page.dart';
@@ -86,7 +87,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'home',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 0),
+          child: const MainContainerPage(initialIndex: 0),
         ),
       ),
 
@@ -96,7 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'links',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 0),
+          child: const LinksListPage(),
         ),
       ),
 
@@ -129,7 +130,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 2),
+          child: const MainContainerPage(initialIndex: 2),
         ),
       ),
 
@@ -139,7 +140,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'projects',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const HomePage(initialIndex: 1),
+          child: const MainContainerPage(initialIndex: 1),
         ),
       ),
       GoRoute(

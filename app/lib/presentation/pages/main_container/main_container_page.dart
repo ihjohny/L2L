@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'feed/feed_screen.dart';
+import 'home/home_page.dart';
 import '../projects/projects_list_page.dart';
 import 'profile_page.dart';
 
-class HomePage extends ConsumerStatefulWidget {
+class MainContainerPage extends ConsumerStatefulWidget {
   final int initialIndex;
 
-  const HomePage({super.key, this.initialIndex = 0});
+  const MainContainerPage({super.key, this.initialIndex = 0});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
+  ConsumerState<MainContainerPage> createState() => _MainContainerPageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _MainContainerPageState extends ConsumerState<MainContainerPage> {
   late int _selectedIndex;
 
   @override
@@ -44,7 +44,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
-            label: 'Feed',
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.folder_outlined),
@@ -62,7 +62,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   static final List<Widget> _pages = [
-    const FeedScreen(),
+    const HomePage(),
     const ProjectsListPage(),
     const ProfilePage(),
   ];
