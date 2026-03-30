@@ -139,14 +139,3 @@ final projectByIdProvider = Provider.family<ProjectModel?, String>((ref, project
     return null;
   }
 });
-
-// Get current selected project
-final selectedProjectProvider = Provider<ProjectModel?>((ref) {
-  final state = ref.watch(projectsProvider);
-  if (state.selectedProjectId == null) return null;
-  try {
-    return state.projects.firstWhere((p) => p.id == state.selectedProjectId);
-  } catch (_) {
-    return null;
-  }
-});

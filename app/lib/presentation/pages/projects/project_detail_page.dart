@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:l2l_app/data/models/link_model.dart';
 import '../../../providers/project_providers.dart';
 import '../../../providers/link_providers.dart';
 import '../../widgets/common/loading_widget.dart';
@@ -188,7 +189,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     );
   }
 
-  Widget _buildLinksList(List<dynamic> projectLinks) {
+  Widget _buildLinksList(List<LinkModel> projectLinks) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -305,33 +306,29 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  IconData _getStatusIcon(String status) {
+  IconData _getStatusIcon(LinkStatus status) {
     switch (status) {
-      case 'pending':
+      case LinkStatus.pending:
         return Icons.schedule;
-      case 'processing':
+      case LinkStatus.processing:
         return Icons.autorenew;
-      case 'completed':
+      case LinkStatus.completed:
         return Icons.check_circle;
-      case 'failed':
+      case LinkStatus.failed:
         return Icons.error;
-      default:
-        return Icons.help_outline;
     }
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(LinkStatus status) {
     switch (status) {
-      case 'pending':
+      case LinkStatus.pending:
         return Colors.orange;
-      case 'processing':
+      case LinkStatus.processing:
         return Colors.blue;
-      case 'completed':
+      case LinkStatus.completed:
         return Colors.green;
-      case 'failed':
+      case LinkStatus.failed:
         return Colors.red;
-      default:
-        return Colors.grey;
     }
   }
 }
