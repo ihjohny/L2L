@@ -88,26 +88,20 @@ class LinksNotifier extends StateNotifier<LinksState> {
     loadLinks();
   }
 
-  // Load all links for the user
-  Future<void> loadLinks({
-    String? projectId,
-  }) async {
+  // Load all links for the user (always fetches all links, no filtering)
+  Future<void> loadLinks() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final links = await _linkRepository.getLinks(
-        projectId: projectId,
-      );
+      final links = await _linkRepository.getLinks();
       state = LinksState(
         links: links,
         isLoading: false,
-        selectedProjectId: projectId,
       );
     } catch (e) {
       state = LinksState(
         links: state.links,
         isLoading: false,
         error: e.toString().replaceAll('Exception: ', ''),
-        selectedProjectId: state.selectedProjectId,
       );
     }
   }
@@ -211,6 +205,13 @@ class LinksNotifier extends StateNotifier<LinksState> {
 final linksProvider = StateNotifierProvider<LinksNotifier, LinksState>((ref) {
   final repository = ref.watch(linkRepositoryProvider);
   return LinksNotifier(repository);
+});
+
+// Project Links Provider - Family provider for project-specific links
+// This keeps project links separate from the global links state
+final projectLinksProvider = FutureProvider.family<List<LinkModel>, String>((ref, projectId) async {
+  final repository = ref.watch(linkRepositoryProvider);
+  return await repository.getLinks(projectId: projectId);
 });
 
 // Provider to fetch a single link by ID

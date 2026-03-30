@@ -22,21 +22,20 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Load links for this project
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(linksProvider.notifier).loadLinks(projectId: widget.projectId);
-    });
+    // Load links for this project using the project-specific provider
   }
 
   @override
   Widget build(BuildContext context) {
     final project = ref.watch(projectByIdProvider(widget.projectId));
-    final linksState = ref.watch(linksProvider);
+    final projectLinksResult = ref.watch(projectLinksProvider(widget.projectId));
 
-    // Filter links for this project
-    final projectLinks = linksState.links
-        .where((l) => l.projectId == widget.projectId)
-        .toList();
+    // Handle async state of project links
+    final projectLinks = projectLinksResult.when(
+      data: (links) => links,
+      loading: () => <LinkModel>[],
+      error: (_, __) => <LinkModel>[],
+    );
 
     return Scaffold(
       appBar: AppBar(
