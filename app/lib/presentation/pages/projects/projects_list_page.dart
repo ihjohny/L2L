@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../providers/project_providers.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/error_widget.dart';
+import '../../widgets/project_card.dart';
 
 class ProjectsListPage extends ConsumerStatefulWidget {
   const ProjectsListPage({super.key});
@@ -69,39 +69,7 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
         itemCount: projectsState.projects.length,
         itemBuilder: (context, index) {
           final project = projectsState.projects[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              leading: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                child: Icon(
-                  Icons.folder,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              title: Text(
-                project.name,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              subtitle: project.description != null && project.description!.isNotEmpty
-                  ? Text(
-                      project.description!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    )
-                  : null,
-              trailing: Icon(
-                Icons.chevron_right,
-                color: Colors.grey[400],
-              ),
-              onTap: () => context.push('/projects/${project.id}'),
-            ),
-          );
+          return ProjectCard(project: project);
         },
       ),
     );

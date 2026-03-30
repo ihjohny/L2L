@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../providers/project_providers.dart';
-import '../../../../../data/models/project_model.dart';
+import '../../../widgets/project_card.dart';
 
 class RecentProjectsSection extends ConsumerWidget {
   const RecentProjectsSection({super.key});
@@ -43,21 +43,21 @@ class RecentProjectsSection extends ConsumerWidget {
         // Horizontal Scrollable List
         if (projectsState.isLoading && displayProjects.isEmpty)
           const SizedBox(
-            height: 120,
+            height: 85,
             child: Center(child: CircularProgressIndicator()),
           )
         else if (displayProjects.isEmpty)
           _buildEmptyState(context)
         else
           SizedBox(
-            height: 140,
+            height: 100,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: displayProjects.length,
               separatorBuilder: (context, index) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final project = displayProjects[index];
-                return _ProjectCard(project: project);
+                return ProjectCard(project: project, isHorizontal: true);
               },
             ),
           ),
@@ -93,112 +93,5 @@ class RecentProjectsSection extends ConsumerWidget {
         ],
       ),
     );
-  }
-}
-
-class _ProjectCard extends StatelessWidget {
-  final ProjectModel project;
-
-  const _ProjectCard({required this.project});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 2,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () => context.push('/projects/${project.id}'),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 200,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor:
-                        Theme.of(context).primaryColor.withOpacity(0.1),
-                    child: Icon(
-                      Icons.folder,
-                      color: Theme.of(context).primaryColor,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      project.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              if (project.description != null && project.description!.isNotEmpty)
-                Text(
-                  project.description!,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                )
-              else
-                Text(
-                  '${project.linkIds.length} links',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                ),
-              const Spacer(),
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time,
-                    size: 12,
-                    color: Colors.grey[600],
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      _formatLastActivity(project),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatLastActivity(ProjectModel project) {
-    final lastActivity = project.updatedAt;
-    final now = DateTime.now();
-    final difference = now.difference(lastActivity);
-
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        return '${difference.inMinutes}m ago';
-      }
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else {
-      return '${lastActivity.day}/${lastActivity.month}/${lastActivity.year}';
-    }
   }
 }
