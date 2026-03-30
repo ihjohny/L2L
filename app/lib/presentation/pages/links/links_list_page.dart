@@ -282,6 +282,13 @@ class LinkSearchDelegate extends SearchDelegate<String> {
   LinkSearchDelegate(this.ref);
 
   @override
+  void close(BuildContext context, String result) {
+    // Clear search query when closing search
+    ref.read(linksProvider.notifier).clearSearchQuery();
+    super.close(context, result);
+  }
+
+  @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
@@ -320,6 +327,7 @@ class LinkSearchDelegate extends SearchDelegate<String> {
     }
 
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: results.length,
       itemBuilder: (context, index) {
         final link = results[index];
@@ -344,6 +352,7 @@ class LinkSearchDelegate extends SearchDelegate<String> {
     }
 
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: suggestions.length,
       itemBuilder: (context, index) {
         final link = suggestions[index];
