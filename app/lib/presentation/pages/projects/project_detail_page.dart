@@ -6,6 +6,7 @@ import '../../../providers/project_providers.dart';
 import '../../../providers/link_providers.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/app_button.dart';
+import '../../widgets/link_card.dart';
 
 class ProjectDetailPage extends ConsumerStatefulWidget {
   final String projectId;
@@ -189,55 +190,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   }
 
   Widget _buildLinksList(List<LinkModel> projectLinks) {
-    return ListView.separated(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: projectLinks.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final link = projectLinks[index];
-        return Card(
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-            leading: CircleAvatar(
-              backgroundColor: _getStatusColor(link.status).withOpacity(0.1),
-              child: Icon(
-                _getStatusIcon(link.status),
-                color: _getStatusColor(link.status),
-                size: 20,
-              ),
-            ),
-            title: Text(
-              link.displayTitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            subtitle: link.statusMessage != null
-                ? Text(
-                    link.statusMessage!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.red[400],
-                    ),
-                  )
-                : Text(
-                    link.displaySummary,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-            trailing: Icon(
-              Icons.chevron_right,
-              color: Colors.grey[400],
-            ),
-            onTap: () => context.push('/links/${link.id}'),
-          ),
-        );
+        return LinkCard(link: link);
       },
     );
   }
@@ -303,31 +262,5 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
-  }
-
-  IconData _getStatusIcon(LinkStatus status) {
-    switch (status) {
-      case LinkStatus.pending:
-        return Icons.schedule;
-      case LinkStatus.processing:
-        return Icons.autorenew;
-      case LinkStatus.completed:
-        return Icons.check_circle;
-      case LinkStatus.failed:
-        return Icons.error;
-    }
-  }
-
-  Color _getStatusColor(LinkStatus status) {
-    switch (status) {
-      case LinkStatus.pending:
-        return Colors.orange;
-      case LinkStatus.processing:
-        return Colors.blue;
-      case LinkStatus.completed:
-        return Colors.green;
-      case LinkStatus.failed:
-        return Colors.red;
-    }
   }
 }

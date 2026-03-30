@@ -29,6 +29,15 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_link),
+            onPressed: () {
+              context.push('/add-link');
+            },
+            tooltip: 'Add Link',
+          ),
+        ],
       ),
       body: const SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -42,12 +51,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             RecentLinksSection(),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/add-link');
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

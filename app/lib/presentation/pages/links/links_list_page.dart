@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../providers/link_providers.dart';
+import '../../widgets/link_card.dart';
 import '../../../data/models/link_model.dart';
 
 class LinksListPage extends ConsumerStatefulWidget {
@@ -171,106 +171,8 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
         itemCount: links.length,
         itemBuilder: (context, index) {
           final link = links[index];
-          return _LinkCard(link: link);
+          return LinkCard(link: link);
         },
-      ),
-    );
-  }
-}
-
-class _LinkCard extends ConsumerWidget {
-  final LinkModel link;
-
-  const _LinkCard({required this.link});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () {
-          context.push('/links/${link.id}');
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Status icon and title
-              Row(
-                children: [
-                  Icon(
-                    link.isProcessed
-                        ? Icons.check_circle
-                        : link.isProcessing
-                            ? Icons.pending
-                            : Icons.error_outline,
-                    size: 20,
-                    color: link.isProcessed
-                        ? Colors.green
-                        : link.isProcessing
-                            ? Colors.orange
-                            : Colors.red,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      link.displayTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // URL
-              Text(
-                link.url,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.blue,
-                    ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-
-              // Summary or description
-              Text(
-                link.displaySummary,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade700,
-                    ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 12),
-
-              // Tags
-              if (link.displayTags.isNotEmpty)
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: link.displayTags.take(3).map((tag) {
-                    return Chip(
-                      label: Text(
-                        tag,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                    );
-                  }).toList(),
-                ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -331,7 +233,7 @@ class LinkSearchDelegate extends SearchDelegate<String> {
       itemCount: results.length,
       itemBuilder: (context, index) {
         final link = results[index];
-        return _LinkCard(link: link);
+        return LinkCard(link: link);
       },
     );
   }
@@ -356,7 +258,7 @@ class LinkSearchDelegate extends SearchDelegate<String> {
       itemCount: suggestions.length,
       itemBuilder: (context, index) {
         final link = suggestions[index];
-        return _LinkCard(link: link);
+        return LinkCard(link: link);
       },
     );
   }
