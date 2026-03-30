@@ -54,7 +54,7 @@ class RecentProjectsSection extends ConsumerWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: displayProjects.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              separatorBuilder: (context, index) => const SizedBox(width: 2),
               itemBuilder: (context, index) {
                 final project = displayProjects[index];
                 return ProjectCard(project: project, isHorizontal: true);

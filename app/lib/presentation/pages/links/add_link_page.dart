@@ -17,11 +17,11 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
   final _urlController = TextEditingController();
   final _titleController = TextEditingController();
   final _tagsController = TextEditingController();
-  final _newProjectController = TextEditingController();
+  final _projectSearchController = TextEditingController();
 
   String? _selectedProjectId;
+  String? _newProjectName;
   bool _isSubmitting = false;
-  bool _showNewProjectInput = false;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
     _urlController.dispose();
     _titleController.dispose();
     _tagsController.dispose();
-    _newProjectController.dispose();
+    _projectSearchController.dispose();
     super.dispose();
   }
 
@@ -95,127 +95,6 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 16),
-
-              // Project Selection
-              const Text(
-                'Project',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Project chips container
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Existing projects - horizontal scrollable chips
-                    if (projectsState.projects.isEmpty && !_showNewProjectInput)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          'No projects yet',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-                      )
-                    else if (!_showNewProjectInput)
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          // "No project" chip
-                          _ProjectChip(
-                            label: 'None',
-                            icon: Icons.block_outlined,
-                            isSelected: _selectedProjectId == null,
-                            onTap: () {
-                              setState(() {
-                                _selectedProjectId = null;
-                              });
-                            },
-                          ),
-                          // Project chips
-                          ...projectsState.projects.map((project) {
-                            return _ProjectChip(
-                              label: project.name,
-                              icon: Icons.folder_outlined,
-                              isSelected: _selectedProjectId == project.id,
-                              linkCount: project.linkIds.length,
-                              onTap: () {
-                                setState(() {
-                                  _selectedProjectId = project.id;
-                                });
-                              },
-                            );
-                          }),
-                          // "New project" chip
-                          _ProjectChip(
-                            label: 'New Project',
-                            icon: Icons.add_circle_outline,
-                            isSelected: _showNewProjectInput,
-                            onTap: () {
-                              setState(() {
-                                _showNewProjectInput = true;
-                                _selectedProjectId = null;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    // Inline new project input
-                    if (_showNewProjectInput) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _newProjectController,
-                              decoration: InputDecoration(
-                                hintText: 'Project name',
-                                prefixIcon: const Icon(Icons.folder, size: 20),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                              ),
-                              textInputAction: TextInputAction.done,
-                              onSubmitted: (_) => _submit(),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.check_circle, color: Colors.green),
-                            onPressed: _submit,
-                            tooltip: 'Create & Save',
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.cancel, color: Colors.red),
-                            onPressed: () {
-                              setState(() {
-                                _showNewProjectInput = false;
-                                _newProjectController.clear();
-                              });
-                            },
-                            tooltip: 'Cancel',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
               // Tags Field (Optional)
               TextFormField(
                 controller: _tagsController,
@@ -228,6 +107,183 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                 ),
                 textInputAction: TextInputAction.done,
               ),
+              const SizedBox(height: 16),
+              // Project Selection (Autocomplete)
+              const Text(
+                'Project',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Autocomplete<String>(
+                optionsBuilder: (textEditingValue) {
+                  // Show all projects when empty
+                  if (textEditingValue.text.isEmpty) {
+                    return projectsState.projects.map((p) => p.name);
+                  }
+                  // Filter projects by search text
+                  return projectsState.projects
+                      .where((project) => project.name
+                          .toLowerCase()
+                          .contains(textEditingValue.text.toLowerCase()))
+                      .map((project) => project.name);
+                },
+                displayStringForOption: (projectName) => projectName,
+                fieldViewBuilder: (context, controller, focusNode, onSubmitted) {
+                  return TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                      hintText: _selectedProjectId != null
+                          ? projectsState.projects
+                              .firstWhere((p) => p.id == _selectedProjectId)
+                              .name
+                          : 'Search or create project...',
+                      prefixIcon: Icon(
+                        _selectedProjectId != null
+                            ? Icons.folder
+                            : Icons.search,
+                        color: _selectedProjectId != null
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                      ),
+                      suffixIcon: _selectedProjectId != null
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 20),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedProjectId = null;
+                                  _newProjectName = null;
+                                  controller.clear();
+                                });
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                    ),
+                    textInputAction: TextInputAction.next,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value.isNotEmpty) {
+                          final existingProject = projectsState.projects
+                              .firstWhere((p) =>
+                                  p.name.toLowerCase() == value.toLowerCase(),
+                              orElse: () => ProjectModel.empty());
+                          if (existingProject.id.isEmpty) {
+                            _newProjectName = value;
+                          } else {
+                            _newProjectName = null;
+                          }
+                        } else {
+                          _newProjectName = null;
+                        }
+                      });
+                    },
+                  );
+                },
+                optionsViewBuilder: (context, onSelected, options) {
+                  return Align(
+                    alignment: Alignment.topLeft,
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        constraints: const BoxConstraints(maxHeight: 250),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: options.length,
+                          itemBuilder: (context, index) {
+                            final projectName = options.elementAt(index);
+                            final project = projectsState.projects
+                                .firstWhere((p) => p.name == projectName);
+                            return ListTile(
+                              leading: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.folder,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 20,
+                                ),
+                              ),
+                              title: Text(projectName),
+                              subtitle: project.linkIds.isNotEmpty
+                                  ? Text('${project.linkIds.length} links')
+                                  : null,
+                              trailing: project.aiOutputId != null
+                                  ? Icon(
+                                      Icons.auto_awesome,
+                                      size: 18,
+                                      color: Colors.amber[700],
+                                    )
+                                  : null,
+                              onTap: () {
+                                onSelected(projectName);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                onSelected: (projectName) {
+                  final project = projectsState.projects
+                      .firstWhere((p) => p.name == projectName);
+                  setState(() {
+                    _selectedProjectId = project.id;
+                    _newProjectName = null;
+                    _projectSearchController.clear();
+                  });
+                },
+              ),
+              // Show "Create new project" indicator when typing unknown name
+              if (_newProjectName != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.add_circle_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'New project "$_newProjectName"',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 24),
 
               // Submit Button
@@ -273,23 +329,23 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
 
       // Handle project selection/creation
       String? finalProjectId = _selectedProjectId;
-      final newProjectName = _newProjectController.text.trim();
 
-      if (newProjectName.isNotEmpty) {
+      // Create new project if user typed a new name
+      if (_newProjectName != null && _newProjectName!.isNotEmpty) {
         final projectsNotifier = ref.read(projectsProvider.notifier);
         final projectsState = ref.read(projectsProvider);
 
         // Check if project with same name already exists
         final existingProject = projectsState.projects
-            .firstWhere((p) => p.name.toLowerCase() == newProjectName.toLowerCase(), orElse: () => ProjectModel.empty());
+            .firstWhere((p) => p.name.toLowerCase() == _newProjectName!.toLowerCase(), orElse: () => ProjectModel.empty());
 
         if (existingProject.id.isNotEmpty) {
           // Use existing project
           finalProjectId = existingProject.id;
         } else {
-          // Create new project
+          // Create new project first
           final newProject = await projectsNotifier.createProject(
-            name: newProjectName,
+            name: _newProjectName!,
           );
           if (newProject != null) {
             finalProjectId = newProject.id;
@@ -344,81 +400,5 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
         });
       }
     }
-  }
-}
-
-/// A chip widget for selecting a project in the add link form.
-class _ProjectChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final int? linkCount;
-
-  const _ProjectChip({
-    required this.label,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-    this.linkCount,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).primaryColor.withValues(alpha: 0.12)
-              : Colors.grey[100],
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? Theme.of(context).primaryColor
-                : Colors.grey[300]!,
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey[600],
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected
-                    ? Theme.of(context).primaryColor
-                    : Colors.grey[800],
-              ),
-            ),
-            if (linkCount != null && linkCount! > 0) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '$linkCount',
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 }

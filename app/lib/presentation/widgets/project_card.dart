@@ -39,7 +39,7 @@ class ProjectCard extends StatelessWidget {
 
   Widget _buildHorizontalCard(BuildContext context) {
     return Container(
-      width: 170,
+      width: 160,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
