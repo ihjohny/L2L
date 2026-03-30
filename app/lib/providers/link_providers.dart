@@ -13,7 +13,6 @@ class LinksState {
   final bool isLoading;
   final String? error;
   final Set<String> selectedTags;
-  final String? selectedProjectId;
   final String searchQuery;
 
   LinksState({
@@ -21,7 +20,6 @@ class LinksState {
     this.isLoading = false,
     this.error,
     this.selectedTags = const {},
-    this.selectedProjectId,
     this.searchQuery = '',
   });
 
@@ -30,7 +28,6 @@ class LinksState {
     bool? isLoading,
     String? error,
     Set<String>? selectedTags,
-    String? selectedProjectId,
     String? searchQuery,
   }) {
     return LinksState(
@@ -38,21 +35,13 @@ class LinksState {
       isLoading: isLoading ?? this.isLoading,
       error: error,
       selectedTags: selectedTags ?? this.selectedTags,
-      selectedProjectId: selectedProjectId ?? this.selectedProjectId,
       searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
-  // Get filtered links based on selected tags, project, and search query
+  // Get filtered links based on selected tags and search query
   List<LinkModel> get filteredLinks {
     var filtered = links;
-
-    // Filter by project
-    if (selectedProjectId != null) {
-      filtered = filtered
-          .where((l) => l.projectId == selectedProjectId)
-          .toList();
-    }
 
     // Filter by tags
     if (selectedTags.isNotEmpty) {
@@ -173,11 +162,6 @@ class LinksNotifier extends StateNotifier<LinksState> {
       newTags.add(tag);
     }
     state = state.copyWith(selectedTags: newTags);
-  }
-
-  // Set project filter
-  void setProjectFilter(String? projectId) {
-    state = state.copyWith(selectedProjectId: projectId);
   }
 
   // Clear tag filters
