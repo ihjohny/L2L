@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../providers/project_providers.dart';
-import '../../../../data/models/project_model.dart';
+import '../../../../../providers/project_providers.dart';
+import '../../../../../data/models/project_model.dart';
 
 class RecentProjectsSection extends ConsumerWidget {
   const RecentProjectsSection({super.key});

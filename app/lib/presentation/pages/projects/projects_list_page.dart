@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/project_providers.dart';
-import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/error_widget.dart';
+import '../../widgets/loading_widget.dart';
+import '../../widgets/error_widget.dart';
 
 class ProjectsListPage extends ConsumerStatefulWidget {
   const ProjectsListPage({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../providers/link_providers.dart';
-import '../../../../data/models/link_model.dart';
+import '../../../../../providers/link_providers.dart';
+import '../../../../../data/models/link_model.dart';
 
 class RecentLinksSection extends ConsumerWidget {
   const RecentLinksSection({super.key});

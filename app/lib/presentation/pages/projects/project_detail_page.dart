@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:l2l_app/data/models/link_model.dart';
 import '../../../providers/project_providers.dart';
 import '../../../providers/link_providers.dart';
-import '../../widgets/common/loading_widget.dart';
-import '../../widgets/common/app_button.dart';
+import '../../widgets/loading_widget.dart';
+import '../../widgets/app_button.dart';
 
 class ProjectDetailPage extends ConsumerStatefulWidget {
   final String projectId;

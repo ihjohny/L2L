@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/project_providers.dart';
-import '../../widgets/common/app_button.dart';
-import '../../widgets/common/app_text_field.dart';
+import '../../widgets/app_button.dart';
+import '../../widgets/app_text_field.dart';
 
 class EditProjectPage extends ConsumerStatefulWidget {
   final String projectId;
