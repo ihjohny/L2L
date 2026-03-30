@@ -150,7 +150,6 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                     hintText: 'Enter project name',
                     prefixIcon: Icon(Icons.folder),
                     border: OutlineInputBorder(),
-                    helperText: 'Leave empty to select existing project',
                   ),
                   textInputAction: TextInputAction.done,
                 ),

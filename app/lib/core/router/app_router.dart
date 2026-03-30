@@ -9,7 +9,6 @@ import '../../presentation/pages/links/add_link_page.dart';
 import '../../presentation/pages/links/links_list_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
-import '../../presentation/pages/projects/create_project_page.dart';
 import '../../presentation/pages/projects/edit_project_page.dart';
 import '../../providers/auth_providers.dart';
 
@@ -154,14 +153,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: ProjectDetailPage(projectId: projectId),
           );
         },
-      ),
-      GoRoute(
-        path: '/create-project',
-        name: 'create_project',
-        pageBuilder: (context, state) => const MaterialPage(
-          key: ValueKey('create_project'),
-          child: CreateProjectPage(),
-        ),
       ),
       GoRoute(
         path: '/projects/:projectId/edit',

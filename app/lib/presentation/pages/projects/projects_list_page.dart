@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../providers/project_providers.dart';
 import '../../widgets/common/loading_widget.dart';
 import '../../widgets/common/error_widget.dart';
-import '../../widgets/common/app_button.dart';
 
 class ProjectsListPage extends ConsumerStatefulWidget {
   const ProjectsListPage({super.key});
@@ -21,12 +20,6 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Projects'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => context.push('/create-project'),
-          ),
-        ],
       ),
       body: projectsState.isLoading && projectsState.projects.isEmpty
           ? const LoadingWidget()
@@ -58,15 +51,10 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Create a project to organize your links',
+            'Create a project while adding a new link',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey,
             ),
-          ),
-          const SizedBox(height: 24),
-          AppButton(
-            text: 'Create Project',
-            onPressed: () => context.push('/create-project'),
           ),
         ],
       ),

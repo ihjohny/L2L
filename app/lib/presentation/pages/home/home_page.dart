@@ -43,12 +43,11 @@ class _HomePageState extends ConsumerState<HomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.push('/add-link');
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Link'),
+        child: const Icon(Icons.add),
       ),
     );
   }
