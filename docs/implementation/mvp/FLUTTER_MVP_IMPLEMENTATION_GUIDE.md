@@ -52,13 +52,13 @@ This document provides step-by-step implementation instructions for the L2L Flut
 | Login | P0 | POST /auth/login |
 | Signup | P0 | POST /auth/register |
 | Profile | P1 | GET /auth/me |
-| Home (Tab Navigation - Feed, Projects, Profile) | P0 | N/A |
-| Feed (Home Tab) | P0 | N/A |
+| Main Container (Tab Navigation - Home, Projects, Profile) | P0 | N/A |
+| Home (Feed Tab) | P0 | GET /projects, GET /links |
 | Projects List | P0 | GET /projects |
-| Create Project | P0 | POST /projects |
 | Project Details | P0 | GET /projects/:id, POST /projects/:id/generate-course |
+| Edit Project | P1 | PUT /projects/:id |
 | Links List | P0 | GET /links |
-| Add Link (FAB from Feed) | P0 | POST /links |
+| Add Link (with inline project creation) | P0 | POST /links, POST /projects |
 | Link Details | P0 | GET /links/:id |
 
 ### 1.3 Out of Scope (Phase 2+)
@@ -146,39 +146,36 @@ lib/
 └── presentation/
     ├── pages/
     │   ├── splash/
-    │   │   └── splash_page.dart       # Initial loading screen
+    │   │   └── splash_page.dart           # Initial loading screen
     │   ├── auth/
-    │   │   ├── login_page.dart        # Login screen
-    │   │   └── register_page.dart     # Registration screen
+    │   │   ├── login_page.dart            # Login screen
+    │   │   └── register_page.dart         # Registration screen
+    │   ├── main_container/
+    │   │   └── main_container_page.dart   # Main tab navigation (Home, Projects, Profile)
     │   ├── home/
-    │   │   ├── home_page.dart         # Main tab navigation (Feed, Projects, Profile)
-    │   │   ├── feed/
-    │   │   │   └── feed_screen.dart   # Feed screen (default home tab)
-    │   │   ├── links/
-    │   │   │   ├── links_list_page.dart  # Links list
-    │   │   │   ├── link_details_page.dart # Link details
-    │   │   │   └── add_link_page.dart     # Add link (from Feed FAB)
-    │   │   └── profile_page.dart      # User profile
+    │   │   ├── home_page.dart             # Home/Feed screen (default tab)
+    │   │   └── widgets/
+    │   │       ├── recent_projects_section.dart  # Horizontal project list for Home
+    │   │       └── recent_links_section.dart     # Vertical links list for Home
+    │   ├── links/
+    │   │   ├── links_list_page.dart       # Links list
+    │   │   ├── link_details_page.dart     # Link details
+    │   │   └── add_link_page.dart         # Add link (modal/page)
+    │   ├── profile/
+    │   │   └── profile_page.dart          # User profile
     │   └── projects/
-    │       ├── projects_list_page.dart      # Projects list
-    │       ├── create_project_page.dart     # Create project
-    │       └── project_detail_page.dart     # Project details
+    │       ├── projects_list_page.dart    # Projects list
+    │       ├── project_detail_page.dart   # Project details
+    │       └── edit_project_page.dart     # Edit project
     │
     └── widgets/
         ├── common/
-        │   ├── app_button.dart        # Primary button component
-        │   ├── app_text_field.dart    # Input field component
-        │   ├── loading_widget.dart    # Loading indicator
-        │   └── error_widget.dart      # Error display component
-        ├── feed/
-        │   ├── recent_projects_section.dart  # Horizontal project list for Feed
-        │   └── recent_links_section.dart     # Vertical links list for Feed
-        ├── auth/
-        │   └── [auth-specific widgets]
-        ├── projects/
-        │   └── [project-specific widgets]
-        └── links/
-            └── [link-specific widgets]
+        │   ├── app_button.dart            # Primary button component
+        │   ├── app_text_field.dart        # Input field component
+        │   ├── loading_widget.dart        # Loading indicator
+        │   └── error_widget.dart          # Error display component
+        ├── link_card.dart                 # Reusable link card widget
+        └── project_card.dart              # Reusable project card widget
 ```
 
 ---
@@ -549,9 +546,9 @@ lib/
 
 ---
 
-### 5.4 Home Screen (Tab Navigation)
+### 5.4 Home Screen (Main Container with Tabs)
 
-**File:** `lib/presentation/pages/home/home_page.dart`
+**File:** `lib/presentation/pages/main_container/main_container_page.dart`
 
 **Purpose:** Main app navigation with bottom tabs
 
@@ -562,31 +559,59 @@ lib/
 **Tabs:**
 | Index | Tab | Screen |
 |-------|-----|--------|
-| 0 | Links | LinksListPage |
-| 1 | Profile | ProfilePage |
+| 0 | Home | HomePage (Feed with recent projects and links) |
+| 1 | Projects | ProjectsListPage |
+| 2 | Profile | ProfilePage |
 
 **UI Components:**
 - Scaffold with BottomNavigationBar
+- IndexedStack to preserve tab state
 - Dynamic body based on selected tab
-- Floating action button for "Add Link" (on Links tab)
 
 **Navigation:**
-- Tab 0: Links list (default)
-- Tab 1: Profile
-- FAB: Navigate to Add Link modal
-
-**Note:** Projects will be accessible from Links tab via filter/project selector
+- Tab 0: Home/Feed (default) - shows recent projects and links
+- Tab 1: Projects list
+- Tab 2: Profile
 
 ---
 
-### 5.5 Profile Screen
+### 5.5 Home/Feed Screen
 
-**File:** `lib/presentation/pages/home/profile_page.dart`
+**File:** `lib/presentation/pages/home/home_page.dart`
+
+**Purpose:** Display recent projects and links as a dashboard
+
+**State Requirements (via Riverpod):**
+- List of recent projects
+- List of recent links
+- Loading states
+
+**API Integration:**
+- Load projects: `ProjectService.getProjects()` on screen load
+- Load links: `LinkService.getLinks()` on screen load
+
+**UI Components:**
+- AppBar with "Home" title
+- Add Link button in AppBar actions
+- ScrollView with:
+  - Recent Projects section (horizontal scrollable list)
+  - Recent Links section (vertical list)
+
+**Navigation:**
+- Add Link button: Navigate to Add Link (`/add-link`)
+- Project tap: Navigate to Project Details (`/projects/:id`)
+- Link tap: Navigate to Link Details (`/links/:id`)
+
+---
+
+### 5.6 Profile Screen
+
+**File:** `lib/presentation/pages/profile/profile_page.dart`
 
 **Purpose:** Display user info and app settings
 
 **State Requirements (via Riverpod):**
-- Current user data
+- Current user data from auth state
 - Loading state
 
 **API Integration:**
@@ -594,18 +619,22 @@ lib/
 - Logout clears tokens and navigates to Login
 
 **UI Components:**
-- User avatar/icon (initials or default icon)
-- User name
-- User email
-- Logout button
-- App version display (optional)
+- CircleAvatar with user initial
+- User name (headline)
+- User email (subtitle)
+- Menu items (placeholder for Phase 2):
+  - Settings
+  - Help & Support
+  - About
+- Log Out button with confirmation dialog
 
 **Navigation:**
-- Logout: Clear auth state, navigate to Login (`/login`)
+- Logout: Confirm dialog, clear auth state, redirect to Login (`/login`)
+- Menu items: Placeholder for Phase 2
 
 ---
 
-### 5.6 Projects List Screen
+### 5.7 Projects List Screen
 
 **File:** `lib/presentation/pages/projects/projects_list_page.dart`
 
@@ -623,13 +652,13 @@ lib/
 
 **UI Components:**
 - App bar with "Projects" title
-- Floating action button: Add Project
-- ListView of project cards (or GridView)
-- Empty state: "No projects yet" with CTA to create
+- ListView of project cards using `ProjectCard` widget
+- Empty state: "No Projects Yet" with hint "Create a project while adding a new link"
 - Loading indicator during fetch
 - Pull-to-refresh (RefreshIndicator)
 
 **Project Card:**
+- Reusable `ProjectCard` widget
 - Project name (title)
 - Description (subtitle, truncated)
 - Link count badge
@@ -638,50 +667,39 @@ lib/
 
 **Navigation:**
 - Tap project: Navigate to Project Details (`/projects/:id`)
-- FAB: Navigate to Create Project (`/create-project`)
 
 **Empty State:**
-- Icon (folder or bookmark)
-- "No projects yet" message
-- "Create your first project" CTA button
+- Icon (folder_outlined)
+- "No Projects Yet" message
+- "Create a project while adding a new link" hint
 
 ---
 
-### 5.7 Create Project Screen
+### 5.7.5 Create Project (Inline from Add Link)
 
-**File:** `lib/presentation/pages/projects/create_project_page.dart`
+**Note:** For MVP simplicity, project creation is integrated into the Add Link screen. Users can create a new project by typing a new project name in the project autocomplete field while adding a link.
 
-**Purpose:** Create a new learning project
+**File:** `lib/presentation/pages/links/add_link_page.dart` (Project creation logic)
 
-**State Requirements:**
-- Project name input
-- Description input (optional)
-- Loading state
-- Error message
+**Purpose:** Create a new learning project inline while adding a link
+
+**Flow:**
+1. User navigates to Add Link screen
+2. In the Project autocomplete field, user types a new project name
+3. If no existing project matches, a "New project" indicator appears
+4. When the link is saved, the new project is created first
+5. The link is then associated with the newly created project
 
 **API Integration:**
-- Call `ProjectService.createProject(name, description)`
-- On success: Navigate back to Projects List
+- Check existing projects: `ProjectService.getProjects()`
+- Create project: `ProjectService.createProject(name)` when user saves link with new project name
+- On success: Project created, link saved with projectId
 - On failure: Display error message
 
-**Form Validation:**
-- Name: Required, minimum 3 characters
-- Description: Optional, maximum 500 characters
-
 **UI Components:**
-- Back button (app bar)
-- Name text field
-- Description text field (multiline, 3-5 lines)
-- Create button (full width)
-- Loading indicator on button during submission
-
-**Navigation:**
-- Success: Pop back to Projects List
-- Back button: Pop without saving
-
-**Error Handling:**
-- Display validation errors inline
-- Display API errors in SnackBar
+- Autocomplete text field for project selection
+- "New project" indicator when typing unknown name
+- Inline creation happens automatically on link save
 
 ---
 
@@ -692,156 +710,171 @@ lib/
 **Purpose:** Display project info, associated links, and trigger course generation
 
 **State Requirements (via Riverpod):**
-- Project data
-- List of links for this project
+- Project data (from `projectByIdProvider`)
+- List of links for this project (from `projectLinksProvider`)
 - Loading state
-- Error message
 - Course generation loading state
 
 **API Integration:**
-- Load project: `ProjectService.getProject(projectId)`
-- Load links: `LinkService.getLinks(projectId: projectId)`
-- Generate course: `ProjectService.generateCourse(projectId)`
+- Load project: `ProjectRepository.getProject(projectId)`
+- Load links: `ProjectLinksProvider` (filtered by projectId)
+- Generate course: `ProjectRepository.generateCourse(projectId)`
+- Delete project: `ProjectRepository.deleteProject(projectId)`
 
 **UI Components:**
 - App bar with project name
-- Edit button (app bar action) - Navigate to edit (Phase 2)
+- Edit button (app bar action) - Navigate to Edit Project
 - Delete button (app bar action) - Show confirmation dialog
 
 **Sections:**
 
 1. **Project Info Card:**
    - Project name (headline)
-   - Description (body text)
-   - Link count
-   - Created date
+   - Description (body text, if available)
+   - Created date with icon
 
 2. **Generate Course Card:**
-   - Icon + title
-   - Description ("Generate a structured course from all links")
-   - Generate Course button
+   - Icon (school) + "AI Course Generation" title
+   - Description ("Generate a structured course from all links in this project")
+   - Generate Course button (full width)
    - Loading state during generation
    - Success message with job ID
 
 3. **Links Section:**
-   - Section title with link count
-   - List of link cards
+   - Section title with link count (e.g., "Links (5)")
+   - List of `LinkCard` widgets
    - Empty state if no links
 
 **Link Card (in project):**
+- Reusable `LinkCard` widget
 - Status icon (pending/processing/completed/failed)
 - Link title/domain
 - Summary preview (truncated)
 - Chevron trailing
 
 **Navigation:**
-- Edit: Navigate to Edit Project (Phase 2)
-- Delete: Show confirmation, then pop to Projects List
+- Edit: Navigate to Edit Project (`/projects/:projectId/edit`)
+- Delete: Show confirmation dialog, delete, then pop to Projects List
 - Link tap: Navigate to Link Details (`/links/:id`)
-- Generate Course: Show success SnackBar with job status
+- Generate Course: Show success SnackBar with job ID
 
 **Empty Links State:**
 - Icon (link_off)
 - "No links yet" message
-- "Add links from the links page" hint
+- "Add links to this project from the links page" hint
 
 **Error Handling:**
 - Display API errors in SnackBar
-- Show failed link status in list with error message
+- Show failed link status in list
 
 ---
 
 ### 5.9 Links List Screen
 
-**File:** `lib/presentation/pages/home/links/links_list_page.dart`
+**File:** `lib/presentation/pages/links/links_list_page.dart`
 
-**Purpose:** Display all user links with filtering options
+**Purpose:** Display all user links with filtering and search options
 
 **State Requirements (via Riverpod):**
 - List of links
 - Loading state
 - Error message
-- Current project filter (optional)
-- Search query (optional, Phase 2)
+- Current tag filter (selected tags)
+- Search query
+- All available tags (for filter chips)
 
 **API Integration:**
 - Call `LinkService.getLinks()` on screen load
-- Optional: Filter by projectId
 - Pull-to-refresh triggers reload
 
 **UI Components:**
-- App bar with "Links" title
-- Project filter dropdown/chip (optional)
-- Floating action button: Add Link
-- ListView of link cards
-- Empty state: "No links yet" with CTA to add
+- App bar with "My Links" title
+- Search button in app bar actions
+- Tags filter section (horizontal scrollable chips)
+- ListView of link cards using `LinkCard` widget
+- Empty state: "No links yet" with hint
 - Loading indicator during fetch
 - Pull-to-refresh (RefreshIndicator)
 
+**Tags Filter:**
+- Horizontal scrollable list of FilterChip widgets
+- Shows all unique tags from user's links
+- Selected tags filter the links list
+- "Clear" chip to reset filters when tags are selected
+
+**Search:**
+- Search icon in app bar opens search overlay
+- Real-time filtering as user types
+- Clear button to reset search
+- Shows "No results found" when empty
+
 **Link Card:**
-- Status icon (circle avatar with color-coded status)
+- Reusable `LinkCard` widget
+- Status icon (color-coded: pending=orange, processing=blue, completed=green, failed=red)
 - Link title/domain (title)
-- Summary preview or tags (subtitle, 2 lines max)
-- Tags chip (if any)
+- Summary preview or tags (subtitle)
 - Chevron trailing icon
-- Status colors: pending=orange, processing=blue, completed=green, failed=red
 
 **Navigation:**
 - Tap link: Navigate to Link Details (`/links/:id`)
-- FAB: Navigate to Add Link (`/add-link`)
+- Search: Opens search overlay
 
-**Empty State:**
-- Icon (bookmark_border)
-- "No links yet" message
-- "Save your first link" CTA button
-
-**Filtering (Optional for MVP):**
-- Project dropdown in app bar
-- "All Projects" default option
-- Filter triggers API call with projectId parameter
+**Empty States:**
+- No links: Icon (bookmark_outline), "No links yet", "Tap + to save your first link"
+- No search results: Icon (search_off), "No matching links"
+- Error: Error icon, error message, Retry button
 
 ---
 
-### 5.10 Add Link Screen (Modal)
+### 5.10 Add Link Screen
 
-**File:** `lib/presentation/pages/home/links/add_link_page.dart`
+**File:** `lib/presentation/pages/links/add_link_page.dart`
 
 **Purpose:** Save a new link to L2L
 
 **State Requirements:**
-- URL input
-- Title input (auto-filled from page metadata, editable)
-- Selected project (optional)
-- Tags input (comma-separated or chip input)
+- URL input (required)
+- Title input (optional)
+- Selected project (optional, via autocomplete)
+- Tags input (optional, comma-separated)
 - Loading state
 - Error message
-- List of projects (for dropdown)
+- List of projects (for autocomplete)
 
 **API Integration:**
-- Load projects: `ProjectService.getProjects()` (for dropdown)
-- Create link: `LinkService.createLink(url, projectId, tags)`
-- On success: Navigate back to Links List
+- Load projects: `ProjectService.getProjects()` (for autocomplete)
+- Create project (if new name typed): `ProjectService.createProject(name)`
+- Create link: `LinkService.createLink(url, projectId, title, tags)`
+- On success: Navigate back with success message
 - On failure: Display error message
 
 **Form Validation:**
 - URL: Required, valid URL format
-- Title: Optional, auto-filled if possible
-- Project: Optional
+- Title: Optional
+- Project: Optional (can create new by typing new name)
 - Tags: Optional, comma-separated
 
 **UI Components:**
-- Back button (app bar) or close button (if modal)
-- URL text field
+- AppBar with "Add Link" title and close button
+- URL text field (required)
 - Title text field (optional)
-- Project dropdown (optional)
-- Tags text field (optional)
-- Save button (full width)
-- Loading indicator on button during submission
+- Tags text field (optional, with helper text "Separate tags with commas")
+- Project autocomplete field with:
+  - Search functionality
+  - Display of existing projects with link count
+  - "New project" indicator when typing unknown name
+- Save button (full width) with loading indicator
+
+**Project Autocomplete Behavior:**
+- Shows all projects when empty
+- Filters projects by search text
+- When user types a new name (no match), shows "New project" indicator
+- On save, creates new project if needed, then saves link with projectId
 
 **Navigation:**
-- Presentation: Modal bottom sheet or full-screen page
-- Success: Pop back to Links List with success message
-- Back/Close: Pop without saving
+- Presentation: Full-screen page
+- Success: Pop back to previous screen with success message
+- Close button: Pop without saving
 
 **Error Handling:**
 - Display validation errors inline
@@ -850,14 +883,14 @@ lib/
 
 **MVP Simplification:**
 - Only URL is required
-- Auto-fetch title/metadata on backend
-- Project and tags are optional enhancements
+- Title, project, and tags are optional enhancements
+- Project creation is inline (no separate create project screen)
 
 ---
 
 ### 5.11 Link Details Screen
 
-**File:** `lib/presentation/pages/home/links/link_details_page.dart`
+**File:** `lib/presentation/pages/links/link_details_page.dart`
 
 **Purpose:** Display link info, AI summary, and flashcards
 
@@ -865,11 +898,9 @@ lib/
 - Link data
 - Loading state
 - Error message
-- Refresh state (for processing status)
 
 **API Integration:**
 - Load link: `LinkService.getLinkById(linkId)`
-- Poll for status if processing (optional, Phase 2)
 
 **UI Components:**
 - App bar with link title/domain
@@ -900,9 +931,9 @@ lib/
 **Status States:**
 
 - **Pending:** "Waiting to be processed..." with spinner
-- **Processing:** "AI is analyzing content... (estimated time)"
+- **Processing:** "AI is analyzing content..."
 - **Completed:** Show full summary and flashcards
-- **Failed:** Show error message with retry option (Phase 2)
+- **Failed:** Show error message with retry option
 
 **Navigation:**
 - External link: Launch URL in browser (url_launcher)
@@ -1246,21 +1277,26 @@ throw Exception(error['message'] ?? 'Unknown error');
 | /splash | splash | SplashPage | No |
 | /login | login | LoginPage | No |
 | /register | register | RegisterPage | No |
-| / | home | HomePage (Feed tab) | Yes |
-| /links | links | HomePage (Feed tab) | Yes |
+| / | home | MainContainerPage (Home tab) | Yes |
+| /links | links | LinksListPage | Yes |
 | /links/:id | link_details | LinkDetailsPage | Yes |
 | /add-link | add_link | AddLinkPage | Yes |
-| /profile | profile | HomePage (Profile tab) | Yes |
-| /projects | projects | HomePage (Projects tab) | Yes |
-| /projects/:id | project_detail | ProjectDetailPage | Yes |
-| /create-project | create_project | CreateProjectPage | Yes |
+| /profile | profile | MainContainerPage (Profile tab) | Yes |
+| /projects | projects | MainContainerPage (Projects tab) | Yes |
+| /projects/:projectId | project_detail | ProjectDetailPage | Yes |
+| /projects/:projectId/edit | edit_project | EditProjectPage | Yes |
 
 **Bottom Navigation Structure:**
 ```
 ┌─────────────────────────────────────────────┐
-│  Feed  │  Projects  │  Profile             │
+│  Home  │  Projects  │  Profile             │
 ├─────────────────────────────────────────────┤
 ```
+
+**Main Container Pages:**
+- Home tab (index 0): `HomePage` - Shows recent projects and links
+- Projects tab (index 1): `ProjectsListPage` - Shows all projects
+- Profile tab (index 2): `ProfilePage` - Shows user info
 
 ### 8.2 Auth Redirect Logic
 
@@ -1349,29 +1385,32 @@ context.goNamed('home');
 
 ### Phase 3: Projects
 
-- [ ] User can view list of projects
-- [ ] User can create new project
-- [ ] Project list refreshes after creation
+- [ ] User can view list of projects from Projects tab
+- [ ] Project list shows empty state with helpful message
 - [ ] User can view project details
 - [ ] Empty state displays when no projects exist
+- [ ] Pull-to-refresh works on projects list
 
 ### Phase 4: Links
 
-- [ ] User can view list of links
-- [ ] User can add new link via URL
-- [ ] Link shows processing status
+- [ ] User can view list of links from Links page
+- [ ] User can add new link via URL from Home screen FAB
+- [ ] Link shows processing status (pending/processing/completed/failed)
 - [ ] Completed links display AI summary
 - [ ] Completed links display flashcards
-- [ ] Links can be filtered by project (optional)
+- [ ] Links can be filtered by tags
+- [ ] Links can be searched
 - [ ] Empty state displays when no links exist
+- [ ] Pull-to-refresh works on links list
 
 ### Phase 5: Integration
 
 - [ ] Link can be assigned to project on creation
+- [ ] New project can be created inline while adding a link
 - [ ] Project details show associated links
 - [ ] User can trigger course generation
 - [ ] Course generation shows success message with job ID
-- [ ] End-to-end flow: Register → Create Project → Add Link → View Summary
+- [ ] End-to-end flow: Register → Add Link (with new project) → View Summary
 
 ### Phase 6: Polish
 
