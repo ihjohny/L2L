@@ -1509,33 +1509,130 @@ context.goNamed('home');
 ```
 
 ### Link (Completed)
+
+**Note:** The API returns AI-generated content in an `aiOutput` array. Each item in the array has a `type` field ("summary" or "flashcards") and a `content` field containing the actual data. The Flutter model parses this array to populate `summary` and `flashcards` fields.
+
 ```json
 {
-  "_id": "507f1f77bcf86cd799439013",
-  "userId": "507f1f77bcf86cd799439011",
-  "url": "https://react.dev/learn",
-  "projectId": "507f1f77bcf86cd799439012",
-  "title": "Learn React - Official Docs",
-  "aiOutputId": "507f1f77bcf86cd799439020",
-  "tags": ["react", "frontend"],
-  "status": "completed",
-  "statusMessage": null,
-  "summary": {
-    "keyPoints": ["Components are the building blocks", "Props pass data down", "State manages dynamic data"],
-    "mainArgument": "React is a library for building user interfaces using components",
-    "takeaways": ["Learn component composition", "Master props and state", "Understand the virtual DOM"]
-  },
-  "flashcards": {
-    "flashcards": [
+  "success": true,
+  "data": {
+    "_id": "69cbdb12ed561ce04d03e4b9",
+    "userId": "69c63c9f1513e95bbcd1a7a0",
+    "projectId": "69c8d140ed561ce04d03ddcb",
+    "url": "https://developer.android.com/kotlin/first",
+    "title": "first",
+    "aiOutputId": "69cbdb13ed561ce04d03e4bf",
+    "tags": [],
+    "status": "completed",
+    "statusMessage": null,
+    "deletedAt": null,
+    "createdAt": "2026-03-31T14:32:50.568Z",
+    "updatedAt": "2026-03-31T14:32:51.643Z",
+    "__v": 0,
+    "id": "69cbdb12ed561ce04d03e4b9",
+    "aiOutput": [
       {
-        "question": "What is a component in React?",
-        "answer": "A reusable piece of UI that can manage its own state and props",
-        "difficulty": "easy"
+        "tokenUsage": {
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "totalTokens": 0
+        },
+        "_id": "69cbdb13ed561ce04d03e4c0",
+        "sourceType": "link",
+        "sourceId": "69cbdb12ed561ce04d03e4b9",
+        "type": "flashcards",
+        "content": {
+          "flashcards": [
+            {
+              "question": "Question 1 about the content?",
+              "answer": "Answer 1 explaining the concept from the content.",
+              "difficulty": "easy"
+            },
+            {
+              "question": "Question 2 about the content?",
+              "answer": "Answer 2 explaining the concept from the content.",
+              "difficulty": "medium"
+            }
+          ]
+        },
+        "createdAt": "2026-03-31T14:32:51.637Z",
+        "updatedAt": "2026-03-31T14:32:51.637Z",
+        "__v": 0
+      },
+      {
+        "tokenUsage": {
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "totalTokens": 0
+        },
+        "_id": "69cbdb13ed561ce04d03e4bf",
+        "sourceType": "link",
+        "sourceId": "69cbdb12ed561ce04d03e4b9",
+        "type": "summary",
+        "content": {
+          "keyPoints": [
+            "Android Developers Get started Kotlin Guides...",
+            "Kotlin is an expressive and concise programming language..."
+          ],
+          "mainArgument": "This content provides educational information on the topic.",
+          "takeaways": [
+            "Key takeaway from the content",
+            "Important concept to remember"
+          ]
+        },
+        "createdAt": "2026-03-31T14:32:51.637Z",
+        "updatedAt": "2026-03-31T14:32:51.637Z",
+        "__v": 0
       }
     ]
   },
-  "createdAt": "2026-03-26T10:00:00.000Z",
-  "updatedAt": "2026-03-26T10:05:00.000Z"
+  "message": "Link retrieved successfully"
+}
+```
+
+**Flutter Model Parsing:**
+
+The `LinkModel.fromJson` method parses the `aiOutput` array:
+
+```dart
+factory LinkModel.fromJson(Map<String, dynamic> json) {
+  SummaryContent? summary;
+  FlashcardsContent? flashcards;
+
+  if (json['aiOutput'] != null && json['aiOutput'] is List) {
+    for (final output in json['aiOutput']) {
+      final type = output['type'];
+      final content = output['content'];
+
+      if (type == 'summary' && content != null) {
+        summary = SummaryContent.fromJson(content);
+      } else if (type == 'flashcards' && content != null) {
+        flashcards = FlashcardsContent.fromJson(content);
+      }
+    }
+  }
+
+  return LinkModel(
+    id: json['_id']?.toString() ?? json['id'] ?? '',
+    url: json['url'] ?? '',
+    userId: json['userId'] ?? '',
+    projectId: json['projectId']?.toString(),
+    title: json['title'],
+    aiOutputId: json['aiOutputId']?.toString(),
+    tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
+    status: LinkStatus.values.firstWhere(
+      (e) => e.name == json['status'],
+      orElse: () => LinkStatus.pending,
+    ),
+    summary: summary,
+    flashcards: flashcards,
+    createdAt: json['createdAt'] != null
+        ? DateTime.parse(json['createdAt'])
+        : DateTime.now(),
+    updatedAt: json['updatedAt'] != null
+        ? DateTime.parse(json['updatedAt'])
+        : DateTime.now(),
+  );
 }
 ```
 

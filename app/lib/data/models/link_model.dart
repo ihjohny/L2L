@@ -60,6 +60,23 @@ class LinkModel with _$LinkModel {
   }) = _LinkModel;
 
   factory LinkModel.fromJson(Map<String, dynamic> json) {
+    // Parse aiOutput array if present (new API format)
+    SummaryContent? summary;
+    FlashcardsContent? flashcards;
+
+    if (json['aiOutput'] != null && json['aiOutput'] is List) {
+      for (final output in json['aiOutput']) {
+        final type = output['type'];
+        final content = output['content'];
+
+        if (type == 'summary' && content != null) {
+          summary = SummaryContent.fromJson(content);
+        } else if (type == 'flashcards' && content != null) {
+          flashcards = FlashcardsContent.fromJson(content);
+        }
+      }
+    }
+
     return LinkModel(
       id: json['_id']?.toString() ?? json['id'] ?? '',
       url: json['url'] ?? '',
@@ -73,12 +90,8 @@ class LinkModel with _$LinkModel {
         orElse: () => LinkStatus.pending,
       ),
       statusMessage: json['statusMessage'],
-      summary: json['summary'] != null
-          ? SummaryContent.fromJson(json['summary'])
-          : null,
-      flashcards: json['flashcards'] != null
-          ? FlashcardsContent.fromJson(json['flashcards'])
-          : null,
+      summary: summary,
+      flashcards: flashcards,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
