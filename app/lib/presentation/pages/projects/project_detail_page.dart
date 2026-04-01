@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:l2l_app/data/models/link_model.dart';
-import '../../../providers/project_providers.dart';
-import '../../../providers/link_providers.dart';
+import '../../../presentation/viewmodels/project_viewmodel.dart';
+import '../../../core/utils/navigation_triggers.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/link_card.dart';
@@ -23,24 +22,70 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Load links for this project using the project-specific provider
+    // Load project and links when page opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(projectViewModelProvider.notifier).selectProject(widget.projectId);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clear selected project when leaving page
+    ref.read(projectViewModelProvider.notifier).clearSelectedProject();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final project = ref.watch(projectByIdProvider(widget.projectId));
-    final projectLinksResult = ref.watch(projectLinksProvider(widget.projectId));
+    final viewModel = ref.watch(projectViewModelProvider.notifier);
+    final state = ref.watch(projectViewModelProvider);
 
-    // Handle async state of project links
-    final projectLinks = projectLinksResult.when(
-      data: (links) => links,
-      loading: () => <LinkModel>[],
-      error: (_, __) => <LinkModel>[],
-    );
+    // Show loading while project data is being fetched
+    if (state.isLoading && state.selectedProject == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Project')),
+        body: const LoadingWidget(),
+      );
+    }
+
+    final project = state.selectedProject;
+    if (project == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Project')),
+        body: const LoadingWidget(),
+      );
+    }
+
+    // Show loading while links are being fetched for the first time
+    if (state.isLoadingLinks && state.selectedProjectLinks.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text(project.name)),
+        body: const LoadingWidget(),
+      );
+    }
+
+    // Handle navigation triggers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (state.navigationTrigger != ProjectNavigationTrigger.none) {
+        switch (state.navigationTrigger) {
+          case ProjectNavigationTrigger.toProjectsList:
+            context.pop();
+            break;
+          case ProjectNavigationTrigger.back:
+            context.pop();
+            break;
+          default:
+            break;
+        }
+        viewModel.resetNavigationTrigger();
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(project?.name ?? 'Project'),
+        title: Text(project.name),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -52,42 +97,40 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           ),
         ],
       ),
-      body: project == null
-          ? const LoadingWidget()
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Project Info Card
-                  _buildProjectInfoCard(project),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Project Info Card
+            _buildProjectInfoCard(project),
 
-                  const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-                  // Generate Course Button
-                  _buildGenerateCourseSection(),
+            // Generate Course Button
+            _buildGenerateCourseSection(),
 
-                  const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-                  // Links Section
-                  Text(
-                    'Links (${projectLinks.length})',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  if (projectLinks.isEmpty)
-                    _buildEmptyLinksState()
-                  else
-                    _buildLinksList(projectLinks),
-                ],
-              ),
+            // Links Section
+            Text(
+              'Links (${state.selectedProjectLinks.length})',
+              style: Theme.of(context).textTheme.titleLarge,
             ),
+
+            const SizedBox(height: 12),
+
+            if (state.selectedProjectLinks.isEmpty)
+              _buildEmptyLinksState()
+            else
+              _buildLinksList(state.selectedProjectLinks),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildProjectInfoCard(dynamic project) {
+  Widget _buildProjectInfoCard(project) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -189,7 +232,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     );
   }
 
-  Widget _buildLinksList(List<LinkModel> projectLinks) {
+  Widget _buildLinksList(projectLinks) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -205,14 +248,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     setState(() => _isGeneratingCourse = true);
 
     try {
-      final result = await ref
-          .read(projectRepositoryProvider)
+      await ref
+          .read(projectViewModelProvider.notifier)
           .generateCourse(widget.projectId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Course generation started: ${result['jobId']}'),
+          const SnackBar(
+            content: Text('Course generation started!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -248,9 +291,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           ),
           TextButton(
             onPressed: () {
-              ref.read(projectsProvider.notifier).deleteProject(widget.projectId);
+              ref.read(projectViewModelProvider.notifier).deleteProject(widget.projectId);
               Navigator.pop(context);
-              context.pop();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),

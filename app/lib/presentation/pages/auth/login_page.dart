@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/auth_providers.dart';
+import '../../../presentation/viewmodels/auth_viewmodel.dart';
+import '../../../core/utils/navigation_triggers.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -14,7 +15,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -23,40 +23,43 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Reset to login state when navigating to login page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authViewModelProvider.notifier).switchToLogin();
+    });
+  }
+
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Clear any previous errors
-    ref.read(authProvider.notifier).clearError();
+    final viewModel = ref.read(authViewModelProvider.notifier);
 
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
+    // Set form values
+    viewModel.setEmail(_emailController.text.trim());
+    viewModel.setPassword(_passwordController.text);
 
-    final success = await ref.read(authProvider.notifier).login(email, password);
-
-    if (success && mounted) {
-      // Navigate to home
-      context.go('/');
-    } else if (mounted) {
-      // Show error if available
-      final error = ref.read(authProvider).error;
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+    // Attempt login
+    await viewModel.login();
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
-    final isLoading = authState.isLoading;
+    final viewModel = ref.watch(authViewModelProvider.notifier);
+    final state = ref.watch(authViewModelProvider);
+    final isLoading = state.isLoading;
+
+    // Handle navigation triggers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (state.navigationTrigger == AuthNavigationTrigger.toHome) {
+        context.go('/');
+        viewModel.resetNavigationTrigger();
+      }
+    });
 
     return Scaffold(
       body: SafeArea(
@@ -111,7 +114,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: _obscurePassword,
+                  obscureText: state.obscurePassword,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _handleLogin(),
                   decoration: InputDecoration(
@@ -119,16 +122,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword
+                        state.obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: isLoading
                           ? null
                           : () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
+                              viewModel.togglePasswordVisibility();
                             },
                     ),
                     border: const OutlineInputBorder(),
@@ -141,6 +142,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   },
                   enabled: !isLoading,
                 ),
+                if (state.error != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    state.error!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: isLoading ? null : _handleLogin,

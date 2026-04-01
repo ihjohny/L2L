@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/auth_providers.dart';
+import '../../../presentation/viewmodels/auth_viewmodel.dart';
+import '../../../core/utils/navigation_triggers.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -16,7 +17,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -27,41 +27,45 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Reset to register state when navigating to register page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authViewModelProvider.notifier).switchToRegister();
+    });
+  }
+
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Clear any previous errors
-    ref.read(authProvider.notifier).clearError();
+    final viewModel = ref.read(authViewModelProvider.notifier);
 
-    final success = await ref.read(authProvider.notifier).register(
-          email: _emailController.text.trim(),
-          name: _nameController.text.trim(),
-          password: _passwordController.text,
-        );
+    // Set form values
+    viewModel.setName(_nameController.text.trim());
+    viewModel.setEmail(_emailController.text.trim());
+    viewModel.setPassword(_passwordController.text);
+    viewModel.setConfirmPassword(_confirmPasswordController.text);
 
-    if (success && mounted) {
-      // Navigate to home
-      context.go('/');
-    } else if (mounted) {
-      // Show error if available
-      final error = ref.read(authProvider).error;
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+    // Attempt register
+    await viewModel.register();
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
-    final isLoading = authState.isLoading;
+    final viewModel = ref.watch(authViewModelProvider.notifier);
+    final state = ref.watch(authViewModelProvider);
+    final isLoading = state.isLoading;
+
+    // Handle navigation triggers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (state.navigationTrigger == AuthNavigationTrigger.toHome) {
+        context.go('/');
+        viewModel.resetNavigationTrigger();
+      }
+    });
 
     return Scaffold(
       body: SafeArea(
@@ -137,23 +141,21 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: _obscurePassword,
+                  obscureText: state.obscurePassword,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword
+                        state.obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: isLoading
                           ? null
                           : () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
+                              viewModel.togglePasswordVisibility();
                             },
                     ),
                     border: const OutlineInputBorder(),
@@ -172,13 +174,25 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  obscureText: _obscurePassword,
+                  obscureText: state.obscureConfirmPassword,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _handleRegister(),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock_outlined),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock_outlined),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        state.obscureConfirmPassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              viewModel.toggleConfirmPasswordVisibility();
+                            },
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -191,6 +205,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   },
                   enabled: !isLoading,
                 ),
+                if (state.error != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    state.error!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: isLoading ? null : _handleRegister,

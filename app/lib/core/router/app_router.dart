@@ -10,14 +10,15 @@ import '../../presentation/pages/links/links_list_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/edit_project_page.dart';
-import '../../providers/auth_providers.dart';
+import '../../presentation/viewmodels/auth_viewmodel.dart';
+import '../../presentation/viewmodels/auth_state.dart';
 
 // Router key for navigation
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // Router provider with auth state integration
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final authState = ref.watch(authViewModelProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,

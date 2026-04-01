@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/link_providers.dart';
-import '../../widgets/link_card.dart';
+import '../../../presentation/viewmodels/link_viewmodel.dart';
+import '../../../presentation/viewmodels/link_state.dart';
 import '../../../data/models/link_model.dart';
+import '../../widgets/link_card.dart';
 
 class LinksListPage extends ConsumerStatefulWidget {
   const LinksListPage({super.key});
@@ -16,15 +17,17 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
   void initState() {
     super.initState();
     // Load links when page initializes
-    Future.microtask(() {
-      ref.read(linksProvider.notifier).loadLinks();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(linkViewModelProvider.notifier).loadLinks();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final linksState = ref.watch(linksProvider);
-    final filteredLinks = linksState.filteredLinks;
+    final linksState = ref.watch(linkViewModelProvider);
+    final filteredLinks = linksState.displayLinks;
 
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +59,7 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
     );
   }
 
-  Widget _buildTagsFilter(LinksState state) {
+  Widget _buildTagsFilter(LinkState state) {
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -72,7 +75,7 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
                 label: const Text('Clear'),
                 selected: false,
                 onSelected: (_) {
-                  ref.read(linksProvider.notifier).clearTagFilters();
+                  ref.read(linkViewModelProvider.notifier).clearTagFilters();
                 },
                 avatar: const Icon(Icons.clear, size: 18),
               ),
@@ -86,7 +89,7 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
                 label: Text(tag),
                 selected: isSelected,
                 onSelected: (_) {
-                  ref.read(linksProvider.notifier).toggleTagFilter(tag);
+                  ref.read(linkViewModelProvider.notifier).toggleTagFilter(tag);
                 },
                 selectedColor:
                     Theme.of(context).colorScheme.primary.withOpacity(0.2),
@@ -99,7 +102,7 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
     );
   }
 
-  Widget _buildLinksList(LinksState state, List<LinkModel> links) {
+  Widget _buildLinksList(LinkState state, List<LinkModel> links) {
     if (state.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -121,7 +124,7 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                ref.read(linksProvider.notifier).loadLinks();
+                ref.read(linkViewModelProvider.notifier).loadLinks();
               },
               child: const Text('Retry'),
             ),
@@ -164,7 +167,7 @@ class _LinksListPageState extends ConsumerState<LinksListPage> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(linksProvider.notifier).loadLinks();
+        await ref.read(linkViewModelProvider.notifier).loadLinks();
       },
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -186,7 +189,7 @@ class LinkSearchDelegate extends SearchDelegate<String> {
   @override
   void close(BuildContext context, String result) {
     // Clear search query when closing search
-    ref.read(linksProvider.notifier).clearSearchQuery();
+    ref.read(linkViewModelProvider.notifier).clearSearchQuery();
     super.close(context, result);
   }
 
@@ -197,7 +200,7 @@ class LinkSearchDelegate extends SearchDelegate<String> {
         icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
-          ref.read(linksProvider.notifier).clearSearchQuery();
+          ref.read(linkViewModelProvider.notifier).clearSearchQuery();
         },
       ),
     ];
@@ -217,10 +220,10 @@ class LinkSearchDelegate extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     // Delay state update to avoid modifying provider during build
     Future.microtask(() {
-      ref.read(linksProvider.notifier).setSearchQuery(query);
+      ref.read(linkViewModelProvider.notifier).setSearchQuery(query);
     });
-    final linksState = ref.watch(linksProvider);
-    final results = linksState.filteredLinks;
+    final linksState = ref.watch(linkViewModelProvider);
+    final results = linksState.displayLinks;
 
     if (results.isEmpty) {
       return const Center(
@@ -242,10 +245,10 @@ class LinkSearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     // Delay state update to avoid modifying provider during build
     Future.microtask(() {
-      ref.read(linksProvider.notifier).setSearchQuery(query);
+      ref.read(linkViewModelProvider.notifier).setSearchQuery(query);
     });
-    final linksState = ref.watch(linksProvider);
-    final suggestions = linksState.filteredLinks;
+    final linksState = ref.watch(linkViewModelProvider);
+    final suggestions = linksState.displayLinks;
 
     if (suggestions.isEmpty) {
       return const Center(

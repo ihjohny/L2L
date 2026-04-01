@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/link_providers.dart';
-import '../../../providers/project_providers.dart';
+import '../../../presentation/viewmodels/link_viewmodel.dart';
+import '../../../presentation/viewmodels/project_viewmodel.dart';
 import '../../../data/models/project_model.dart';
 
 class AddLinkPage extends ConsumerStatefulWidget {
@@ -27,8 +27,10 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
   void initState() {
     super.initState();
     // Load projects for dropdown
-    Future.microtask(() {
-      ref.read(projectsProvider.notifier).loadProjects();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(projectViewModelProvider.notifier).loadProjects();
+      }
     });
   }
 
@@ -43,7 +45,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
 
   @override
   Widget build(BuildContext context) {
-    final projectsState = ref.watch(projectsProvider);
+    final projectState = ref.watch(projectViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -122,10 +124,10 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                 optionsBuilder: (textEditingValue) {
                   // Show all projects when empty
                   if (textEditingValue.text.isEmpty) {
-                    return projectsState.projects.map((p) => p.name);
+                    return projectState.projects.map((p) => p.name);
                   }
                   // Filter projects by search text
-                  return projectsState.projects
+                  return projectState.projects
                       .where((project) => project.name
                           .toLowerCase()
                           .contains(textEditingValue.text.toLowerCase()))
@@ -138,7 +140,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                     focusNode: focusNode,
                     decoration: InputDecoration(
                       hintText: _selectedProjectId != null
-                          ? projectsState.projects
+                          ? projectState.projects
                               .firstWhere((p) => p.id == _selectedProjectId)
                               .name
                           : 'Search or create project...',
@@ -172,7 +174,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                     onChanged: (value) {
                       setState(() {
                         if (value.isNotEmpty) {
-                          final existingProject = projectsState.projects
+                          final existingProject = projectState.projects
                               .firstWhere((p) =>
                                   p.name.toLowerCase() == value.toLowerCase(),
                               orElse: () => ProjectModel.empty());
@@ -201,7 +203,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                           itemCount: options.length,
                           itemBuilder: (context, index) {
                             final projectName = options.elementAt(index);
-                            final project = projectsState.projects
+                            final project = projectState.projects
                                 .firstWhere((p) => p.name == projectName);
                             return ListTile(
                               leading: Container(
@@ -240,7 +242,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                   );
                 },
                 onSelected: (projectName) {
-                  final project = projectsState.projects
+                  final project = projectState.projects
                       .firstWhere((p) => p.name == projectName);
                   setState(() {
                     _selectedProjectId = project.id;
@@ -320,23 +322,16 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
     });
 
     try {
-      // Parse tags
-      final tags = _tagsController.text
-          .split(',')
-          .map((t) => t.trim())
-          .where((t) => t.isNotEmpty)
-          .toList();
-
       // Handle project selection/creation
       String? finalProjectId = _selectedProjectId;
 
       // Create new project if user typed a new name
       if (_newProjectName != null && _newProjectName!.isNotEmpty) {
-        final projectsNotifier = ref.read(projectsProvider.notifier);
-        final projectsState = ref.read(projectsProvider);
+        final projectViewModel = ref.read(projectViewModelProvider.notifier);
 
         // Check if project with same name already exists
-        final existingProject = projectsState.projects
+        final projectState = ref.watch(projectViewModelProvider);
+        final existingProject = projectState.projects
             .firstWhere((p) => p.name.toLowerCase() == _newProjectName!.toLowerCase(), orElse: () => ProjectModel.empty());
 
         if (existingProject.id.isNotEmpty) {
@@ -344,27 +339,33 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
           finalProjectId = existingProject.id;
         } else {
           // Create new project first
-          final newProject = await projectsNotifier.createProject(
-            name: _newProjectName!,
-          );
-          if (newProject != null) {
-            finalProjectId = newProject.id;
+          projectViewModel.setFormName(_newProjectName!);
+          await projectViewModel.createProject();
+
+          // Get the newly created project
+          final newState = ref.read(projectViewModelProvider);
+          if (newState.projects.isNotEmpty) {
+            finalProjectId = newState.projects.last.id;
           }
         }
       }
 
-      final notifier = ref.read(linksProvider.notifier);
+      final linkViewModel = ref.read(linkViewModelProvider.notifier);
 
-      final result = await notifier.addLink(
-        url: _urlController.text.trim(),
-        title: _titleController.text.trim().isEmpty
-            ? null
-            : _titleController.text.trim(),
-        projectId: finalProjectId,
-        tags: tags.isEmpty ? null : tags,
-      );
+      // Set form values
+      linkViewModel.setFormUrl(_urlController.text.trim());
+      if (_titleController.text.trim().isNotEmpty) {
+        linkViewModel.setFormTitle(_titleController.text.trim());
+      }
+      linkViewModel.setFormTags(_tagsController.text);
+      if (finalProjectId != null) {
+        linkViewModel.setFormProjectId(finalProjectId);
+      }
 
-      if (result != null && mounted) {
+      // Create link
+      await linkViewModel.createLink();
+
+      if (mounted) {
         // Success - show snackbar and go back
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -373,16 +374,6 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
           ),
         );
         context.pop(true);
-      } else if (mounted) {
-        // Failed
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              ref.read(linksProvider).error ?? 'Failed to save link',
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
       }
     } catch (e) {
       if (mounted) {

@@ -1,43 +1,63 @@
-import '../models/user_model.dart';
-import '../services/auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/models/user_model.dart';
+import '../../data/services/auth_service.dart';
 import '../../core/storage/secure_storage.dart';
+import '../../core/utils/result.dart';
 
+/// Provider for AuthRepository with dependency injection.
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository(
+    authService: AuthService(),
+    secureStorage: SecureStorage(),
+  );
+});
+
+/// Repository for authentication operations.
+///
+/// Coordinates between AuthService and SecureStorage to manage
+/// authentication state and token persistence.
 class AuthRepository {
   final AuthService _authService;
   final SecureStorage _secureStorage;
 
   AuthRepository({
-    AuthService? authService,
-    SecureStorage? secureStorage,
-  })  : _authService = authService ?? AuthService(),
-        _secureStorage = secureStorage ?? SecureStorage();
+    required AuthService authService,
+    required SecureStorage secureStorage,
+  })  : _authService = authService,
+        _secureStorage = secureStorage;
 
-  /// Initialize auth - check for existing session
-  Future<UserModel?> initializeAuth() async {
-    final accessToken = await _secureStorage.getAccessToken();
-    if (accessToken != null) {
-      try {
-        // Validate token by fetching current user
-        final user = await _authService.getCurrentUser();
-        return user;
-      } catch (e) {
-        // Token expired, try refresh
-        final refreshed = await refreshAuthToken();
-        if (refreshed) {
-          try {
-            return await _authService.getCurrentUser();
-          } catch (e2) {
-            // Refresh didn't help, return null
-            return null;
+  /// Initialize auth - check for existing session.
+  /// Returns [Success] with user if authenticated, [Failure] otherwise.
+  Future<Result<UserModel?>> initializeAuth() async {
+    try {
+      final accessToken = await _secureStorage.getAccessToken();
+      if (accessToken != null) {
+        try {
+          // Validate token by fetching current user
+          final user = await _authService.getCurrentUser();
+          return Success(user);
+        } catch (_) {
+          // Token expired, try refresh
+          final refreshed = await _refreshAuthToken();
+          if (refreshed) {
+            try {
+              final user = await _authService.getCurrentUser();
+              return Success(user);
+            } catch (_) {
+              return const Success(null);
+            }
           }
         }
       }
+      return const Success(null);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
     }
-    return null;
   }
 
-  /// Login
-  Future<AuthResult> login(String email, String password) async {
+  /// Login with email and password.
+  /// Returns [Success] with user on success, [Failure] with error message on failure.
+  Future<Result<UserModel>> login(String email, String password) async {
     try {
       final response = await _authService.login(email, password);
 
@@ -47,25 +67,23 @@ class AuthRepository {
         response.refreshToken,
       );
 
-      return AuthResult(success: true, user: response.user);
+      return Success(response.user);
     } catch (e) {
-      return AuthResult(
-        success: false,
-        error: e.toString().replaceAll('Exception: ', ''),
-      );
+      return Failure(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
-  /// Register
-  Future<AuthResult> register({
-    required String email,
+  /// Register with name, email and password.
+  /// Returns [Success] with user on success, [Failure] with error message on failure.
+  Future<Result<UserModel>> register({
     required String name,
+    required String email,
     required String password,
   }) async {
     try {
       final response = await _authService.register(
-        email: email,
         name: name,
+        email: email,
         password: password,
       );
 
@@ -75,27 +93,29 @@ class AuthRepository {
         response.refreshToken,
       );
 
-      return AuthResult(success: true, user: response.user);
+      return Success(response.user);
     } catch (e) {
-      return AuthResult(
-        success: false,
-        error: e.toString().replaceAll('Exception: ', ''),
-      );
+      return Failure(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
-  /// Logout
+  /// Logout - clear stored tokens.
   Future<void> logout() async {
     await _secureStorage.clearTokens();
   }
 
-  /// Get user profile
-  Future<UserModel> getProfile() async {
-    return await _authService.getCurrentUser();
+  /// Get user profile.
+  Future<Result<UserModel>> getProfile() async {
+    try {
+      final user = await _authService.getCurrentUser();
+      return Success(user);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
   }
 
-  /// Refresh auth token
-  Future<bool> refreshAuthToken() async {
+  /// Refresh auth token internally.
+  Future<bool> _refreshAuthToken() async {
     try {
       final refreshToken = await _secureStorage.getRefreshToken();
       if (refreshToken == null) return false;
@@ -113,16 +133,4 @@ class AuthRepository {
       return false;
     }
   }
-}
-
-class AuthResult {
-  final UserModel? user;
-  final bool success;
-  final String? error;
-
-  AuthResult({
-    this.user,
-    required this.success,
-    this.error,
-  });
 }

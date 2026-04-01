@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/auth_providers.dart';
+import '../../../presentation/viewmodels/auth_viewmodel.dart';
 
-class ProfilePage extends ConsumerWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authViewModelProvider);
     final user = authState.user;
 
     return Scaffold(
@@ -89,7 +94,7 @@ class ProfilePage extends ConsumerWidget {
               );
 
               if (confirmed == true && context.mounted) {
-                await ref.read(authProvider.notifier).logout();
+                await ref.read(authViewModelProvider.notifier).logout();
               }
             },
           ),

@@ -107,10 +107,13 @@ lib/
 ├── main.dart                          # App entry point
 ├── app.dart                           # MaterialApp configuration
 │
-├── providers/
-│   ├── auth_providers.dart            # Auth state management
-│   ├── project_providers.dart         # Project state management
-│   └── link_providers.dart            # Link state management
+├── viewmodels/
+│   ├── auth_viewmodel.dart            # Auth ViewModel with StateNotifier
+│   ├── auth_state.dart                # AuthState (Freezed)
+│   ├── project_viewmodel.dart         # Project ViewModel with StateNotifier
+│   ├── project_state.dart             # ProjectState (Freezed)
+│   ├── link_viewmodel.dart            # Link ViewModel with StateNotifier
+│   └── link_state.dart                # LinkState (Freezed)
 │
 ├── core/
 │   ├── app/
@@ -136,7 +139,9 @@ lib/
 │   │   ├── link_model.dart            # Link data class
 │   │   └── job_model.dart             # Job status data class
 │   ├── repositories/
-│   │   └── auth_repository.dart       # Auth business logic
+│   │   ├── auth_repository.dart       # Auth business logic
+│   │   ├── project_repository.dart    # Project business logic
+│   │   └── link_repository.dart       # Link business logic
 │   └── services/
 │       ├── auth_service.dart          # Auth API calls
 │       ├── project_service.dart       # Project API calls
@@ -948,111 +953,97 @@ lib/
 
 ## 6. State Management Patterns
 
-### 6.1 Riverpod Provider Structure
+### 6.1 MVVM Architecture with Riverpod
 
-**Pattern:** StateNotifier for complex state, Provider for services
+**Pattern:** ViewModel (StateNotifier) + Immutable State (Freezed)
 
-**Auth Providers:**
+**ViewModels:**
 ```
-authRepositoryProvider → Provider<AuthRepository>
-authProvider → StateNotifierProvider<AuthNotifier, AuthState>
-isAuthenticatedProvider → Provider<bool> (derived)
-currentUserProvider → Provider<UserModel?> (derived)
-authLoadingProvider → Provider<bool> (derived)
-authErrorProvider → Provider<String?> (derived)
+authViewModelProvider → StateNotifierProvider<AuthViewModel, AuthState>
+projectViewModelProvider → StateNotifierProvider<ProjectViewModel, ProjectState>
+linkViewModelProvider → StateNotifierProvider<LinkViewModel, LinkState>
 ```
 
-**Project Providers:**
-```
-projectServiceProvider → Provider<ProjectService>
-projectsProvider → StateNotifierProvider<ProjectsNotifier, ProjectsState>
-projectByIdProvider → Provider.family<ProjectModel?, String> (derived)
-selectedProjectProvider → Provider<ProjectModel?> (derived)
-```
+**State Classes:**
+- Use `@freezed` for immutable state with `copyWith` support
+- Include loading, error, navigation triggers, and domain data
+- Extension methods (`[Feature]StateX`) for computed properties
 
-**Link Providers:**
-```
-linkServiceProvider → Provider<LinkService>
-linksProvider → StateNotifierProvider<LinksNotifier, LinksState>
-linkByIdProvider → Provider.family<LinkModel?, String> (derived)
-```
+### 6.2 Result Pattern for Error Handling
 
-### 6.2 State Class Pattern
+**Pattern:** Custom sealed class `Result<T>` with `Success` and `Failure` variants
 
-**Structure:**
-```
-class [Feature]State {
-  final List<[Model]> items;
-  final bool isLoading;
-  final String? error;
-  final [AdditionalState] selected[Item];
-
-  [Feature]State({
-    this.items = const [],
-    this.isLoading = false,
-    this.error,
-    this.selected[Item],
-  });
-
-  [Feature]State copyWith({
-    List<[Model]>? items,
-    bool? isLoading,
-    String? error,
-    [AdditionalState]? selected[Item],
-  }) {
-    return [Feature]State(
-      items: items ?? this.items,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
-      selected[Item]: selected[Item] ?? this.selected[Item],
-    );
-  }
+```dart
+abstract class Result<T> {
+  bool get isSuccess;
+  T get data;
+  String? get error;
+  R fold<R>(R Function(T) onSuccess, R Function(String) onFailure);
 }
 ```
 
-### 6.3 StateNotifier Pattern
+All repositories return `Result<T>` to enforce explicit error handling.
+
+### 6.3 Navigation Triggers
+
+**Pattern:** Enum-based navigation triggers in state
+
+```dart
+enum AuthNavigationTrigger { none, toHome, toLogin, toRegister }
+enum ProjectNavigationTrigger { none, toProjectsList, toProjectDetail, ... }
+enum LinkNavigationTrigger { none, toLinksList, toLinkDetail, ... }
+```
+
+UI observes state and performs navigation in `addPostFrameCallback` to avoid state-during-build issues.
+
+### 6.4 ViewModel Pattern
 
 **Structure:**
-```
-class [Feature]Notifier extends StateNotifier<[Feature]State> {
-  final [Feature]Service _service;
+```dart
+class [Feature]ViewModel extends StateNotifier<[Feature]State> {
+  final [Feature]Repository _repository;
+  final Ref _ref; // For accessing other providers
 
-  [Feature]Notifier(this._service) : super([Feature]State()) {
+  [Feature]ViewModel(this._repository, this._ref) : super([Feature]State.initial()) {
     _initialize();
   }
 
   Future<void> load[Items]() async {
     state = state.copyWith(isLoading: true, error: null);
-    try {
-      final items = await _service.getItems();
-      state = [Feature]State(items: items, isLoading: false);
-    } catch (e) {
-      state = state.copyWith(
-        items: state.items,
+
+    final result = await _repository.get[Items]();
+    result.fold(
+      (items) => state = state.copyWith(items: items, isLoading: false),
+      (error) => state = state.copyWith(isLoading: false, error: error),
+    );
+  }
+
+  Future<void> create[Item]() async {
+    if (!state.canSave[Item]) return;
+
+    state = state.copyWith(isLoading: true, error: null);
+
+    final result = await _repository.create[Item](
+      name: state.formName,
+      ...
+    );
+    result.fold(
+      (newItem) => state = state.copyWith(
+        items: [...state.items, newItem],
         isLoading: false,
-        error: e.toString().replaceAll('Exception: ', ''),
-      );
-    }
+        navigationTrigger: [NavigationTrigger].to[Items]List,
+      ),
+      (error) => state = state.copyWith(isLoading: false, error: error),
+    );
   }
 
-  Future<[Model]?> create[Item]({...params}) async {
-    try {
-      final newItem = await _service.createItem(...params);
-      state = state.copyWith(items: [...state.items, newItem]);
-      return newItem;
-    } catch (e) {
-      state = state.copyWith(error: e.toString().replaceAll('Exception: ', ''));
-      return null;
-    }
-  }
-
-  void clearError() {
-    state = state.copyWith(error: null);
+  void resetNavigationTrigger() {
+    state = state.copyWith(navigationTrigger: [NavigationTrigger].none);
   }
 }
 ```
 
-### 6.4 Usage in Screens
+### 6.5 Usage in Screens
 
 **Pattern:**
 ```dart
@@ -1066,15 +1057,23 @@ class _[Screen]State extends ConsumerState<[Screen]> {
   void initState() {
     super.initState();
     // Trigger data loading
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read([feature]Provider.notifier).load[Items]();
+    Future.microtask(() {
+      ref.read([feature]ViewModelProvider.notifier).load[Items]();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch([feature]Provider);
-    final notifier = ref.read([feature]Provider.notifier);
+    final state = ref.watch([feature]ViewModelProvider);
+    final notifier = ref.read([feature]ViewModelProvider.notifier);
+
+    // Handle navigation triggers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (state.navigationTrigger != [NavigationTrigger].none) {
+        // Perform navigation based on trigger
+        // Then call notifier.resetNavigationTrigger()
+      }
+    });
 
     if (state.isLoading) return LoadingWidget();
     if (state.error != null) return ErrorWidget(message: state.error!);

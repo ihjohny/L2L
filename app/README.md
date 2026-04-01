@@ -11,10 +11,32 @@ The L2L Flutter application provides a cross-platform mobile/web interface for m
 | Layer | Directory | Purpose |
 |-------|-----------|---------|
 | **Presentation** | `lib/presentation/` | UI screens and widgets |
-| **Providers** | `lib/core/providers/` | Riverpod state management |
+| **ViewModels** | `lib/presentation/viewmodels/` | Riverpod StateNotifiers for state management |
 | **Routing** | `lib/core/router/` | GoRouter navigation |
-| **Data** | `lib/data/` | Models, services, repositories |
+| **Data** | `lib/data/` | Models, repositories, services |
 | **Core** | `lib/core/` | Constants, network, storage, utils |
+
+### MVVM Architecture
+
+The app follows the MVVM (Model-View-ViewModel) pattern:
+
+- **Model**: Data classes (`LinkModel`, `ProjectModel`, `UserModel`) and repositories
+- **View**: Flutter widgets (pages and reusable components) that observe ViewModel state
+- **ViewModel**: `StateNotifier` classes that manage business logic and state transitions
+
+### State Management
+
+The app uses Riverpod with the Result pattern:
+
+- **AuthViewModel**: Manages authentication state (login, logout, register)
+- **ProjectViewModel**: Manages projects list and selected project with links
+- **LinkViewModel**: Manages links list with filtering by project/tags
+
+All repository methods return `Result<T>` (sealed class with `Success`/`Failure`) to enforce explicit error handling.
+
+### Navigation Pattern
+
+Navigation is triggered via enum flags in ViewModel state (`AuthNavigationTrigger`, `ProjectNavigationTrigger`, `LinkNavigationTrigger`). Views observe these triggers and perform navigation in `addPostFrameCallback`, keeping ViewModels testable and free of Flutter dependencies.
 
 ## Features
 
@@ -94,19 +116,27 @@ app/
 ├── lib/
 │   ├── main.dart                 # App entry point
 │   ├── core/
-│   │   ├── providers/            # Riverpod providers (auth, projects, links)
 │   │   ├── router/               # GoRouter configuration
 │   │   ├── constants/            # App constants (API endpoints, etc.)
-│   │   └── utils/                # Utility functions
+│   │   ├── utils/                # Utility functions (Result, NavigationTriggers)
+│   │   └── theme/                # App theme configuration
 │   ├── data/
 │   │   ├── models/               # Data models (Link, Project, User)
+│   │   ├── repositories/         # Business logic (Auth, Project, Link)
 │   │   └── services/             # API services (AuthService, ProjectService, LinkService)
 │   └── presentation/
+│       ├── viewmodels/           # Riverpod StateNotifiers
+│       │   ├── auth_viewmodel.dart
+│       │   ├── auth_state.dart
+│       │   ├── project_viewmodel.dart
+│       │   ├── project_state.dart
+│       │   ├── link_viewmodel.dart
+│       │   └── link_state.dart
 │       ├── pages/                # Screen widgets
 │       │   ├── auth/             # Login, Register screens
 │       │   ├── home/             # Main app screens
-│       │   ├── projects/         # Project list, detail, create screens
-│       │   └── links/            # Link detail screens
+│       │   ├── projects/         # Project list, detail, edit screens
+│       │   └── links/            # Link list, detail, add screens
 │       └── widgets/              # Reusable widgets
 ├── test/                         # Widget and unit tests
 └── pubspec.yaml                  # Dependencies
@@ -130,11 +160,16 @@ The app communicates with the backend API at `http://localhost:3000/api/v1`:
 
 ## State Management
 
-The app uses Riverpod for state management:
+The app uses Riverpod with MVVM architecture:
 
-- **AuthNotifier**: Manages authentication state (login, logout, register)
-- **ProjectsNotifier**: Manages projects list and selected project
-- **LinksNotifier**: Manages links list with filtering by project/tags
+- **AuthViewModel**: Manages authentication state (login, logout, register) with navigation triggers
+- **ProjectViewModel**: Manages projects list and selected project with links
+- **LinkViewModel**: Manages links list with filtering by project/tags
+
+All business logic is in ViewModels. Views (pages/widgets) only:
+- Observe state via `ref.watch(viewModelProvider)`
+- Invoke commands via `ref.read(viewModelProvider.notifier).method()`
+- Handle navigation based on navigation trigger enums in state
 
 ## Testing
 

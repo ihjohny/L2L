@@ -2,8 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import '../../../providers/link_providers.dart';
+import '../../../presentation/viewmodels/link_viewmodel.dart';
 import '../../../data/models/link_model.dart';
+
+// Extension to access displayTitle and other extension methods from link_model.dart
+// These are already defined in link_model.dart as LinkModelX
+extension LinkModelDisplay on LinkModel {
+  String get displayTitleAlias => title ?? _extractDomain(url);
+
+  String _extractDomain(String url) {
+    try {
+      final uri = Uri.parse(url);
+      return uri.host.replaceAll('www.', '');
+    } catch (_) {
+      return url;
+    }
+  }
+}
 
 class LinkDetailsPage extends ConsumerStatefulWidget {
   final String linkId;
@@ -15,87 +30,118 @@ class LinkDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
+  LinkModel? _link;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        _loadLink();
+      }
+    });
+  }
+
+  Future<void> _loadLink() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final linkViewModel = ref.read(linkViewModelProvider.notifier);
+      linkViewModel.selectLink(widget.linkId);
+
+      // Get link from state
+      final state = ref.read(linkViewModelProvider);
+      setState(() {
+        _link = state.selectedLink;
+        _isLoading = false;
+        if (_link == null) {
+          _error = 'Link not found';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = e.toString().replaceAll('Exception: ', '');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final linkAsync = ref.watch(singleLinkProvider(widget.linkId));
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Link Details')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: linkAsync.when(
-          data: (link) => Text(link.displayTitle),
-          loading: () => const Text('Loading...'),
-          error: (_, __) => const Text('Link Details'),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () {
-              final link = linkAsync.value;
-              if (link != null) {
-                _launchUrl(link.url);
-              }
-            },
-            tooltip: 'Open original link',
-          ),
-        ],
-      ),
-      body: linkAsync.when(
-        data: (link) => _buildContent(link, context),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
+    if (_error != null || _link == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Link Details')),
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
               Text(
-                error.toString().replaceAll('Exception: ', ''),
+                _error ?? 'Link not found',
                 style: const TextStyle(color: Colors.red),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  ref.invalidate(singleLinkProvider(widget.linkId));
-                },
+                onPressed: _loadLink,
                 child: const Text('Retry'),
               ),
             ],
           ),
         ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_link!.displayTitleAlias),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.open_in_new),
+            onPressed: () => _launchUrl(_link!.url),
+            tooltip: 'Open original link',
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildContent(LinkModel link, BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(singleLinkProvider(widget.linkId));
-        await ref.read(singleLinkProvider(widget.linkId).future);
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Link Info Card
-            _buildLinkInfoCard(link, context),
-            const SizedBox(height: 16),
-
-            // Status Card
-            _buildStatusCard(link, context),
-            const SizedBox(height: 16),
-
-            // Summary Card (when completed)
-            if (link.isProcessed && link.summary != null) ...[
-              _buildSummaryCard(link, context),
+      body: RefreshIndicator(
+        onRefresh: _loadLink,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Link Info Card
+              _buildLinkInfoCard(_link!, context),
               const SizedBox(height: 16),
-            ],
 
-            // Flashcards Card (when completed)
-            if (link.isProcessed && link.flashcards != null)
-              _buildFlashcardsCard(link, context),
-          ],
+              // Status Card
+              _buildStatusCard(_link!, context),
+              const SizedBox(height: 16),
+
+              // Summary Card (when completed)
+              if (_link!.isProcessed && _link!.summary != null) ...[
+                _buildSummaryCard(_link!, context),
+                const SizedBox(height: 16),
+              ],
+
+              // Flashcards Card (when completed)
+              if (_link!.isProcessed && _link!.flashcards != null)
+                _buildFlashcardsCard(_link!, context),
+            ],
+          ),
         ),
       ),
     );
@@ -109,7 +155,7 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              link.displayTitle,
+              link.displayTitleAlias,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -169,6 +215,9 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
         break;
     }
 
+    final isProcessed = link.status == LinkStatus.completed;
+    final isProcessing = link.status == LinkStatus.processing;
+
     return Card(
       color: statusColor.withOpacity(0.1),
       child: Padding(
@@ -182,9 +231,9 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    link.status == LinkStatus.processing
+                    isProcessing
                         ? 'Processing...'
-                        : link.isProcessed
+                        : isProcessed
                             ? 'Ready'
                             : 'Error',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -202,7 +251,7 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
                 ],
               ),
             ),
-            if (link.isProcessing)
+            if (isProcessing)
               const SizedBox(
                 width: 20,
                 height: 20,
@@ -216,6 +265,9 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
 
   Widget _buildSummaryCard(LinkModel link, BuildContext context) {
     final summary = link.summary!;
+    final isProcessed = link.status == LinkStatus.completed;
+
+    if (!isProcessed) return const SizedBox.shrink();
 
     return Card(
       child: Padding(

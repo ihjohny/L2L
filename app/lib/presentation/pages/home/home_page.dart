@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/link_providers.dart';
-import '../../../providers/project_providers.dart';
+import '../../../presentation/viewmodels/link_viewmodel.dart';
+import '../../../presentation/viewmodels/project_viewmodel.dart';
 import 'widgets/recent_projects_section.dart';
 import 'widgets/recent_links_section.dart';
 
@@ -18,9 +18,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     // Load data when screen initializes
-    Future.microtask(() {
-      ref.read(linksProvider.notifier).loadLinks();
-      ref.read(projectsProvider.notifier).loadProjects();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(linkViewModelProvider.notifier).loadLinks();
+        ref.read(projectViewModelProvider.notifier).loadProjects();
+      }
     });
   }
 

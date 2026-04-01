@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/project_providers.dart';
+import '../../../presentation/viewmodels/project_viewmodel.dart';
+import '../../../presentation/viewmodels/project_state.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 
@@ -23,7 +24,8 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
   @override
   void initState() {
     super.initState();
-    final project = ref.read(projectByIdProvider(widget.projectId));
+    final state = ref.read(projectViewModelProvider);
+    final project = state.getProjectById(widget.projectId);
     _nameController = TextEditingController(text: project?.name ?? '');
     _descriptionController = TextEditingController(text: project?.description ?? '');
   }
@@ -37,7 +39,8 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
 
   @override
   Widget build(BuildContext context) {
-    final project = ref.watch(projectByIdProvider(widget.projectId));
+    final state = ref.watch(projectViewModelProvider);
+    final project = state.getProjectById(widget.projectId);
 
     if (project == null) {
       return const Scaffold(
@@ -103,11 +106,15 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
       final name = _nameController.text.trim();
       final description = _descriptionController.text.trim();
 
-      await ref.read(projectsProvider.notifier).updateProject(
-        projectId: widget.projectId,
-        name: name,
-        description: description.isEmpty ? null : description,
-      );
+      // Set form fields first
+      final viewModel = ref.read(projectViewModelProvider.notifier);
+      viewModel.setFormName(name);
+      if (description.isNotEmpty) {
+        viewModel.setFormDescription(description);
+      }
+
+      // Update project using form state
+      await viewModel.updateProject();
 
       if (mounted) {
         context.pop();
