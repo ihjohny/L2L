@@ -167,12 +167,14 @@ class ProjectCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 )
-              : Text(
-                  '${project.linkCount} ${project.linkCount == 1 ? 'link' : 'links'}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[500],
-                      ),
-                ),
+              : project.linkCount > 0
+                  ? Text(
+                      '${project.linkCount} ${project.linkCount == 1 ? 'link' : 'links'}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[500],
+                          ),
+                    )
+                  : const SizedBox.shrink(),
         ],
       ),
     );
