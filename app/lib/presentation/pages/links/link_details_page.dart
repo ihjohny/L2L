@@ -5,21 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../presentation/viewmodels/link_viewmodel.dart';
 import '../../../data/models/link_model.dart';
 
-// Extension to access displayTitle and other extension methods from link_model.dart
-// These are already defined in link_model.dart as LinkModelX
-extension LinkModelDisplay on LinkModel {
-  String get displayTitleAlias => title ?? _extractDomain(url);
-
-  String _extractDomain(String url) {
-    try {
-      final uri = Uri.parse(url);
-      return uri.host.replaceAll('www.', '');
-    } catch (_) {
-      return url;
-    }
-  }
-}
-
 class LinkDetailsPage extends ConsumerStatefulWidget {
   final String linkId;
 
@@ -107,7 +92,7 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_link!.displayTitleAlias),
+        title: Text(_link!.displayTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.open_in_new),
@@ -155,7 +140,7 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              link.displayTitleAlias,
+              link.displayTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
