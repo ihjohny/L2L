@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/link_viewmodel.dart';
-import '../../../presentation/viewmodels/project_viewmodel.dart';
+import '../../../presentation/viewmodels/add_link_viewmodel.dart';
+import '../../../presentation/viewmodels/add_link_state.dart';
 import '../../../data/models/project_model.dart';
 
 class AddLinkPage extends ConsumerStatefulWidget {
@@ -20,18 +20,11 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
   final _projectSearchController = TextEditingController();
 
   String? _selectedProjectId;
-  String? _newProjectName;
   bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
-    // Load projects for dropdown
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(projectViewModelProvider.notifier).loadProjects();
-      }
-    });
   }
 
   @override
@@ -45,7 +38,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
 
   @override
   Widget build(BuildContext context) {
-    final projectState = ref.watch(projectViewModelProvider);
+    final state = ref.watch(addLinkViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -82,6 +75,9 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  ref.read(addLinkViewModelProvider.notifier).setUrl(value);
+                },
               ),
               const SizedBox(height: 16),
 
@@ -95,6 +91,9 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                   border: OutlineInputBorder(),
                 ),
                 textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  ref.read(addLinkViewModelProvider.notifier).setTitle(value);
+                },
               ),
               const SizedBox(height: 16),
               // Tags Field (Optional)
@@ -108,6 +107,9 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                   helperText: 'Separate tags with commas',
                 ),
                 textInputAction: TextInputAction.done,
+                onChanged: (value) {
+                  ref.read(addLinkViewModelProvider.notifier).setTags(value);
+                },
               ),
               const SizedBox(height: 16),
               // Project Selection (Autocomplete)
@@ -124,10 +126,10 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                 optionsBuilder: (textEditingValue) {
                   // Show all projects when empty
                   if (textEditingValue.text.isEmpty) {
-                    return projectState.projects.map((p) => p.name);
+                    return state.projects.map((p) => p.name);
                   }
                   // Filter projects by search text
-                  return projectState.projects
+                  return state.projects
                       .where((project) => project.name
                           .toLowerCase()
                           .contains(textEditingValue.text.toLowerCase()))
@@ -140,7 +142,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                     focusNode: focusNode,
                     decoration: InputDecoration(
                       hintText: _selectedProjectId != null
-                          ? projectState.projects
+                          ? state.projects
                               .firstWhere((p) => p.id == _selectedProjectId)
                               .name
                           : 'Search or create project...',
@@ -158,8 +160,8 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                               onPressed: () {
                                 setState(() {
                                   _selectedProjectId = null;
-                                  _newProjectName = null;
                                   controller.clear();
+                                  ref.read(addLinkViewModelProvider.notifier).setProjectId(null);
                                 });
                               },
                             )
@@ -174,17 +176,19 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                     onChanged: (value) {
                       setState(() {
                         if (value.isNotEmpty) {
-                          final existingProject = projectState.projects
+                          final existingProject = state.projects
                               .firstWhere((p) =>
                                   p.name.toLowerCase() == value.toLowerCase(),
                               orElse: () => ProjectModel.empty());
                           if (existingProject.id.isEmpty) {
-                            _newProjectName = value;
+                            ref.read(addLinkViewModelProvider.notifier).setNewProjectName(value);
                           } else {
-                            _newProjectName = null;
+                            ref.read(addLinkViewModelProvider.notifier).setNewProjectName(null);
+                            ref.read(addLinkViewModelProvider.notifier).setProjectId(existingProject.id);
                           }
                         } else {
-                          _newProjectName = null;
+                          ref.read(addLinkViewModelProvider.notifier).setNewProjectName(null);
+                          ref.read(addLinkViewModelProvider.notifier).setProjectId(null);
                         }
                       });
                     },
@@ -203,7 +207,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                           itemCount: options.length,
                           itemBuilder: (context, index) {
                             final projectName = options.elementAt(index);
-                            final project = projectState.projects
+                            final project = state.projects
                                 .firstWhere((p) => p.name == projectName);
                             return ListTile(
                               leading: Container(
@@ -242,17 +246,17 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                   );
                 },
                 onSelected: (projectName) {
-                  final project = projectState.projects
+                  final project = state.projects
                       .firstWhere((p) => p.name == projectName);
                   setState(() {
                     _selectedProjectId = project.id;
-                    _newProjectName = null;
                     _projectSearchController.clear();
                   });
+                  ref.read(addLinkViewModelProvider.notifier).setProjectId(project.id);
                 },
               ),
               // Show "Create new project" indicator when typing unknown name
-              if (_newProjectName != null) ...[
+              if (state.isCreatingNewProject) ...[
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -272,7 +276,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'New project "$_newProjectName"',
+                          'New project "${state.newProjectName}"',
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.w500,
@@ -290,7 +294,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
 
               // Submit Button
               ElevatedButton(
-                onPressed: _isSubmitting ? null : _submit,
+                onPressed: state.canSubmit && !_isSubmitting ? _submit : null,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -322,58 +326,33 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
     });
 
     try {
-      // Handle project selection/creation
-      String? finalProjectId = _selectedProjectId;
+      final linkViewModel = ref.read(addLinkViewModelProvider.notifier);
 
-      // Create new project if user typed a new name
-      if (_newProjectName != null && _newProjectName!.isNotEmpty) {
-        final projectViewModel = ref.read(projectViewModelProvider.notifier);
-
-        // Check if project with same name already exists
-        final projectState = ref.watch(projectViewModelProvider);
-        final existingProject = projectState.projects
-            .firstWhere((p) => p.name.toLowerCase() == _newProjectName!.toLowerCase(), orElse: () => ProjectModel.empty());
-
-        if (existingProject.id.isNotEmpty) {
-          // Use existing project
-          finalProjectId = existingProject.id;
-        } else {
-          // Create new project first
-          projectViewModel.setFormName(_newProjectName!);
-          await projectViewModel.createProject();
-
-          // Get the newly created project
-          final newState = ref.read(projectViewModelProvider);
-          if (newState.projects.isNotEmpty) {
-            finalProjectId = newState.projects.last.id;
-          }
-        }
-      }
-
-      final linkViewModel = ref.read(linkViewModelProvider.notifier);
-
-      // Set form values
-      linkViewModel.setFormUrl(_urlController.text.trim());
-      if (_titleController.text.trim().isNotEmpty) {
-        linkViewModel.setFormTitle(_titleController.text.trim());
-      }
-      linkViewModel.setFormTags(_tagsController.text);
-      if (finalProjectId != null) {
-        linkViewModel.setFormProjectId(finalProjectId);
-      }
-
-      // Create link
-      await linkViewModel.createLink();
+      // Submit via ViewModel
+      final success = await linkViewModel.submitLink();
 
       if (mounted) {
-        // Success - show snackbar and go back
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Link saved successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.pop(true);
+        if (success) {
+          // Success - show snackbar and go back
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Link saved successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          context.pop(true);
+        } else {
+          // Error - show error message
+          final state = ref.read(addLinkViewModelProvider);
+          if (state.error != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error!),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       }
     } catch (e) {
       if (mounted) {

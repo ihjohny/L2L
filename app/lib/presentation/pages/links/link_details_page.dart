@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import '../../../presentation/viewmodels/link_viewmodel.dart';
+import '../../../presentation/viewmodels/link_detail_viewmodel.dart';
 import '../../../data/models/link_model.dart';
 
 class LinkDetailsPage extends ConsumerStatefulWidget {
@@ -15,57 +15,28 @@ class LinkDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
-  LinkModel? _link;
-  bool _isLoading = true;
-  String? _error;
-
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       if (mounted) {
-        _loadLink();
+        ref.read(linkDetailViewModelProvider.notifier).loadLink(widget.linkId);
       }
     });
   }
 
-  Future<void> _loadLink() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final linkViewModel = ref.read(linkViewModelProvider.notifier);
-      linkViewModel.selectLink(widget.linkId);
-
-      // Get link from state
-      final state = ref.read(linkViewModelProvider);
-      setState(() {
-        _link = state.selectedLink;
-        _isLoading = false;
-        if (_link == null) {
-          _error = 'Link not found';
-        }
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _error = e.toString().replaceAll('Exception: ', '');
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final state = ref.watch(linkDetailViewModelProvider);
+
+    if (state.isLoading) {
       return Scaffold(
         appBar: AppBar(title: const Text('Link Details')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (_error != null || _link == null) {
+    if (state.error != null || state.link == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Link Details')),
         body: Center(
@@ -75,13 +46,15 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
               Text(
-                _error ?? 'Link not found',
+                state.error ?? 'Link not found',
                 style: const TextStyle(color: Colors.red),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _loadLink,
+                onPressed: () {
+                  ref.read(linkDetailViewModelProvider.notifier).loadLink(widget.linkId);
+                },
                 child: const Text('Retry'),
               ),
             ],
@@ -90,41 +63,43 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
       );
     }
 
+    final link = state.link!;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(_link!.displayTitle),
+        title: Text(link.displayTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.open_in_new),
-            onPressed: () => _launchUrl(_link!.url),
+            onPressed: () => _launchUrl(link.url),
             tooltip: 'Open original link',
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _loadLink,
+        onRefresh: () => ref.read(linkDetailViewModelProvider.notifier).refreshLink(widget.linkId),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Link Info Card
-              _buildLinkInfoCard(_link!, context),
+              _buildLinkInfoCard(link, context),
               const SizedBox(height: 16),
 
               // Status Card
-              _buildStatusCard(_link!, context),
+              _buildStatusCard(link, context),
               const SizedBox(height: 16),
 
               // Summary Card (when completed)
-              if (_link!.isProcessed && _link!.summary != null) ...[
-                _buildSummaryCard(_link!, context),
+              if (link.isProcessed && link.summary != null) ...[
+                _buildSummaryCard(link, context),
                 const SizedBox(height: 16),
               ],
 
               // Flashcards Card (when completed)
-              if (_link!.isProcessed && _link!.flashcards != null)
-                _buildFlashcardsCard(_link!, context),
+              if (link.isProcessed && link.flashcards != null)
+                _buildFlashcardsCard(link, context),
             ],
           ),
         ),

@@ -2,17 +2,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../data/models/link_model.dart';
 import '../../../core/utils/navigation_triggers.dart';
 
-part 'link_state.freezed.dart';
+part 'link_list_state.freezed.dart';
 
-/// Immutable state for the LinkViewModel.
+/// Immutable state for the LinkListViewModel.
 @freezed
-class LinkState with _$LinkState {
-  const factory LinkState({
-    /// List of all links
+class LinkListState with _$LinkListState {
+  const factory LinkListState({
+    /// List of all links (without AI output - lightweight)
     @Default([]) List<LinkModel> links,
-
-    /// Selected link for detail view
-    LinkModel? selectedLink,
 
     /// Filtered links based on search and tags
     List<LinkModel>? filteredLinks,
@@ -26,42 +23,31 @@ class LinkState with _$LinkState {
     /// Navigation trigger for the UI to consume
     @Default(LinkNavigationTrigger.none) LinkNavigationTrigger navigationTrigger,
 
-    /// Form state for add/edit link
-    String? editingLinkId,
-    @Default('') String formUrl,
-    @Default('') String formTitle,
-    @Default('') String formTags,
-    String? formProjectId,
-
     /// Filter state
     @Default({}) Set<String> selectedTags,
     @Default('') String searchQuery,
-  }) = _LinkState;
+
+    /// Link ID to delete (for confirmation dialog)
+    String? deleteLinkId,
+  }) = _LinkListState;
 
   /// Initial state
-  factory LinkState.initial() => const LinkState(
+  factory LinkListState.initial() => const LinkListState(
         links: [],
-        selectedLink: null,
         filteredLinks: null,
-        isLoading: true, // Start loading to fetch links
+        isLoading: true,
         error: null,
         navigationTrigger: LinkNavigationTrigger.none,
       );
 }
 
-/// Extension methods for LinkState.
-extension LinkStateX on LinkState {
+/// Extension methods for LinkListState.
+extension LinkListStateX on LinkListState {
   /// Whether links are loaded
   bool get hasLinks => links.isNotEmpty;
 
   /// Get links to display (filtered or all)
   List<LinkModel> get displayLinks => filteredLinks ?? links;
-
-  /// Whether the form is valid for save
-  bool get canSaveLink => !isLoading && formUrl.isNotEmpty;
-
-  /// Whether currently editing a link
-  bool get isEditing => editingLinkId != null;
 
   /// Get all unique tags from links
   Set<String> get allTags {

@@ -112,8 +112,12 @@ lib/
 │   ├── auth_state.dart                # AuthState (Freezed)
 │   ├── project_viewmodel.dart         # Project ViewModel with StateNotifier
 │   ├── project_state.dart             # ProjectState (Freezed)
-│   ├── link_viewmodel.dart            # Link ViewModel with StateNotifier
-│   └── link_state.dart                # LinkState (Freezed)
+│   ├── link_list_viewmodel.dart       # Links List ViewModel with StateNotifier
+│   ├── link_list_state.dart           # LinkListState (Freezed)
+│   ├── link_detail_viewmodel.dart     # Link Detail ViewModel with StateNotifier
+│   ├── link_detail_state.dart         # LinkDetailState (Freezed)
+│   ├── add_link_viewmodel.dart        # Add Link ViewModel with StateNotifier
+│   └── add_link_state.dart            # AddLinkState (Freezed)
 │
 ├── core/
 │   ├── app/
@@ -951,6 +955,52 @@ lib/
 
 ---
 
+### 5.12 Link ViewModels Architecture
+
+**Purpose:** The Link feature is split into three dedicated ViewModels to handle different API responses and use cases:
+
+| ViewModel | Purpose | API Call | AI Output |
+|-----------|---------|----------|-----------|
+| `LinkListViewModel` | Display list of links with filtering | `GET /links` | NOT included (lightweight) |
+| `LinkDetailViewModel` | Display single link with full data | `GET /links/:id` | INCLUDED (summary, flashcards) |
+| `AddLinkViewModel` | Create new link with form management | `POST /links` | N/A |
+
+**Why Separation is Needed:**
+
+The Link List API returns links WITHOUT AI-generated content (summary, flashcards) to keep responses lightweight. The Link Detail API returns the COMPLETE link data INCLUDING AI output. This separation requires different ViewModels to:
+
+1. **LinkListViewModel**: Efficiently manage a list of links without heavy AI data, handle tag filtering and search
+2. **LinkDetailViewModel**: Fetch and display complete link data including AI-generated summary and flashcards
+3. **AddLinkViewModel**: Manage form state for creating new links with optional project creation
+
+**Implementation:**
+
+```dart
+// Link List - lightweight, no AI output
+final linkListViewModelProvider =
+    StateNotifierProvider<LinkListViewModel, LinkListState>((ref) {
+  final repository = ref.watch(linkRepositoryProvider);
+  return LinkListViewModel(repository);
+});
+
+// Link Detail - full data with AI output
+final linkDetailViewModelProvider =
+    StateNotifierProvider<LinkDetailViewModel, LinkDetailState>((ref) {
+  final repository = ref.watch(linkRepositoryProvider);
+  return LinkDetailViewModel(repository);
+});
+
+// Add Link - form management
+final addLinkViewModelProvider =
+    StateNotifierProvider<AddLinkViewModel, AddLinkState>((ref) {
+  final linkRepository = ref.watch(linkRepositoryProvider);
+  final projectRepository = ref.watch(projectRepositoryProvider);
+  return AddLinkViewModel(linkRepository, projectRepository);
+});
+```
+
+---
+
 ## 6. State Management Patterns
 
 ### 6.1 MVVM Architecture with Riverpod
@@ -961,7 +1011,9 @@ lib/
 ```
 authViewModelProvider → StateNotifierProvider<AuthViewModel, AuthState>
 projectViewModelProvider → StateNotifierProvider<ProjectViewModel, ProjectState>
-linkViewModelProvider → StateNotifierProvider<LinkViewModel, LinkState>
+linkListViewModelProvider → StateNotifierProvider<LinkListViewModel, LinkListState>
+linkDetailViewModelProvider → StateNotifierProvider<LinkDetailViewModel, LinkDetailState>
+addLinkViewModelProvider → StateNotifierProvider<AddLinkViewModel, AddLinkState>
 ```
 
 **State Classes:**

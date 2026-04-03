@@ -18,11 +18,23 @@ The L2L Flutter application provides a cross-platform mobile/web interface for m
 
 ### MVVM Architecture
 
-The app follows the MVVM (Model-View-ViewModel) pattern:
+The app follows the MVVM (Model-View-ViewModel) pattern with separated responsibilities:
 
 - **Model**: Data classes (`LinkModel`, `ProjectModel`, `UserModel`) and repositories
 - **View**: Flutter widgets (pages and reusable components) that observe ViewModel state
 - **ViewModel**: `StateNotifier` classes that manage business logic and state transitions
+
+### ViewModel Separation
+
+Link-related functionality is split into three dedicated ViewModels:
+
+| ViewModel | Purpose | Key Feature |
+|-----------|---------|-------------|
+| `LinkListViewModel` | Links list with filtering | Lightweight, no AI output data |
+| `LinkDetailViewModel` | Single link with full data | Includes AI summary and flashcards |
+| `AddLinkViewModel` | Create new link form | Manages form state and project creation |
+
+This separation is necessary because the Link List API does NOT include AI-generated content (summary, flashcards) while the Link Detail API DOES include complete AI output.
 
 ### State Management
 
@@ -30,7 +42,9 @@ The app uses Riverpod with the Result pattern:
 
 - **AuthViewModel**: Manages authentication state (login, logout, register)
 - **ProjectViewModel**: Manages projects list and selected project with links
-- **LinkViewModel**: Manages links list with filtering by project/tags
+- **LinkListViewModel**: Manages links list with filtering by project/tags (no AI output)
+- **LinkDetailViewModel**: Manages single link with complete AI-generated content
+- **AddLinkViewModel**: Manages form state for creating new links
 
 All repository methods return `Result<T>` (sealed class with `Success`/`Failure`) to enforce explicit error handling.
 
@@ -130,8 +144,12 @@ app/
 │       │   ├── auth_state.dart
 │       │   ├── project_viewmodel.dart
 │       │   ├── project_state.dart
-│       │   ├── link_viewmodel.dart
-│       │   └── link_state.dart
+│       │   ├── link_list_viewmodel.dart
+│       │   ├── link_list_state.dart
+│       │   ├── link_detail_viewmodel.dart
+│       │   ├── link_detail_state.dart
+│       │   ├── add_link_viewmodel.dart
+│       │   └── add_link_state.dart
 │       ├── pages/                # Screen widgets
 │       │   ├── auth/             # Login, Register screens
 │       │   ├── home/             # Main app screens
@@ -164,12 +182,19 @@ The app uses Riverpod with MVVM architecture:
 
 - **AuthViewModel**: Manages authentication state (login, logout, register) with navigation triggers
 - **ProjectViewModel**: Manages projects list and selected project with links
-- **LinkViewModel**: Manages links list with filtering by project/tags
+- **LinkListViewModel**: Manages links list with filtering by project/tags (lightweight, no AI output)
+- **LinkDetailViewModel**: Manages single link with complete AI-generated content (summary, flashcards)
+- **AddLinkViewModel**: Manages form state for creating new links with optional project creation
 
 All business logic is in ViewModels. Views (pages/widgets) only:
 - Observe state via `ref.watch(viewModelProvider)`
 - Invoke commands via `ref.read(viewModelProvider.notifier).method()`
 - Handle navigation based on navigation trigger enums in state
+
+**Note on Link ViewModels:** The Link feature uses three separate ViewModels because:
+- List API returns links WITHOUT AI output (lightweight for performance)
+- Detail API returns links WITH AI output (summary, flashcards)
+- Add Link requires form state management and optional project creation
 
 ## Testing
 

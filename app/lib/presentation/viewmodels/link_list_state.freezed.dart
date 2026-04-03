@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'link_state.dart';
+part of 'link_list_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,12 +15,9 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$LinkState {
-  /// List of all links
+mixin _$LinkListState {
+  /// List of all links (without AI output - lightweight)
   List<LinkModel> get links => throw _privateConstructorUsedError;
-
-  /// Selected link for detail view
-  LinkModel? get selectedLink => throw _privateConstructorUsedError;
 
   /// Filtered links based on search and tags
   List<LinkModel>? get filteredLinks => throw _privateConstructorUsedError;
@@ -35,85 +32,66 @@ mixin _$LinkState {
   LinkNavigationTrigger get navigationTrigger =>
       throw _privateConstructorUsedError;
 
-  /// Form state for add/edit link
-  String? get editingLinkId => throw _privateConstructorUsedError;
-  String get formUrl => throw _privateConstructorUsedError;
-  String get formTitle => throw _privateConstructorUsedError;
-  String get formTags => throw _privateConstructorUsedError;
-  String? get formProjectId => throw _privateConstructorUsedError;
-
   /// Filter state
   Set<String> get selectedTags => throw _privateConstructorUsedError;
   String get searchQuery => throw _privateConstructorUsedError;
 
-  /// Create a copy of LinkState
+  /// Link ID to delete (for confirmation dialog)
+  String? get deleteLinkId => throw _privateConstructorUsedError;
+
+  /// Create a copy of LinkListState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $LinkStateCopyWith<LinkState> get copyWith =>
+  $LinkListStateCopyWith<LinkListState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $LinkStateCopyWith<$Res> {
-  factory $LinkStateCopyWith(LinkState value, $Res Function(LinkState) then) =
-      _$LinkStateCopyWithImpl<$Res, LinkState>;
+abstract class $LinkListStateCopyWith<$Res> {
+  factory $LinkListStateCopyWith(
+          LinkListState value, $Res Function(LinkListState) then) =
+      _$LinkListStateCopyWithImpl<$Res, LinkListState>;
   @useResult
   $Res call(
       {List<LinkModel> links,
-      LinkModel? selectedLink,
       List<LinkModel>? filteredLinks,
       bool isLoading,
       String? error,
       LinkNavigationTrigger navigationTrigger,
-      String? editingLinkId,
-      String formUrl,
-      String formTitle,
-      String formTags,
-      String? formProjectId,
       Set<String> selectedTags,
-      String searchQuery});
-
-  $LinkModelCopyWith<$Res>? get selectedLink;
+      String searchQuery,
+      String? deleteLinkId});
 }
 
 /// @nodoc
-class _$LinkStateCopyWithImpl<$Res, $Val extends LinkState>
-    implements $LinkStateCopyWith<$Res> {
-  _$LinkStateCopyWithImpl(this._value, this._then);
+class _$LinkListStateCopyWithImpl<$Res, $Val extends LinkListState>
+    implements $LinkListStateCopyWith<$Res> {
+  _$LinkListStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of LinkState
+  /// Create a copy of LinkListState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? links = null,
-    Object? selectedLink = freezed,
     Object? filteredLinks = freezed,
     Object? isLoading = null,
     Object? error = freezed,
     Object? navigationTrigger = null,
-    Object? editingLinkId = freezed,
-    Object? formUrl = null,
-    Object? formTitle = null,
-    Object? formTags = null,
-    Object? formProjectId = freezed,
     Object? selectedTags = null,
     Object? searchQuery = null,
+    Object? deleteLinkId = freezed,
   }) {
     return _then(_value.copyWith(
       links: null == links
           ? _value.links
           : links // ignore: cast_nullable_to_non_nullable
               as List<LinkModel>,
-      selectedLink: freezed == selectedLink
-          ? _value.selectedLink
-          : selectedLink // ignore: cast_nullable_to_non_nullable
-              as LinkModel?,
       filteredLinks: freezed == filteredLinks
           ? _value.filteredLinks
           : filteredLinks // ignore: cast_nullable_to_non_nullable
@@ -130,26 +108,6 @@ class _$LinkStateCopyWithImpl<$Res, $Val extends LinkState>
           ? _value.navigationTrigger
           : navigationTrigger // ignore: cast_nullable_to_non_nullable
               as LinkNavigationTrigger,
-      editingLinkId: freezed == editingLinkId
-          ? _value.editingLinkId
-          : editingLinkId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      formUrl: null == formUrl
-          ? _value.formUrl
-          : formUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      formTitle: null == formTitle
-          ? _value.formTitle
-          : formTitle // ignore: cast_nullable_to_non_nullable
-              as String,
-      formTags: null == formTags
-          ? _value.formTags
-          : formTags // ignore: cast_nullable_to_non_nullable
-              as String,
-      formProjectId: freezed == formProjectId
-          ? _value.formProjectId
-          : formProjectId // ignore: cast_nullable_to_non_nullable
-              as String?,
       selectedTags: null == selectedTags
           ? _value.selectedTags
           : selectedTags // ignore: cast_nullable_to_non_nullable
@@ -158,87 +116,60 @@ class _$LinkStateCopyWithImpl<$Res, $Val extends LinkState>
           ? _value.searchQuery
           : searchQuery // ignore: cast_nullable_to_non_nullable
               as String,
+      deleteLinkId: freezed == deleteLinkId
+          ? _value.deleteLinkId
+          : deleteLinkId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
-  }
-
-  /// Create a copy of LinkState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $LinkModelCopyWith<$Res>? get selectedLink {
-    if (_value.selectedLink == null) {
-      return null;
-    }
-
-    return $LinkModelCopyWith<$Res>(_value.selectedLink!, (value) {
-      return _then(_value.copyWith(selectedLink: value) as $Val);
-    });
   }
 }
 
 /// @nodoc
-abstract class _$$LinkStateImplCopyWith<$Res>
-    implements $LinkStateCopyWith<$Res> {
-  factory _$$LinkStateImplCopyWith(
-          _$LinkStateImpl value, $Res Function(_$LinkStateImpl) then) =
-      __$$LinkStateImplCopyWithImpl<$Res>;
+abstract class _$$LinkListStateImplCopyWith<$Res>
+    implements $LinkListStateCopyWith<$Res> {
+  factory _$$LinkListStateImplCopyWith(
+          _$LinkListStateImpl value, $Res Function(_$LinkListStateImpl) then) =
+      __$$LinkListStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {List<LinkModel> links,
-      LinkModel? selectedLink,
       List<LinkModel>? filteredLinks,
       bool isLoading,
       String? error,
       LinkNavigationTrigger navigationTrigger,
-      String? editingLinkId,
-      String formUrl,
-      String formTitle,
-      String formTags,
-      String? formProjectId,
       Set<String> selectedTags,
-      String searchQuery});
-
-  @override
-  $LinkModelCopyWith<$Res>? get selectedLink;
+      String searchQuery,
+      String? deleteLinkId});
 }
 
 /// @nodoc
-class __$$LinkStateImplCopyWithImpl<$Res>
-    extends _$LinkStateCopyWithImpl<$Res, _$LinkStateImpl>
-    implements _$$LinkStateImplCopyWith<$Res> {
-  __$$LinkStateImplCopyWithImpl(
-      _$LinkStateImpl _value, $Res Function(_$LinkStateImpl) _then)
+class __$$LinkListStateImplCopyWithImpl<$Res>
+    extends _$LinkListStateCopyWithImpl<$Res, _$LinkListStateImpl>
+    implements _$$LinkListStateImplCopyWith<$Res> {
+  __$$LinkListStateImplCopyWithImpl(
+      _$LinkListStateImpl _value, $Res Function(_$LinkListStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of LinkState
+  /// Create a copy of LinkListState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? links = null,
-    Object? selectedLink = freezed,
     Object? filteredLinks = freezed,
     Object? isLoading = null,
     Object? error = freezed,
     Object? navigationTrigger = null,
-    Object? editingLinkId = freezed,
-    Object? formUrl = null,
-    Object? formTitle = null,
-    Object? formTags = null,
-    Object? formProjectId = freezed,
     Object? selectedTags = null,
     Object? searchQuery = null,
+    Object? deleteLinkId = freezed,
   }) {
-    return _then(_$LinkStateImpl(
+    return _then(_$LinkListStateImpl(
       links: null == links
           ? _value._links
           : links // ignore: cast_nullable_to_non_nullable
               as List<LinkModel>,
-      selectedLink: freezed == selectedLink
-          ? _value.selectedLink
-          : selectedLink // ignore: cast_nullable_to_non_nullable
-              as LinkModel?,
       filteredLinks: freezed == filteredLinks
           ? _value._filteredLinks
           : filteredLinks // ignore: cast_nullable_to_non_nullable
@@ -255,26 +186,6 @@ class __$$LinkStateImplCopyWithImpl<$Res>
           ? _value.navigationTrigger
           : navigationTrigger // ignore: cast_nullable_to_non_nullable
               as LinkNavigationTrigger,
-      editingLinkId: freezed == editingLinkId
-          ? _value.editingLinkId
-          : editingLinkId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      formUrl: null == formUrl
-          ? _value.formUrl
-          : formUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      formTitle: null == formTitle
-          ? _value.formTitle
-          : formTitle // ignore: cast_nullable_to_non_nullable
-              as String,
-      formTags: null == formTags
-          ? _value.formTags
-          : formTags // ignore: cast_nullable_to_non_nullable
-              as String,
-      formProjectId: freezed == formProjectId
-          ? _value.formProjectId
-          : formProjectId // ignore: cast_nullable_to_non_nullable
-              as String?,
       selectedTags: null == selectedTags
           ? _value._selectedTags
           : selectedTags // ignore: cast_nullable_to_non_nullable
@@ -283,35 +194,34 @@ class __$$LinkStateImplCopyWithImpl<$Res>
           ? _value.searchQuery
           : searchQuery // ignore: cast_nullable_to_non_nullable
               as String,
+      deleteLinkId: freezed == deleteLinkId
+          ? _value.deleteLinkId
+          : deleteLinkId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
 /// @nodoc
 
-class _$LinkStateImpl implements _LinkState {
-  const _$LinkStateImpl(
+class _$LinkListStateImpl implements _LinkListState {
+  const _$LinkListStateImpl(
       {final List<LinkModel> links = const [],
-      this.selectedLink,
       final List<LinkModel>? filteredLinks,
       this.isLoading = false,
       this.error,
       this.navigationTrigger = LinkNavigationTrigger.none,
-      this.editingLinkId,
-      this.formUrl = '',
-      this.formTitle = '',
-      this.formTags = '',
-      this.formProjectId,
       final Set<String> selectedTags = const {},
-      this.searchQuery = ''})
+      this.searchQuery = '',
+      this.deleteLinkId})
       : _links = links,
         _filteredLinks = filteredLinks,
         _selectedTags = selectedTags;
 
-  /// List of all links
+  /// List of all links (without AI output - lightweight)
   final List<LinkModel> _links;
 
-  /// List of all links
+  /// List of all links (without AI output - lightweight)
   @override
   @JsonKey()
   List<LinkModel> get links {
@@ -319,10 +229,6 @@ class _$LinkStateImpl implements _LinkState {
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_links);
   }
-
-  /// Selected link for detail view
-  @override
-  final LinkModel? selectedLink;
 
   /// Filtered links based on search and tags
   final List<LinkModel>? _filteredLinks;
@@ -351,21 +257,6 @@ class _$LinkStateImpl implements _LinkState {
   @JsonKey()
   final LinkNavigationTrigger navigationTrigger;
 
-  /// Form state for add/edit link
-  @override
-  final String? editingLinkId;
-  @override
-  @JsonKey()
-  final String formUrl;
-  @override
-  @JsonKey()
-  final String formTitle;
-  @override
-  @JsonKey()
-  final String formTags;
-  @override
-  final String? formProjectId;
-
   /// Filter state
   final Set<String> _selectedTags;
 
@@ -382,19 +273,21 @@ class _$LinkStateImpl implements _LinkState {
   @JsonKey()
   final String searchQuery;
 
+  /// Link ID to delete (for confirmation dialog)
+  @override
+  final String? deleteLinkId;
+
   @override
   String toString() {
-    return 'LinkState(links: $links, selectedLink: $selectedLink, filteredLinks: $filteredLinks, isLoading: $isLoading, error: $error, navigationTrigger: $navigationTrigger, editingLinkId: $editingLinkId, formUrl: $formUrl, formTitle: $formTitle, formTags: $formTags, formProjectId: $formProjectId, selectedTags: $selectedTags, searchQuery: $searchQuery)';
+    return 'LinkListState(links: $links, filteredLinks: $filteredLinks, isLoading: $isLoading, error: $error, navigationTrigger: $navigationTrigger, selectedTags: $selectedTags, searchQuery: $searchQuery, deleteLinkId: $deleteLinkId)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LinkStateImpl &&
+            other is _$LinkListStateImpl &&
             const DeepCollectionEquality().equals(other._links, _links) &&
-            (identical(other.selectedLink, selectedLink) ||
-                other.selectedLink == selectedLink) &&
             const DeepCollectionEquality()
                 .equals(other._filteredLinks, _filteredLinks) &&
             (identical(other.isLoading, isLoading) ||
@@ -402,70 +295,49 @@ class _$LinkStateImpl implements _LinkState {
             (identical(other.error, error) || other.error == error) &&
             (identical(other.navigationTrigger, navigationTrigger) ||
                 other.navigationTrigger == navigationTrigger) &&
-            (identical(other.editingLinkId, editingLinkId) ||
-                other.editingLinkId == editingLinkId) &&
-            (identical(other.formUrl, formUrl) || other.formUrl == formUrl) &&
-            (identical(other.formTitle, formTitle) ||
-                other.formTitle == formTitle) &&
-            (identical(other.formTags, formTags) ||
-                other.formTags == formTags) &&
-            (identical(other.formProjectId, formProjectId) ||
-                other.formProjectId == formProjectId) &&
             const DeepCollectionEquality()
                 .equals(other._selectedTags, _selectedTags) &&
             (identical(other.searchQuery, searchQuery) ||
-                other.searchQuery == searchQuery));
+                other.searchQuery == searchQuery) &&
+            (identical(other.deleteLinkId, deleteLinkId) ||
+                other.deleteLinkId == deleteLinkId));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_links),
-      selectedLink,
       const DeepCollectionEquality().hash(_filteredLinks),
       isLoading,
       error,
       navigationTrigger,
-      editingLinkId,
-      formUrl,
-      formTitle,
-      formTags,
-      formProjectId,
       const DeepCollectionEquality().hash(_selectedTags),
-      searchQuery);
+      searchQuery,
+      deleteLinkId);
 
-  /// Create a copy of LinkState
+  /// Create a copy of LinkListState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$LinkStateImplCopyWith<_$LinkStateImpl> get copyWith =>
-      __$$LinkStateImplCopyWithImpl<_$LinkStateImpl>(this, _$identity);
+  _$$LinkListStateImplCopyWith<_$LinkListStateImpl> get copyWith =>
+      __$$LinkListStateImplCopyWithImpl<_$LinkListStateImpl>(this, _$identity);
 }
 
-abstract class _LinkState implements LinkState {
-  const factory _LinkState(
+abstract class _LinkListState implements LinkListState {
+  const factory _LinkListState(
       {final List<LinkModel> links,
-      final LinkModel? selectedLink,
       final List<LinkModel>? filteredLinks,
       final bool isLoading,
       final String? error,
       final LinkNavigationTrigger navigationTrigger,
-      final String? editingLinkId,
-      final String formUrl,
-      final String formTitle,
-      final String formTags,
-      final String? formProjectId,
       final Set<String> selectedTags,
-      final String searchQuery}) = _$LinkStateImpl;
+      final String searchQuery,
+      final String? deleteLinkId}) = _$LinkListStateImpl;
 
-  /// List of all links
+  /// List of all links (without AI output - lightweight)
   @override
   List<LinkModel> get links;
-
-  /// Selected link for detail view
-  @override
-  LinkModel? get selectedLink;
 
   /// Filtered links based on search and tags
   @override
@@ -483,28 +355,20 @@ abstract class _LinkState implements LinkState {
   @override
   LinkNavigationTrigger get navigationTrigger;
 
-  /// Form state for add/edit link
-  @override
-  String? get editingLinkId;
-  @override
-  String get formUrl;
-  @override
-  String get formTitle;
-  @override
-  String get formTags;
-  @override
-  String? get formProjectId;
-
   /// Filter state
   @override
   Set<String> get selectedTags;
   @override
   String get searchQuery;
 
-  /// Create a copy of LinkState
+  /// Link ID to delete (for confirmation dialog)
+  @override
+  String? get deleteLinkId;
+
+  /// Create a copy of LinkListState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LinkStateImplCopyWith<_$LinkStateImpl> get copyWith =>
+  _$$LinkListStateImplCopyWith<_$LinkListStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
