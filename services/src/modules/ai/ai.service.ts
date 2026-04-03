@@ -273,10 +273,10 @@ ${summariesText}`
   /**
    * Generate quiz from course content
    */
-  async generateQuiz(courseContent: CourseContent): Promise<QuizContent> {
+  async generateQuiz(courseContent: CourseContent, courseId?: string): Promise<QuizContent> {
     try {
       if (!this.openai) {
-        return this.mockQuiz(courseContent);
+        return this.mockQuiz(courseContent, courseId);
       }
 
       const lessonsText = courseContent.lessons
@@ -322,6 +322,11 @@ ${lessonsText.substring(0, 3000)}`
       // Validate structure
       if (!parsed.questions || parsed.questions.length < 3) {
         throw new Error('Not enough quiz questions generated');
+      }
+
+      // Add courseId to the content
+      if (courseId) {
+        parsed.courseId = courseId;
       }
 
       return parsed;
@@ -371,8 +376,9 @@ ${lessonsText.substring(0, 3000)}`
     };
   }
 
-  private mockQuiz(courseContent: CourseContent): QuizContent {
+  private mockQuiz(courseContent: CourseContent, courseId?: string): QuizContent {
     return {
+      courseId,
       questions: Array.from({ length: 5 }).map((_, i) => ({
         question: `Question ${i + 1} about the course content?`,
         options: [

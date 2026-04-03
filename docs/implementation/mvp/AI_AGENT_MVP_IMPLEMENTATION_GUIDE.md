@@ -429,11 +429,12 @@ generateCourse(summaries[]) {
   // Return course structure
 }
 
-generateQuiz(courseContent) {
+generateQuiz(courseContent, courseId) {
   // Call OpenAI with quiz prompt
   // Parse { questions[] }
   // Validate 5-15 questions
-  // Return [{ question, options, correct, explanation }]
+  // Add courseId reference to content
+  // Return [{ question, options, correct, explanation }, courseId]
 }
 ```
 
@@ -484,8 +485,9 @@ processJob(job) {
   // Update job status: "processing", progress: 0
   // Fetch all link summaries for project
   // Call aiService.generateCourse(summaries)
-  // Call aiService.generateQuiz(course)
-  // Store ai_output for project
+  // Store course ai_output first to get _id
+  // Call aiService.generateQuiz(course, courseId) - pass course _id
+  // Store quiz ai_output with courseId reference
   // Update project.aiOutputId
   // Update job status: "completed", progress: 100
   // Emit notification event

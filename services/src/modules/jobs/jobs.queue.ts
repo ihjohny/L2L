@@ -194,28 +194,30 @@ function createGenerateCourseWorker(): void {
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 60 });
 
-        // Generate quiz
-        const quizContent = await aiService.generateQuiz(courseContent);
+        // Store course output first to get the ID
+        const courseOutput = await AiOutputModel.create({
+          sourceType: 'project',
+          sourceId: projectId,
+          type: 'course',
+          content: courseContent,
+          tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
+        });
+
+        await JobModel.findByIdAndUpdate(job.id, { progress: 70 });
+
+        // Generate quiz (pass course ID for reference)
+        const quizContent = await aiService.generateQuiz(courseContent, courseOutput._id.toString());
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 80 });
 
-        // Store AI outputs
-        const [courseOutput, quizOutput] = await Promise.all([
-          AiOutputModel.create({
-            sourceType: 'project',
-            sourceId: projectId,
-            type: 'course',
-            content: courseContent,
-            tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
-          }),
-          AiOutputModel.create({
-            sourceType: 'project',
-            sourceId: projectId,
-            type: 'quiz',
-            content: quizContent,
-            tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
-          })
-        ]);
+        // Store quiz output
+        const quizOutput = await AiOutputModel.create({
+          sourceType: 'project',
+          sourceId: projectId,
+          type: 'quiz',
+          content: quizContent,
+          tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
+        });
 
         // Update project with AI output ID
         await ProjectModel.findByIdAndUpdate(projectId, {

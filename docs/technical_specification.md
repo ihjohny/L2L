@@ -117,7 +117,7 @@ This document provides a high-level technical overview of the L2L platform archi
 │                                 │   │  tags[], aiOutputId,    │
 │  AI Output (Project):           │   │  status, metadata       │
 │  - course { lessons[] }         │   │                         │
-│  - quiz { questions[], score }  │   │  AI Output (Link):      │
+│  - quiz { courseId, questions[] │   │  AI Output (Link):      │
 │                                 │   │  - summary              │
 │                                 │   │  - flashcards[]         │
 │                                 │   │                         │
@@ -131,6 +131,7 @@ This document provides a high-level technical overview of the L2L platform archi
 - **Project → Links:** One-to-many (projects contain multiple links)
 - **Link → AI Output:** One-to-one (each link has its own summary + flashcards)
 - **Project → AI Output:** One-to-one (each project has course + quiz synthesized from its links)
+- **Course → Quiz:** One-to-one (quiz references the course it was generated from via `courseId`)
 
 ---
 

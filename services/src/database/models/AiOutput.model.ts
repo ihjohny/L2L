@@ -44,6 +44,7 @@ export interface QuizQuestion {
 }
 
 export interface QuizContent {
+  courseId?: string;
   questions: QuizQuestion[];
 }
 
