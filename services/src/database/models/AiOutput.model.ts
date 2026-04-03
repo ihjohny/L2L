@@ -44,7 +44,7 @@ export interface QuizQuestion {
 }
 
 export interface QuizContent {
-  courseId?: string;
+  courseId?: string;  // Reference to the course this quiz was generated from (ai_outputs._id)
   questions: QuizQuestion[];
 }
 

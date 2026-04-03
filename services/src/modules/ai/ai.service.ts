@@ -273,7 +273,7 @@ ${summariesText}`
   /**
    * Generate quiz from course content
    */
-  async generateQuiz(courseContent: CourseContent, courseId?: string): Promise<QuizContent> {
+  async generateQuiz(courseContent: CourseContent, courseId?: mongoose.Types.ObjectId): Promise<QuizContent> {
     try {
       if (!this.openai) {
         return this.mockQuiz(courseContent, courseId);
@@ -376,7 +376,7 @@ ${lessonsText.substring(0, 3000)}`
     };
   }
 
-  private mockQuiz(courseContent: CourseContent, courseId?: string): QuizContent {
+  private mockQuiz(courseContent: CourseContent, courseId?: mongoose.Types.ObjectId): QuizContent {
     return {
       courseId,
       questions: Array.from({ length: 5 }).map((_, i) => ({
