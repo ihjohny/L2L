@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/repositories/link_repository.dart';
 import '../../../data/repositories/project_repository.dart';
 import 'add_link_state.dart';
+import 'link_list_viewmodel.dart';
+import 'project_viewmodel.dart';
 
 /// ViewModel for add link operations.
 ///
@@ -9,10 +11,12 @@ import 'add_link_state.dart';
 class AddLinkViewModel extends StateNotifier<AddLinkState> {
   final LinkRepository _linkRepository;
   final ProjectRepository _projectRepository;
+  final Ref _ref;
 
   AddLinkViewModel(
     this._linkRepository,
     this._projectRepository,
+    this._ref,
   ) : super(AddLinkState.initial()) {
     loadProjects();
   }
@@ -121,7 +125,7 @@ class AddLinkViewModel extends StateNotifier<AddLinkState> {
         return false;
       }
 
-      // Success - clear form
+      // Success - clear form and refresh lists
       state = state.copyWith(
         isSubmitting: false,
         formUrl: '',
@@ -130,6 +134,11 @@ class AddLinkViewModel extends StateNotifier<AddLinkState> {
         formProjectId: null,
         newProjectName: null,
       );
+
+      // Refresh link list and project list to include the new link
+      _ref.read(linkListViewModelProvider.notifier).loadLinks();
+      _ref.read(projectViewModelProvider.notifier).loadProjects();
+
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -157,5 +166,5 @@ final addLinkViewModelProvider =
     StateNotifierProvider<AddLinkViewModel, AddLinkState>((ref) {
   final linkRepository = ref.watch(linkRepositoryProvider);
   final projectRepository = ref.watch(projectRepositoryProvider);
-  return AddLinkViewModel(linkRepository, projectRepository);
+  return AddLinkViewModel(linkRepository, projectRepository, ref);
 });
