@@ -9,6 +9,7 @@ import {
 } from '../../database/models/AiOutput.model';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
+import mongoose from 'mongoose';
 
 class AiService {
   private openai: OpenAI | null = null;

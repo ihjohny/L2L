@@ -44,7 +44,7 @@ export interface QuizQuestion {
 }
 
 export interface QuizContent {
-  courseId?: string;  // Reference to the course this quiz was generated from (ai_outputs._id)
+  courseId?: mongoose.Types.ObjectId;  // Reference to the course this quiz was generated from (ai_outputs._id)
   questions: QuizQuestion[];
 }
 
