@@ -151,6 +151,50 @@ class ProjectService {
     }
   }
 
+  async getLatestCourse(projectId: string, userId: string) {
+    try {
+      // Verify project ownership
+      const project = await ProjectModel.findByIdAndUser(projectId, userId);
+      if (!project) {
+        throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
+      }
+
+      // Get latest course
+      const course = await AiOutputModel.findLatestCourseByProject(projectId);
+
+      if (!course) {
+        throw new AppError('No course found for this project', 'NOT_FOUND', 404);
+      }
+
+      return course;
+    } catch (error: any) {
+      logger.error('Error in getLatestCourse:', error);
+      throw error;
+    }
+  }
+
+  async getLatestQuiz(projectId: string, userId: string) {
+    try {
+      // Verify project ownership
+      const project = await ProjectModel.findByIdAndUser(projectId, userId);
+      if (!project) {
+        throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
+      }
+
+      // Get latest quiz
+      const quiz = await AiOutputModel.findLatestQuizByProject(projectId);
+
+      if (!quiz) {
+        throw new AppError('No quiz found for this project', 'NOT_FOUND', 404);
+      }
+
+      return quiz;
+    } catch (error: any) {
+      logger.error('Error in getLatestQuiz:', error);
+      throw error;
+    }
+  }
+
   private async queueCourseGenerationJob(userId: string, projectId: string) {
     try {
       const queue = await getQueue(QUEUE_NAMES.GENERATE_COURSE);

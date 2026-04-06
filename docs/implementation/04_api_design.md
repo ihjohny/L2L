@@ -55,7 +55,8 @@ Link: </api/v2/links>; rel="successor-version"
 | PUT | `/projects/:id` | Yes | User | `{ name?, description?, tags? }` | `{ project }` | 200, 400, 401, 403, 404 | MVP |
 | DELETE | `/projects/:id` | Yes | User | - | `{ success }` | 200, 401, 403, 404 | MVP |
 | POST | `/projects/:id/generate-course-quiz` | Yes | User | `{ forceRegenerate? }` | `{ jobId }` | 202, 400, 401, 403, 404 | MVP |
-| GET | `/projects/:id/course` | Yes | User | - | `{ course, quiz }` | 200, 404 | MVP |
+| GET | `/projects/:id/course` | Yes | User | - | `{ course }` | 200, 404 | MVP |
+| GET | `/projects/:id/quiz` | Yes | User | - | `{ quiz }` | 200, 404 | MVP |
 | GET | `/shared/projects/:slug` | No | Public | - | `{ project, links }` | 200, 404 | P2 |
 
 ---

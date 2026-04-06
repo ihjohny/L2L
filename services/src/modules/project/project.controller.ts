@@ -119,6 +119,40 @@ class ProjectController {
       next(error);
     }
   }
+
+  async getLatestCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.sub;
+      if (!userId) {
+        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
+      }
+
+      const { projectId } = req.params;
+      const course = await projectService.getLatestCourse(projectId, userId);
+
+      return successResponse(res, course, 'Latest course retrieved successfully');
+    } catch (error: any) {
+      logger.error('Error in getLatestCourse controller:', error);
+      next(error);
+    }
+  }
+
+  async getLatestQuiz(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.sub;
+      if (!userId) {
+        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
+      }
+
+      const { projectId } = req.params;
+      const quiz = await projectService.getLatestQuiz(projectId, userId);
+
+      return successResponse(res, quiz, 'Latest quiz retrieved successfully');
+    } catch (error: any) {
+      logger.error('Error in getLatestQuiz controller:', error);
+      next(error);
+    }
+  }
 }
 
 const projectController = new ProjectController();

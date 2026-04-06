@@ -136,12 +136,22 @@ aiOutputSchema.statics.findQuizByProject = function (projectId: string) {
   return this.findOne({ sourceType: 'project', sourceId: projectId, type: 'quiz' });
 };
 
+aiOutputSchema.statics.findLatestCourseByProject = function (projectId: string) {
+  return this.findOne({ sourceType: 'project', sourceId: projectId, type: 'course' }).sort({ createdAt: -1 });
+};
+
+aiOutputSchema.statics.findLatestQuizByProject = function (projectId: string) {
+  return this.findOne({ sourceType: 'project', sourceId: projectId, type: 'quiz' }).sort({ createdAt: -1 });
+};
+
 interface AiOutputModel extends Model<AiOutputDocument> {
   findBySource(sourceType: string, sourceId: string): Promise<AiOutputDocument[]>;
   findSummaryByLink(linkId: string): Promise<AiOutputDocument | null>;
   findFlashcardsByLink(linkId: string): Promise<AiOutputDocument | null>;
   findCourseByProject(projectId: string): Promise<AiOutputDocument | null>;
   findQuizByProject(projectId: string): Promise<AiOutputDocument | null>;
+  findLatestCourseByProject(projectId: string): Promise<AiOutputDocument | null>;
+  findLatestQuizByProject(projectId: string): Promise<AiOutputDocument | null>;
 }
 
 const AiOutputModel = mongoose.model<AiOutputDocument, AiOutputModel>('AiOutput', aiOutputSchema);

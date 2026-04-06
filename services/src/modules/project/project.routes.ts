@@ -46,4 +46,18 @@ router.delete('/:projectId', authenticate, Project.deleteProject);
  */
 router.post('/:projectId/generate-course-quiz', authenticate, Project.generateCourseQuiz);
 
+/**
+ * @route   GET /api/projects/:projectId/course
+ * @desc    Get latest created course for a project
+ * @access  Private
+ */
+router.get('/:projectId/course', authenticate, Project.getLatestCourse);
+
+/**
+ * @route   GET /api/projects/:projectId/quiz
+ * @desc    Get latest created quiz for a project
+ * @access  Private
+ */
+router.get('/:projectId/quiz', authenticate, Project.getLatestQuiz);
+
 export default router;

@@ -376,6 +376,8 @@ getLink(linkId) {
 - `PUT /projects/:id` - Update project
 - `DELETE /projects/:id` - Soft delete project
 - `POST /projects/:id/generate-course-quiz` - Trigger course and quiz generation
+- `GET /projects/:id/course` - Get latest created course
+- `GET /projects/:id/quiz` - Get latest created quiz
 
 **Service Pattern:**
 ```typescript
@@ -745,6 +747,8 @@ docker-compose -f docker-compose.prod.yml up -d --scale api=3
 | PUT | `/projects/:id` | Yes | Update project |
 | DELETE | `/projects/:id` | Yes | Delete project |
 | POST | `/projects/:id/generate-course-quiz` | Yes | Generate course and quiz |
+| GET | `/projects/:id/course` | Yes | Get latest created course |
+| GET | `/projects/:id/quiz` | Yes | Get latest created quiz |
 | GET | `/links` | Yes | List links |
 | POST | `/links` | Yes | Create link |
 | GET | `/links/:id` | Yes | Get link |
