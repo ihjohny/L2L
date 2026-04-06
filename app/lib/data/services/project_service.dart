@@ -93,17 +93,17 @@ class ProjectService {
     }
   }
 
-  /// Generate course from project links
-  Future<Map<String, dynamic>> generateCourse(String projectId) async {
+  /// Generate course and quiz from project links
+  Future<Map<String, dynamic>> generateCourseQuiz(String projectId) async {
     try {
       final response = await _dioClient.dio.post(
-        '/projects/$projectId/generate-course',
+        '/projects/$projectId/generate-course-quiz',
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data['data'] as Map<String, dynamic>;
       }
-      throw Exception('Failed to generate course');
+      throw Exception('Failed to generate course and quiz');
     } catch (e) {
       throw _dioClient.handleError(e);
     }

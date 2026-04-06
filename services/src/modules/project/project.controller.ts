@@ -103,7 +103,7 @@ class ProjectController {
     }
   }
 
-  async generateCourse(req: Request, res: Response, next: NextFunction) {
+  async generateCourseQuiz(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.sub;
       if (!userId) {
@@ -111,11 +111,11 @@ class ProjectController {
       }
 
       const { projectId } = req.params;
-      const result = await projectService.generateCourse(projectId, userId);
+      const result = await projectService.generateCourseQuiz(projectId, userId);
 
-      return successResponse(res, result, 'Course generation started');
+      return successResponse(res, result, 'Course and quiz generation started');
     } catch (error: any) {
-      logger.error('Error in generateCourse controller:', error);
+      logger.error('Error in generateCourseQuiz controller:', error);
       next(error);
     }
   }

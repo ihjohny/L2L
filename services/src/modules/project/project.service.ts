@@ -101,7 +101,7 @@ class ProjectService {
     }
   }
 
-  async generateCourse(projectId: string, userId: string) {
+  async generateCourseQuiz(projectId: string, userId: string) {
     try {
       // Verify project ownership
       const project = await ProjectModel.findByIdAndUser(projectId, userId);
@@ -129,7 +129,7 @@ class ProjectService {
         status: 'queued'
       };
     } catch (error: any) {
-      logger.error('Error in generateCourse:', error);
+      logger.error('Error in generateCourseQuiz:', error);
       throw error;
     }
   }

@@ -55,7 +55,7 @@ This document provides step-by-step implementation instructions for the L2L Flut
 | Main Container (Tab Navigation - Home, Projects, Profile) | P0 | N/A |
 | Home (Feed Tab) | P0 | GET /projects, GET /links |
 | Projects List | P0 | GET /projects |
-| Project Details | P0 | GET /projects/:id, POST /projects/:id/generate-course |
+| Project Details | P0 | GET /projects/:id, POST /projects/:id/generate-course-quiz |
 | Edit Project | P1 | PUT /projects/:id |
 | Links List | P0 | GET /links |
 | Add Link (with inline project creation) | P0 | POST /links, POST /projects |
@@ -728,7 +728,7 @@ lib/
 **API Integration:**
 - Load project: `ProjectRepository.getProject(projectId)`
 - Load links: `ProjectLinksProvider` (filtered by projectId)
-- Generate course: `ProjectRepository.generateCourse(projectId)`
+- Generate course: `ProjectRepository.generateCourseQuiz(projectId)`
 - Delete project: `ProjectRepository.deleteProject(projectId)`
 
 **UI Components:**
@@ -1274,7 +1274,7 @@ class AuthRepository {
 | Projects List | Fetch projects | GET | /projects | ProjectService |
 | Create Project | Create project | POST | /projects | ProjectService |
 | Project Details | Get project | GET | /projects/:id | ProjectService |
-| Project Details | Generate course | POST | /projects/:id/generate-course | ProjectService |
+| Project Details | Generate course & quiz | POST | /projects/:id/generate-course-quiz | ProjectService |
 | Links List | Fetch links | GET | /links | LinkService |
 | Add Link | Create link | POST | /links | LinkService |
 | Link Details | Get link | GET | /links/:id | LinkService |
@@ -1495,7 +1495,7 @@ context.goNamed('home');
 | GET | /projects/:id | Yes | - | { project } |
 | PUT | /projects/:id | Yes | { name?, description? } | { project } |
 | DELETE | /projects/:id | Yes | - | { success: true } |
-| POST | /projects/:id/generate-course | Yes | - | { jobId } |
+| POST | /projects/:id/generate-course-quiz | Yes | - | { jobId } |
 
 ### Links
 

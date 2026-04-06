@@ -236,7 +236,7 @@ class AIProcessingService:
 | `POST` | `/api/projects` | Create a project |
 | `GET` | `/api/projects` | List user's projects |
 | `GET` | `/api/projects/:id` | Get project with links and AI output |
-| `POST` | `/api/projects/:id/generate-course` | Trigger course generation |
+| `POST` | `/api/projects/:id/generate-course-quiz` | Trigger course and quiz generation |
 | `PUT` | `/api/projects/:id` | Update project |
 | `DELETE` | `/api/projects/:id` | Delete project |
 

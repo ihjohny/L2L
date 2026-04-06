@@ -172,7 +172,7 @@ The app communicates with the backend API at `http://localhost:3000/api/v1`:
 | `/auth/me` | GET | Get current user |
 | `/projects` | GET/POST | List/Create projects |
 | `/projects/:id` | GET/PUT/DELETE | Get/Update/Delete project |
-| `/projects/:id/generate-course` | POST | Generate AI course |
+| `/projects/:id/generate-course-quiz` | POST | Generate AI course and quiz |
 | `/links` | GET/POST | List/Create links |
 | `/links/:id` | GET/PUT/DELETE | Get/Update/Delete link |
 

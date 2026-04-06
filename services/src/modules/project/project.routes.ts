@@ -40,10 +40,10 @@ router.put('/:projectId', authenticate, Project.updateProject);
 router.delete('/:projectId', authenticate, Project.deleteProject);
 
 /**
- * @route   POST /api/projects/:projectId/generate-course
- * @desc    Generate AI course from project links
+ * @route   POST /api/projects/:projectId/generate-course-quiz
+ * @desc    Generate AI course and quiz from project links
  * @access  Private
  */
-router.post('/:projectId/generate-course', authenticate, Project.generateCourse);
+router.post('/:projectId/generate-course-quiz', authenticate, Project.generateCourseQuiz);
 
 export default router;

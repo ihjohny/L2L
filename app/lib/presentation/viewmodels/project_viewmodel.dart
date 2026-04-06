@@ -195,14 +195,14 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     );
   }
 
-  /// Generate course from project links.
-  Future<void> generateCourse(String projectId) async {
-    final result = await _projectRepository.generateCourse(projectId);
+  /// Generate course and quiz from project links.
+  Future<void> generateCourseQuiz(String projectId) async {
+    final result = await _projectRepository.generateCourseQuiz(projectId);
 
     if (!mounted) return;
     result.fold(
       (data) {
-        // Course generation started - could update state with job info
+        // Course and quiz generation started - could update state with job info
       },
       (error) {
         state = state.copyWith(error: error);

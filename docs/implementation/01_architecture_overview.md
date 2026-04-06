@@ -126,7 +126,7 @@ Get Projects List                    →  GET /api/v1/projects      →  Project
 Get Link with AI Output              →  GET /api/v1/links/:id     →  Link + AI
 Create/Update Project                →  POST/PUT /api/v1/projects →  Project
 Create/Delete Link                   →  POST/DELETE /api/v1/links →  Link + Job
-Trigger Course Generation            →  POST /api/v1/projects/:id/generate-course → Job
+Trigger Course Generation            →  POST /api/v1/projects/:id/generate-course-quiz → Job
 Get Job Status                       →  GET /api/v1/jobs/:jobId   →  Job Status
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -137,8 +137,7 @@ Get Job Status                       →  GET /api/v1/jobs/:jobId   →  Job Sta
 Job Type                →  Queue Name        →  Expected Duration  →  Notification
 ─────────────────────────────────────────────────────────────────────────────────
 process_link            →  process_link      →  5-15 seconds       →  WebSocket/Push
-generate_course         →  generate_course   →  15-45 seconds      →  WebSocket/Push
-generate_quiz           →  generate_course   →  10-30 seconds      →  WebSocket/Push
+generate_course_quiz    →  generate_course   →  15-45 seconds      →  WebSocket/Push
 export_data             →  export_data       →  30-120 seconds     →  Email [P2]
 ```
 
@@ -223,7 +222,7 @@ export_data             →  export_data       →  30-120 seconds     →  Emai
    └─> Confirms generation (shows token cost estimate)
    │
    ▼
-2. API LAYER (POST /api/v1/projects/:id/generate-course)
+2. API LAYER (POST /api/v1/projects/:id/generate-course-quiz)
    │
    ├─> Validates project ownership
    ├─> Checks project has ≥1 link with completed AI output

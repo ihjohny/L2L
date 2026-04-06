@@ -84,10 +84,10 @@ class ProjectRepository {
     }
   }
 
-  /// Generate course from project links.
-  Future<Result<Map<String, dynamic>>> generateCourse(String projectId) async {
+  /// Generate course and quiz from project links.
+  Future<Result<Map<String, dynamic>>> generateCourseQuiz(String projectId) async {
     try {
-      final result = await _projectService.generateCourse(projectId);
+      final result = await _projectService.generateCourseQuiz(projectId);
       return Success(result);
     } catch (e) {
       return Failure(e.toString().replaceAll('Exception: ', ''));

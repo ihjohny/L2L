@@ -105,10 +105,10 @@ backend/
 │   │   │   ├── job.schema.ts
 │   │   │   ├── queues/
 │   │   │   │   ├── process-link.queue.ts
-│   │   │   │   └── generate-course.queue.ts
+│   │   │   │   └── generate-course-quiz.queue.ts
 │   │   │   └── workers/
 │   │   │       ├── process-link.worker.ts
-│   │   │       └── generate-course.worker.ts
+│   │   │       └── generate-course-quiz.worker.ts
 │   │   │
 │   │   ├── analytics/                     [P2]
 │   │   │   ├── analytics.controller.ts
@@ -170,7 +170,7 @@ backend/
 // redisConfig: host, port, password, maxRetriesPerRequest: null
 // queueOptions: attempts: 3, exponential backoff (2s delay), removeOnComplete: 100
 // workerOptions: concurrency: 5
-// Queue names: l2l:process_link, l2l:generate_course, l2l:notify_user, l2l:failed_jobs
+// Queue names: l2l:process_link, l2l:generate_course_quiz, l2l:notify_user, l2l:failed_jobs
 ```
 
 #### Error Class Hierarchy → HTTP Status Mapping

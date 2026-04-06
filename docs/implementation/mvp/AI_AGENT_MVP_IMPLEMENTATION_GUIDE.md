@@ -375,7 +375,7 @@ getLink(linkId) {
 - `GET /projects/:id` - Get project with links
 - `PUT /projects/:id` - Update project
 - `DELETE /projects/:id` - Soft delete project
-- `POST /projects/:id/generate-course` - Trigger course generation
+- `POST /projects/:id/generate-course-quiz` - Trigger course and quiz generation
 
 **Service Pattern:**
 ```typescript
@@ -390,10 +390,10 @@ getProjectWithLinks(projectId, userId) {
   // Return project with links array
 }
 
-generateCourse(projectId) {
+generateCourseQuiz(projectId) {
   // Find project with completed links
   // Validate has summaries
-  // Queue job: generate_course
+  // Queue job: generate_course_quiz
   // Return jobId
 }
 ```
@@ -480,7 +480,7 @@ processJob(job) {
   // Emit notification event
 }
 
-// generate-course.worker.ts
+// generate-course-quiz.worker.ts
 processJob(job) {
   // Update job status: "processing", progress: 0
   // Fetch all link summaries for project
@@ -560,7 +560,7 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
   fetchProjects() { /* GET /projects */ }
   createProject(name, description) { /* POST /projects */ }
   getProject(id) { /* GET /projects/:id */ }
-  generateCourse(id) { /* POST /projects/:id/generate-course */ }
+  generateCourseQuiz(id) { /* POST /projects/:id/generate-course-quiz */ }
 }
 ```
 
@@ -727,7 +727,7 @@ docker-compose -f docker-compose.prod.yml up -d --scale api=3
 - [ ] Flutter widget tests pass
 - [ ] GitHub Actions workflow succeeds
 - [ ] Docker image builds and runs
-- [ ] End-to-end flow works: register → save link → view AI output → generate course
+- [ ] End-to-end flow works: register → save link → view AI output → generate course & quiz
 
 ---
 
@@ -744,7 +744,7 @@ docker-compose -f docker-compose.prod.yml up -d --scale api=3
 | GET | `/projects/:id` | Yes | Get project |
 | PUT | `/projects/:id` | Yes | Update project |
 | DELETE | `/projects/:id` | Yes | Delete project |
-| POST | `/projects/:id/generate-course` | Yes | Generate course |
+| POST | `/projects/:id/generate-course-quiz` | Yes | Generate course and quiz |
 | GET | `/links` | Yes | List links |
 | POST | `/links` | Yes | Create link |
 | GET | `/links/:id` | Yes | Get link |

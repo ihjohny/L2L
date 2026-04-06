@@ -179,22 +179,22 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
                 Icon(Icons.school, color: Theme.of(context).primaryColor),
                 const SizedBox(width: 12),
                 Text(
-                  'AI Course Generation',
+                  'AI Course & Quiz Generation',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'Generate a structured course from all links in this project',
+              'Generate a structured course and quiz from all links in this project',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                text: _isGeneratingCourse ? 'Generating...' : 'Generate Course',
-                onPressed: _isGeneratingCourse ? null : _generateCourse,
+                text: _isGeneratingCourse ? 'Generating...' : 'Generate Course & Quiz',
+                onPressed: _isGeneratingCourse ? null : _generateCourseQuiz,
                 isLoading: _isGeneratingCourse,
               ),
             ),
@@ -244,18 +244,18 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     );
   }
 
-  Future<void> _generateCourse() async {
+  Future<void> _generateCourseQuiz() async {
     setState(() => _isGeneratingCourse = true);
 
     try {
       await ref
           .read(projectViewModelProvider.notifier)
-          .generateCourse(widget.projectId);
+          .generateCourseQuiz(widget.projectId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Course generation started!'),
+            content: Text('Course and quiz generation started!'),
             backgroundColor: Colors.green,
           ),
         );

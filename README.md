@@ -236,7 +236,7 @@ OPENAI_MODEL=gpt-4o
 | GET | `/api/v1/projects/:id` | Get project details |
 | PUT | `/api/v1/projects/:id` | Update project |
 | DELETE | `/api/v1/projects/:id` | Delete project |
-| POST | `/api/v1/projects/:id/generate-course` | Generate AI course |
+| POST | `/api/v1/projects/:id/generate-course-quiz` | Generate AI course and quiz |
 
 ### Links
 
