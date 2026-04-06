@@ -206,7 +206,7 @@ function createGenerateCourseWorker(): void {
         await JobModel.findByIdAndUpdate(job.id, { progress: 70 });
 
         // Generate quiz (pass course ID for reference)
-        const quizContent = await aiService.generateQuiz(courseContent, courseOutput._id.toString());
+        const quizContent = await aiService.generateQuiz(courseContent, courseOutput._id);
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 80 });
 

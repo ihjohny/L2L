@@ -405,7 +405,7 @@ lib/
 #### Quiz (for Phase 2)
 | Field | Type | Description |
 |-------|------|-------------|
-| courseId | String? | Reference to the course this quiz was generated from |
+| courseId | String? | Reference to the course ai_output._id this quiz was generated from |
 | questions | List<QuizQuestion> | Quiz questions |
 
 #### QuizQuestion (for Phase 2)

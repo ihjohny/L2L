@@ -209,7 +209,7 @@ content: {
 **Content Schema for `type: quiz`:**
 ```javascript
 content: {
-  courseId: String,        // Reference to ai_outputs._id (course this quiz was generated from)
+  courseId: ObjectId,      // Reference to ai_outputs._id (course this quiz was generated from)
   title: String,
   description: String,
   passingScore: Number,      // Percentage (e.g., 70)
