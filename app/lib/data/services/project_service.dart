@@ -1,5 +1,7 @@
 import '../../core/network/dio_client.dart';
 import '../models/project_model.dart';
+import '../models/course_model.dart';
+import '../models/quiz_model.dart';
 
 class ProjectService {
   final DioClient _dioClient = DioClient.instance;
@@ -104,6 +106,64 @@ class ProjectService {
         return response.data['data'] as Map<String, dynamic>;
       }
       throw Exception('Failed to generate course and quiz');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
+  /// Get latest course for a project
+  Future<CourseModel> getLatestCourse(String projectId) async {
+    try {
+      final response = await _dioClient.dio.get('/projects/$projectId/course');
+
+      if (response.statusCode == 200) {
+        return CourseModel.fromJson(response.data['data']);
+      }
+      throw Exception('Failed to fetch course');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
+  /// Get latest quiz for a project
+  Future<QuizModel> getLatestQuiz(String projectId) async {
+    try {
+      final response = await _dioClient.dio.get('/projects/$projectId/quiz');
+
+      if (response.statusCode == 200) {
+        return QuizModel.fromJson(response.data['data']);
+      }
+      throw Exception('Failed to fetch quiz');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
+  /// Get project statistics
+  Future<Map<String, dynamic>> getProjectStats(String projectId) async {
+    try {
+      final response = await _dioClient.dio.get('/projects/$projectId/stats');
+
+      if (response.statusCode == 200) {
+        return response.data['data'] as Map<String, dynamic>;
+      }
+      throw Exception('Failed to fetch project stats');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
+  /// Sync/regenerate course for project
+  Future<Map<String, dynamic>> syncCourse(String projectId) async {
+    try {
+      final response = await _dioClient.dio.post(
+        '/projects/$projectId/sync-course',
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data['data'] as Map<String, dynamic>;
+      }
+      throw Exception('Failed to sync course');
     } catch (e) {
       throw _dioClient.handleError(e);
     }

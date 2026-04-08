@@ -7,6 +7,8 @@ export interface Project extends BaseEntity {
   description?: string | null;
   aiOutputId?: string | null;
   deletedAt?: Date | null;
+  courseGenerated?: boolean;
+  lastGeneratedAt?: Date | null;
 }
 
 export interface CreateProjectDto {
@@ -48,6 +50,14 @@ const projectSchema = new Schema(
       type: Date,
       default: null,
       index: true
+    },
+    courseGenerated: {
+      type: Boolean,
+      default: false
+    },
+    lastGeneratedAt: {
+      type: Date,
+      default: null
     }
   },
   {
@@ -56,6 +66,14 @@ const projectSchema = new Schema(
     toObject: { virtuals: true }
   }
 );
+
+// Virtual for link count
+projectSchema.virtual('linkCount', {
+  ref: 'Link',
+  localField: '_id',
+  foreignField: 'projectId',
+  count: true
+});
 
 // Indexes
 projectSchema.index({ userId: 1, createdAt: -1 });

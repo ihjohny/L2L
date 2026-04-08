@@ -24,6 +24,10 @@ mixin _$ProjectModel {
   List<String> get linkIds => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
+  bool get courseGenerated => throw _privateConstructorUsedError;
+  DateTime? get lastGeneratedAt => throw _privateConstructorUsedError;
+  int get linkCount => throw _privateConstructorUsedError;
+  String get courseStatus => throw _privateConstructorUsedError;
 
   /// Create a copy of ProjectModel
   /// with the given fields replaced by the non-null parameter values.
@@ -46,7 +50,11 @@ abstract class $ProjectModelCopyWith<$Res> {
       String? aiOutputId,
       List<String> linkIds,
       DateTime createdAt,
-      DateTime updatedAt});
+      DateTime updatedAt,
+      bool courseGenerated,
+      DateTime? lastGeneratedAt,
+      int linkCount,
+      String courseStatus});
 }
 
 /// @nodoc
@@ -72,6 +80,10 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
     Object? linkIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? courseGenerated = null,
+    Object? lastGeneratedAt = freezed,
+    Object? linkCount = null,
+    Object? courseStatus = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -106,6 +118,22 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      courseGenerated: null == courseGenerated
+          ? _value.courseGenerated
+          : courseGenerated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      lastGeneratedAt: freezed == lastGeneratedAt
+          ? _value.lastGeneratedAt
+          : lastGeneratedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      linkCount: null == linkCount
+          ? _value.linkCount
+          : linkCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      courseStatus: null == courseStatus
+          ? _value.courseStatus
+          : courseStatus // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -126,7 +154,11 @@ abstract class _$$ProjectModelImplCopyWith<$Res>
       String? aiOutputId,
       List<String> linkIds,
       DateTime createdAt,
-      DateTime updatedAt});
+      DateTime updatedAt,
+      bool courseGenerated,
+      DateTime? lastGeneratedAt,
+      int linkCount,
+      String courseStatus});
 }
 
 /// @nodoc
@@ -150,6 +182,10 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
     Object? linkIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? courseGenerated = null,
+    Object? lastGeneratedAt = freezed,
+    Object? linkCount = null,
+    Object? courseStatus = null,
   }) {
     return _then(_$ProjectModelImpl(
       id: null == id
@@ -184,6 +220,22 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      courseGenerated: null == courseGenerated
+          ? _value.courseGenerated
+          : courseGenerated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      lastGeneratedAt: freezed == lastGeneratedAt
+          ? _value.lastGeneratedAt
+          : lastGeneratedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      linkCount: null == linkCount
+          ? _value.linkCount
+          : linkCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      courseStatus: null == courseStatus
+          ? _value.courseStatus
+          : courseStatus // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -199,7 +251,11 @@ class _$ProjectModelImpl extends _ProjectModel {
       this.aiOutputId,
       final List<String> linkIds = const [],
       required this.createdAt,
-      required this.updatedAt})
+      required this.updatedAt,
+      this.courseGenerated = false,
+      this.lastGeneratedAt,
+      this.linkCount = 0,
+      this.courseStatus = 'unknown'})
       : _linkIds = linkIds,
         super._();
 
@@ -226,10 +282,21 @@ class _$ProjectModelImpl extends _ProjectModel {
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
+  @override
+  @JsonKey()
+  final bool courseGenerated;
+  @override
+  final DateTime? lastGeneratedAt;
+  @override
+  @JsonKey()
+  final int linkCount;
+  @override
+  @JsonKey()
+  final String courseStatus;
 
   @override
   String toString() {
-    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutputId: $aiOutputId, linkIds: $linkIds, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutputId: $aiOutputId, linkIds: $linkIds, createdAt: $createdAt, updatedAt: $updatedAt, courseGenerated: $courseGenerated, lastGeneratedAt: $lastGeneratedAt, linkCount: $linkCount, courseStatus: $courseStatus)';
   }
 
   @override
@@ -248,7 +315,15 @@ class _$ProjectModelImpl extends _ProjectModel {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.courseGenerated, courseGenerated) ||
+                other.courseGenerated == courseGenerated) &&
+            (identical(other.lastGeneratedAt, lastGeneratedAt) ||
+                other.lastGeneratedAt == lastGeneratedAt) &&
+            (identical(other.linkCount, linkCount) ||
+                other.linkCount == linkCount) &&
+            (identical(other.courseStatus, courseStatus) ||
+                other.courseStatus == courseStatus));
   }
 
   @override
@@ -261,7 +336,11 @@ class _$ProjectModelImpl extends _ProjectModel {
       aiOutputId,
       const DeepCollectionEquality().hash(_linkIds),
       createdAt,
-      updatedAt);
+      updatedAt,
+      courseGenerated,
+      lastGeneratedAt,
+      linkCount,
+      courseStatus);
 
   /// Create a copy of ProjectModel
   /// with the given fields replaced by the non-null parameter values.
@@ -281,7 +360,11 @@ abstract class _ProjectModel extends ProjectModel {
       final String? aiOutputId,
       final List<String> linkIds,
       required final DateTime createdAt,
-      required final DateTime updatedAt}) = _$ProjectModelImpl;
+      required final DateTime updatedAt,
+      final bool courseGenerated,
+      final DateTime? lastGeneratedAt,
+      final int linkCount,
+      final String courseStatus}) = _$ProjectModelImpl;
   const _ProjectModel._() : super._();
 
   @override
@@ -300,6 +383,14 @@ abstract class _ProjectModel extends ProjectModel {
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
+  @override
+  bool get courseGenerated;
+  @override
+  DateTime? get lastGeneratedAt;
+  @override
+  int get linkCount;
+  @override
+  String get courseStatus;
 
   /// Create a copy of ProjectModel
   /// with the given fields replaced by the non-null parameter values.

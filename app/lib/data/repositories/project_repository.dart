@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/project_model.dart';
+import '../../data/models/course_model.dart';
+import '../../data/models/quiz_model.dart';
 import '../../data/services/project_service.dart';
 import '../../core/utils/result.dart';
 
@@ -88,6 +90,46 @@ class ProjectRepository {
   Future<Result<Map<String, dynamic>>> generateCourseQuiz(String projectId) async {
     try {
       final result = await _projectService.generateCourseQuiz(projectId);
+      return Success(result);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Get latest course for a project.
+  Future<Result<CourseModel>> getLatestCourse(String projectId) async {
+    try {
+      final course = await _projectService.getLatestCourse(projectId);
+      return Success(course);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Get latest quiz for a project.
+  Future<Result<QuizModel>> getLatestQuiz(String projectId) async {
+    try {
+      final quiz = await _projectService.getLatestQuiz(projectId);
+      return Success(quiz);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Get project statistics.
+  Future<Result<Map<String, dynamic>>> getProjectStats(String projectId) async {
+    try {
+      final stats = await _projectService.getProjectStats(projectId);
+      return Success(stats);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Sync/regenerate course for project.
+  Future<Result<Map<String, dynamic>>> syncCourse(String projectId) async {
+    try {
+      final result = await _projectService.syncCourse(projectId);
       return Success(result);
     } catch (e) {
       return Failure(e.toString().replaceAll('Exception: ', ''));

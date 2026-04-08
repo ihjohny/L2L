@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/models/link_model.dart';
+import '../../../data/models/course_model.dart';
+import '../../../data/models/quiz_model.dart';
 import '../../../core/utils/navigation_triggers.dart';
 
 part 'project_state.freezed.dart';
@@ -18,11 +20,23 @@ class ProjectState with _$ProjectState {
     /// Links for the selected project
     @Default([]) List<LinkModel> selectedProjectLinks,
 
+    /// Course for the selected project
+    CourseModel? selectedProjectCourse,
+
+    /// Quiz for the selected project
+    QuizModel? selectedProjectQuiz,
+
+    /// Project statistics
+    Map<String, dynamic>? selectedProjectStats,
+
     /// Whether the ViewModel is currently loading
     @Default(false) bool isLoading,
 
     /// Whether links are loading for the selected project
     @Default(false) isLoadingLinks,
+
+    /// Whether course/quiz data is loading
+    @Default(false) isLoadingCourse,
 
     /// Error message from the last failed operation
     String? error,
@@ -41,8 +55,12 @@ class ProjectState with _$ProjectState {
         projects: [],
         selectedProject: null,
         selectedProjectLinks: [],
+        selectedProjectCourse: null,
+        selectedProjectQuiz: null,
+        selectedProjectStats: null,
         isLoading: true, // Start loading to fetch projects
         isLoadingLinks: false,
+        isLoadingCourse: false,
         error: null,
         navigationTrigger: ProjectNavigationTrigger.none,
       );
@@ -70,4 +88,20 @@ extension ProjectStateX on ProjectState {
 
   /// Whether the selected project has links
   bool get selectedProjectHasLinks => selectedProjectLinks.isNotEmpty;
+
+  /// Whether the selected project has a generated course
+  bool get hasCourse => selectedProjectCourse != null;
+
+  /// Whether the selected project has a quiz
+  bool get hasQuiz => selectedProjectQuiz != null;
+
+  /// Whether the course needs to be synced (new links added)
+  bool get needsCourseSync {
+    if (selectedProjectStats == null) return false;
+    final courseStatus = selectedProjectStats!['courseStatus'] as String?;
+    return courseStatus == 'needs_sync';
+  }
+
+  /// Whether a course can be generated
+  bool get canGenerateCourse => selectedProjectHasLinks && !hasCourse && !needsCourseSync;
 }

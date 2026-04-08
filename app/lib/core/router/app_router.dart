@@ -10,6 +10,8 @@ import '../../presentation/pages/links/links_list_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/edit_project_page.dart';
+import '../../presentation/pages/courses/course_detail_page.dart';
+import '../../presentation/pages/quiz/quiz_page.dart';
 import '../../presentation/viewmodels/auth_viewmodel.dart';
 import '../../presentation/viewmodels/auth_state.dart';
 
@@ -163,6 +165,45 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MaterialPage(
             key: state.pageKey,
             child: EditProjectPage(projectId: projectId),
+          );
+        },
+      ),
+
+      // Course Routes (Protected)
+      GoRoute(
+        path: '/projects/:projectId/course',
+        name: 'course_detail',
+        pageBuilder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          return MaterialPage(
+            key: state.pageKey,
+            child: CourseDetailPage(projectId: projectId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/projects/:projectId/course/lesson',
+        name: 'lesson_detail',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return MaterialPage(
+            key: state.pageKey,
+            child: LessonDetailPage(
+              lessonData: extra ?? {'title': '', 'content': '', 'order': 0},
+            ),
+          );
+        },
+      ),
+
+      // Quiz Routes (Protected)
+      GoRoute(
+        path: '/projects/:projectId/quiz',
+        name: 'quiz',
+        pageBuilder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          return MaterialPage(
+            key: state.pageKey,
+            child: QuizPage(projectId: projectId),
           );
         },
       ),

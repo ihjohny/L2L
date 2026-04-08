@@ -60,4 +60,18 @@ router.get('/:projectId/course', authenticate, Project.getLatestCourse);
  */
 router.get('/:projectId/quiz', authenticate, Project.getLatestQuiz);
 
+/**
+ * @route   GET /api/projects/:projectId/stats
+ * @desc    Get project statistics including link count and course status
+ * @access  Private
+ */
+router.get('/:projectId/stats', authenticate, Project.getProjectStats);
+
+/**
+ * @route   POST /api/projects/:projectId/sync-course
+ * @desc    Sync/regenerate course when new links are added
+ * @access  Private
+ */
+router.post('/:projectId/sync-course', authenticate, Project.syncCourse);
+
 export default router;
