@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/project_viewmodel.dart';
-import '../../../presentation/viewmodels/project_state.dart';
+import '../../../presentation/viewmodels/project_details_viewmodel.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 
@@ -24,10 +23,14 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
   @override
   void initState() {
     super.initState();
-    final state = ref.read(projectViewModelProvider);
-    final project = state.getProjectById(widget.projectId);
-    _nameController = TextEditingController(text: project?.name ?? '');
-    _descriptionController = TextEditingController(text: project?.description ?? '');
+    // Load project when page initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(projectDetailsViewModelProvider.notifier).selectProject(widget.projectId);
+      }
+    });
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
   }
 
   @override
@@ -39,12 +42,25 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(projectViewModelProvider);
-    final project = state.getProjectById(widget.projectId);
+    final state = ref.watch(projectDetailsViewModelProvider);
+    final project = state.selectedProject;
+
+    // Update controllers when project loads
+    if (project != null &&
+        (_nameController.text.isEmpty || _nameController.text != project.name)) {
+      _nameController.text = project.name;
+      _descriptionController.text = project.description ?? '';
+    }
+
+    if (state.isLoading && project == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     if (project == null) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(child: Text('Project not found')),
       );
     }
 
@@ -107,7 +123,7 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
       final description = _descriptionController.text.trim();
 
       // Set form fields first
-      final viewModel = ref.read(projectViewModelProvider.notifier);
+      final viewModel = ref.read(projectDetailsViewModelProvider.notifier);
       viewModel.setFormName(name);
       if (description.isNotEmpty) {
         viewModel.setFormDescription(description);

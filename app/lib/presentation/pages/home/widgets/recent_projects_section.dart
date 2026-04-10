@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../presentation/viewmodels/project_viewmodel.dart';
+import '../../../../../presentation/viewmodels/projects_list_viewmodel.dart';
 import '../../../widgets/project_card.dart';
 
 class RecentProjectsSection extends ConsumerWidget {
@@ -9,7 +9,7 @@ class RecentProjectsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final projectsState = ref.watch(projectViewModelProvider);
+    final projectsState = ref.watch(projectsListViewModelProvider);
     final projects = projectsState.projects;
 
     // Sort projects by activity (most recently updated first)

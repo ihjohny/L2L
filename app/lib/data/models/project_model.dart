@@ -28,7 +28,6 @@ class ProjectModel with _$ProjectModel {
     ProjectAiOutput? aiOutput,
     @Default(false) bool shouldSyncAiOutput,
     @Default(0) int totalLinks,
-    @Default([]) List<String> linkIds,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _ProjectModel;
@@ -43,7 +42,6 @@ class ProjectModel with _$ProjectModel {
         : null,
     shouldSyncAiOutput: json['shouldSyncAiOutput'] ?? false,
     totalLinks: json['totalLinks'] ?? 0,
-    linkIds: json['linkIds'] != null ? List<String>.from(json['linkIds']) : [],
     createdAt: json['createdAt'] != null
         ? DateTime.parse(json['createdAt'].toString())
         : DateTime.now(),
@@ -64,9 +62,9 @@ class ProjectModel with _$ProjectModel {
 
 // Extension methods for computed properties
 extension ProjectModelX on ProjectModel {
-  bool get hasLinks => totalLinks > 0 || linkIds.isNotEmpty;
+  bool get hasLinks => totalLinks > 0;
 
-  int get linkCount => totalLinks > 0 ? totalLinks : linkIds.length;
+  int get linkCount => totalLinks;
 
   bool get hasCourse => aiOutput?.courseId != null && aiOutput!.courseId!.isNotEmpty;
 

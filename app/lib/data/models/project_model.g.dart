@@ -31,10 +31,6 @@ _$ProjectModelImpl _$$ProjectModelImplFromJson(Map<String, dynamic> json) =>
           : ProjectAiOutput.fromJson(json['aiOutput'] as Map<String, dynamic>),
       shouldSyncAiOutput: json['shouldSyncAiOutput'] as bool? ?? false,
       totalLinks: (json['totalLinks'] as num?)?.toInt() ?? 0,
-      linkIds: (json['linkIds'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -48,7 +44,6 @@ Map<String, dynamic> _$$ProjectModelImplToJson(_$ProjectModelImpl instance) =>
       'aiOutput': instance.aiOutput,
       'shouldSyncAiOutput': instance.shouldSyncAiOutput,
       'totalLinks': instance.totalLinks,
-      'linkIds': instance.linkIds,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

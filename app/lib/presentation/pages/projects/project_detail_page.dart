@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/project_viewmodel.dart';
+import '../../../presentation/viewmodels/project_details_viewmodel.dart';
 import '../../../core/utils/navigation_triggers.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/app_button.dart';
@@ -25,7 +25,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     // Load project and links when page opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        ref.read(projectViewModelProvider.notifier).selectProject(widget.projectId);
+        ref.read(projectDetailsViewModelProvider.notifier).selectProject(widget.projectId);
       }
     });
   }
@@ -33,14 +33,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   @override
   void dispose() {
     // Clear selected project when leaving page
-    ref.read(projectViewModelProvider.notifier).clearSelectedProject();
+    ref.read(projectDetailsViewModelProvider.notifier).clearSelectedProject();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = ref.watch(projectViewModelProvider.notifier);
-    final state = ref.watch(projectViewModelProvider);
+    final viewModel = ref.watch(projectDetailsViewModelProvider.notifier);
+    final state = ref.watch(projectDetailsViewModelProvider);
 
     // Show loading while project data is being fetched
     if (state.isLoading && state.selectedProject == null) {
@@ -249,7 +249,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
     try {
       await ref
-          .read(projectViewModelProvider.notifier)
+          .read(projectDetailsViewModelProvider.notifier)
           .generateCourseQuiz(widget.projectId);
 
       if (mounted) {
@@ -291,7 +291,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           ),
           TextButton(
             onPressed: () {
-              ref.read(projectViewModelProvider.notifier).deleteProject(widget.projectId);
+              ref.read(projectDetailsViewModelProvider.notifier).deleteProject();
               Navigator.pop(context);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),

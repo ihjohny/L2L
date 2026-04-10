@@ -54,12 +54,7 @@ class ProjectController {
       }
 
       const { projectId } = req.params;
-      const { includeLinks } = req.query;
-      const project = await projectService.getProject(
-        projectId,
-        userId,
-        includeLinks === 'true'
-      );
+      const project = await projectService.getProject(projectId, userId);
 
       return successResponse(res, project, 'Project retrieved successfully');
     } catch (error: any) {

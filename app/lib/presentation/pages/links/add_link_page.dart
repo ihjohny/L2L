@@ -225,8 +225,8 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                                 ),
                               ),
                               title: Text(projectName),
-                              subtitle: project.linkIds.isNotEmpty
-                                  ? Text('${project.linkIds.length} links')
+                              subtitle: project.totalLinks > 0
+                                  ? Text('${project.totalLinks} links')
                                   : null,
                               trailing: project.hasCourse || project.hasQuiz
                                   ? Icon(

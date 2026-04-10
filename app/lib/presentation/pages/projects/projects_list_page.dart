@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../presentation/viewmodels/project_viewmodel.dart';
-import '../../../presentation/viewmodels/project_state.dart';
+import '../../../presentation/viewmodels/projects_list_viewmodel.dart';
+import '../../../presentation/viewmodels/projects_list_state.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/error_widget.dart';
 import '../../widgets/project_card.dart';
@@ -16,7 +16,7 @@ class ProjectsListPage extends ConsumerStatefulWidget {
 class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
   @override
   Widget build(BuildContext context) {
-    final projectsState = ref.watch(projectViewModelProvider);
+    final projectsState = ref.watch(projectsListViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +27,7 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
           : projectsState.error != null && projectsState.projects.isEmpty
               ? CustomErrorWidget(
                   message: projectsState.error!,
-                  onRetry: () => ref.read(projectViewModelProvider.notifier).loadProjects(),
+                  onRetry: () => ref.read(projectsListViewModelProvider.notifier).loadProjects(),
                 )
               : projectsState.projects.isEmpty
                   ? _buildEmptyState(context)
@@ -62,9 +62,9 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
     );
   }
 
-  Widget _buildProjectsList(ProjectState projectsState) {
+  Widget _buildProjectsList(ProjectsListState projectsState) {
     return RefreshIndicator(
-      onRefresh: () => ref.read(projectViewModelProvider.notifier).loadProjects(),
+      onRefresh: () => ref.read(projectsListViewModelProvider.notifier).loadProjects(),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: projectsState.projects.length,

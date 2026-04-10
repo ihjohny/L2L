@@ -3,7 +3,7 @@ import '../../../data/repositories/link_repository.dart';
 import '../../../data/repositories/project_repository.dart';
 import 'add_link_state.dart';
 import 'link_list_viewmodel.dart';
-import 'project_viewmodel.dart';
+import 'projects_list_viewmodel.dart';
 
 /// ViewModel for add link operations.
 ///
@@ -137,7 +137,7 @@ class AddLinkViewModel extends StateNotifier<AddLinkState> {
 
       // Refresh link list and project list to include the new link
       _ref.read(linkListViewModelProvider.notifier).loadLinks();
-      _ref.read(projectViewModelProvider.notifier).loadProjects();
+      _ref.read(projectsListViewModelProvider.notifier).loadProjects();
 
       return true;
     } catch (e) {

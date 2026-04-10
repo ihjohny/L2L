@@ -42,19 +42,11 @@ class ProjectService {
     }
   }
 
-  async getProject(projectId: string, userId: string, includeLinks = false) {
+  async getProject(projectId: string, userId: string) {
     try {
       const project = await ProjectModel.findByIdAndUser(projectId, userId);
       if (!project) {
         throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
-      }
-
-      if (includeLinks) {
-        const links = await LinkModel.findByProject(userId, projectId);
-        return {
-          ...project.toObject(),
-          links
-        };
       }
 
       return project;

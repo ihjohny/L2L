@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../presentation/viewmodels/link_list_viewmodel.dart';
-import '../../../presentation/viewmodels/project_viewmodel.dart';
+import '../../../presentation/viewmodels/projects_list_viewmodel.dart';
 import 'widgets/recent_projects_section.dart';
 import 'widgets/recent_links_section.dart';
 
@@ -21,7 +21,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ref.read(linkListViewModelProvider.notifier).loadLinks();
-        ref.read(projectViewModelProvider.notifier).loadProjects();
+        ref.read(projectsListViewModelProvider.notifier).loadProjects();
       }
     });
   }

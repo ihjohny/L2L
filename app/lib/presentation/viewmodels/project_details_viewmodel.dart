@@ -2,54 +2,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/repositories/project_repository.dart';
 import '../../../data/repositories/link_repository.dart';
 import '../../../core/utils/navigation_triggers.dart';
-import 'project_state.dart';
+import 'project_details_state.dart';
 
-/// ViewModel for project-related operations.
+/// ViewModel for managing project details.
 ///
-/// Manages projects list, project detail, create, update, delete, and course generation.
-class ProjectViewModel extends StateNotifier<ProjectState> {
+/// Handles viewing, updating, and deleting individual projects,
+/// as well as managing project links and course generation.
+class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
   final ProjectRepository _projectRepository;
   final Ref _ref;
 
-  ProjectViewModel(this._projectRepository, this._ref) : super(ProjectState.initial()) {
-    loadProjects();
-  }
+  ProjectDetailsViewModel(this._projectRepository, this._ref)
+      : super(const ProjectDetailsState());
 
-  /// Load all projects.
-  Future<void> loadProjects() async {
-    state = state.copyWith(isLoading: true, error: null);
-
-    final result = await _projectRepository.getProjects();
-    if (!mounted) return;
-    result.fold(
-      (projects) {
-        state = state.copyWith(
-          projects: projects,
-          isLoading: false,
-        );
-      },
-      (error) {
-        state = state.copyWith(
-          isLoading: false,
-          error: error,
-        );
-      },
-    );
-  }
-
-  /// Select a project and load its links.
+  /// Select a project and load its details and links.
   Future<void> selectProject(String projectId) async {
-    state = state.copyWith(isLoadingLinks: true, error: null);
+    state = state.copyWith(isLoading: true, isLoadingLinks: true, error: ProjectDetailsState.nullValue);
 
     // Get project details
     final projectResult = await _projectRepository.getProjectById(projectId);
     if (!mounted) return;
+
     projectResult.fold(
       (project) {
-        state = state.copyWith(selectedProject: project);
+        state = state.copyWith(selectedProject: project, isLoading: false);
       },
       (error) {
-        state = state.copyWith(error: error);
+        state = state.copyWith(
+          isLoading: false,
+          isLoadingLinks: false,
+          error: error,
+        );
       },
     );
 
@@ -57,6 +40,7 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     final linkRepo = _ref.read(linkRepositoryProvider);
     final linksResult = await linkRepo.getLinks(projectId: projectId);
     if (!mounted) return;
+
     linksResult.fold(
       (links) {
         state = state.copyWith(
@@ -76,69 +60,43 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
   /// Clear selected project.
   void clearSelectedProject() {
     state = state.copyWith(
-      selectedProject: null,
+      selectedProject: ProjectDetailsState.nullValue,
       selectedProjectLinks: [],
+      editingProjectId: ProjectDetailsState.nullValue,
+      formName: '',
+      formDescription: '',
     );
   }
 
-  /// Set form fields for creating a new project.
+  /// Set form fields for editing project name.
   void setFormName(String name) {
-    state = state.copyWith(formName: name, error: null);
+    state = state.copyWith(formName: name, error: ProjectDetailsState.nullValue);
   }
 
-  /// Set form fields for description.
+  /// Set form fields for project description.
   void setFormDescription(String description) {
-    state = state.copyWith(formDescription: description, error: null);
+    state = state.copyWith(formDescription: description, error: ProjectDetailsState.nullValue);
   }
 
-  /// Prepare form for editing a project.
-  void prepareEditProject(String projectId) {
-    final project = state.getProjectById(projectId);
+  /// Prepare form for editing the currently selected project.
+  void prepareEditProject() {
+    final project = state.selectedProject;
     if (project != null) {
       state = state.copyWith(
-        editingProjectId: projectId,
+        editingProjectId: project.id,
         formName: project.name,
         formDescription: project.description ?? '',
       );
     }
   }
 
-  /// Create a new project.
-  Future<void> createProject() async {
-    if (!state.canSaveProject) return;
-
-    state = state.copyWith(isLoading: true, error: null);
-
-    final result = await _projectRepository.createProject(
-      name: state.formName,
-      description: state.formDescription.isEmpty ? null : state.formDescription,
-    );
-
-    if (!mounted) return;
-    result.fold(
-      (newProject) {
-        state = state.copyWith(
-          projects: [...state.projects, newProject],
-          isLoading: false,
-          formName: '',
-          formDescription: '',
-          navigationTrigger: ProjectNavigationTrigger.toProjectsList,
-        );
-      },
-      (error) {
-        state = state.copyWith(
-          isLoading: false,
-          error: error,
-        );
-      },
-    );
-  }
-
   /// Update an existing project.
   Future<void> updateProject() async {
-    if (!state.canSaveProject || !state.isEditing) return;
+    if (!state.canSaveProject || !state.isEditing || state.editingProjectId == null) {
+      return;
+    }
 
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: ProjectDetailsState.nullValue);
 
     final result = await _projectRepository.updateProject(
       projectId: state.editingProjectId!,
@@ -147,15 +105,13 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     );
 
     if (!mounted) return;
+
     result.fold(
       (updatedProject) {
         state = state.copyWith(
-          projects: state.projects.map((p) {
-            return p.id == updatedProject.id ? updatedProject : p;
-          }).toList(),
           selectedProject: updatedProject,
           isLoading: false,
-          editingProjectId: null,
+          editingProjectId: ProjectDetailsState.nullValue,
           formName: '',
           formDescription: '',
           navigationTrigger: ProjectNavigationTrigger.toProjectDetail,
@@ -170,19 +126,20 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     );
   }
 
-  /// Delete a project.
-  Future<void> deleteProject(String projectId) async {
-    state = state.copyWith(isLoading: true, error: null);
+  /// Delete the currently selected project.
+  Future<void> deleteProject() async {
+    final projectId = state.selectedProject?.id;
+    if (projectId == null) return;
+
+    state = state.copyWith(isLoading: true, error: ProjectDetailsState.nullValue);
 
     final result = await _projectRepository.deleteProject(projectId);
 
     if (!mounted) return;
+
     result.fold(
       (_) {
-        state = state.copyWith(
-          projects: state.projects.where((p) => p.id != projectId).toList(),
-          selectedProject: null,
-          isLoading: false,
+        state = const ProjectDetailsState(
           navigationTrigger: ProjectNavigationTrigger.toProjectsList,
         );
       },
@@ -200,6 +157,7 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     final result = await _projectRepository.generateCourseQuiz(projectId);
 
     if (!mounted) return;
+
     result.fold(
       (data) {
         // Course and quiz generation started - could update state with job info
@@ -210,9 +168,9 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     );
   }
 
-  /// Clear error.
+  /// Clear error message.
   void clearError() {
-    state = state.copyWith(error: null);
+    state = state.copyWith(error: ProjectDetailsState.nullValue);
   }
 
   /// Reset navigation trigger.
@@ -223,15 +181,16 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
   /// Clear form state.
   void clearForm() {
     state = state.copyWith(
-      editingProjectId: null,
+      editingProjectId: ProjectDetailsState.nullValue,
       formName: '',
       formDescription: '',
     );
   }
 }
 
-/// Provider for ProjectViewModel.
-final projectViewModelProvider = StateNotifierProvider<ProjectViewModel, ProjectState>((ref) {
+/// Provider for ProjectDetailsViewModel.
+final projectDetailsViewModelProvider =
+    StateNotifierProvider<ProjectDetailsViewModel, ProjectDetailsState>((ref) {
   final repository = ref.watch(projectRepositoryProvider);
-  return ProjectViewModel(repository, ref);
+  return ProjectDetailsViewModel(repository, ref);
 });

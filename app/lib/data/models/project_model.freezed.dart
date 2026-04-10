@@ -195,7 +195,6 @@ mixin _$ProjectModel {
   ProjectAiOutput? get aiOutput => throw _privateConstructorUsedError;
   bool get shouldSyncAiOutput => throw _privateConstructorUsedError;
   int get totalLinks => throw _privateConstructorUsedError;
-  List<String> get linkIds => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -223,7 +222,6 @@ abstract class $ProjectModelCopyWith<$Res> {
       ProjectAiOutput? aiOutput,
       bool shouldSyncAiOutput,
       int totalLinks,
-      List<String> linkIds,
       DateTime createdAt,
       DateTime updatedAt});
 
@@ -252,7 +250,6 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
     Object? aiOutput = freezed,
     Object? shouldSyncAiOutput = null,
     Object? totalLinks = null,
-    Object? linkIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -285,10 +282,6 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
           ? _value.totalLinks
           : totalLinks // ignore: cast_nullable_to_non_nullable
               as int,
-      linkIds: null == linkIds
-          ? _value.linkIds
-          : linkIds // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -331,7 +324,6 @@ abstract class _$$ProjectModelImplCopyWith<$Res>
       ProjectAiOutput? aiOutput,
       bool shouldSyncAiOutput,
       int totalLinks,
-      List<String> linkIds,
       DateTime createdAt,
       DateTime updatedAt});
 
@@ -359,7 +351,6 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
     Object? aiOutput = freezed,
     Object? shouldSyncAiOutput = null,
     Object? totalLinks = null,
-    Object? linkIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -392,10 +383,6 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
           ? _value.totalLinks
           : totalLinks // ignore: cast_nullable_to_non_nullable
               as int,
-      linkIds: null == linkIds
-          ? _value._linkIds
-          : linkIds // ignore: cast_nullable_to_non_nullable
-              as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -419,11 +406,9 @@ class _$ProjectModelImpl extends _ProjectModel {
       this.aiOutput,
       this.shouldSyncAiOutput = false,
       this.totalLinks = 0,
-      final List<String> linkIds = const [],
       required this.createdAt,
       required this.updatedAt})
-      : _linkIds = linkIds,
-        super._();
+      : super._();
 
   factory _$ProjectModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProjectModelImplFromJson(json);
@@ -444,15 +429,6 @@ class _$ProjectModelImpl extends _ProjectModel {
   @override
   @JsonKey()
   final int totalLinks;
-  final List<String> _linkIds;
-  @override
-  @JsonKey()
-  List<String> get linkIds {
-    if (_linkIds is EqualUnmodifiableListView) return _linkIds;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_linkIds);
-  }
-
   @override
   final DateTime createdAt;
   @override
@@ -460,7 +436,7 @@ class _$ProjectModelImpl extends _ProjectModel {
 
   @override
   String toString() {
-    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutput: $aiOutput, shouldSyncAiOutput: $shouldSyncAiOutput, totalLinks: $totalLinks, linkIds: $linkIds, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutput: $aiOutput, shouldSyncAiOutput: $shouldSyncAiOutput, totalLinks: $totalLinks, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -479,7 +455,6 @@ class _$ProjectModelImpl extends _ProjectModel {
                 other.shouldSyncAiOutput == shouldSyncAiOutput) &&
             (identical(other.totalLinks, totalLinks) ||
                 other.totalLinks == totalLinks) &&
-            const DeepCollectionEquality().equals(other._linkIds, _linkIds) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -488,18 +463,8 @@ class _$ProjectModelImpl extends _ProjectModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      userId,
-      name,
-      description,
-      aiOutput,
-      shouldSyncAiOutput,
-      totalLinks,
-      const DeepCollectionEquality().hash(_linkIds),
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hash(runtimeType, id, userId, name, description,
+      aiOutput, shouldSyncAiOutput, totalLinks, createdAt, updatedAt);
 
   /// Create a copy of ProjectModel
   /// with the given fields replaced by the non-null parameter values.
@@ -526,7 +491,6 @@ abstract class _ProjectModel extends ProjectModel {
       final ProjectAiOutput? aiOutput,
       final bool shouldSyncAiOutput,
       final int totalLinks,
-      final List<String> linkIds,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$ProjectModelImpl;
   const _ProjectModel._() : super._();
@@ -548,8 +512,6 @@ abstract class _ProjectModel extends ProjectModel {
   bool get shouldSyncAiOutput;
   @override
   int get totalLinks;
-  @override
-  List<String> get linkIds;
   @override
   DateTime get createdAt;
   @override
