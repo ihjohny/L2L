@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/repositories/link_repository.dart';
+import '../../../../data/repositories/link_repository.dart';
 import 'link_detail_state.dart';
 
 /// ViewModel for link detail operations.

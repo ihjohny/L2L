@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../presentation/viewmodels/projects_list_viewmodel.dart';
-import '../../../presentation/viewmodels/projects_list_state.dart';
+import '../../viewmodels/projects_list/projects_list_viewmodel.dart';
+import '../../viewmodels/projects_list/projects_list_state.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/error_widget.dart';
 import '../../widgets/project_card.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/repositories/project_repository.dart';
+import '../../../../data/repositories/project_repository.dart';
 import 'projects_list_state.dart';
 
 /// ViewModel for managing the list of projects.

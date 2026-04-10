@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/auth_viewmodel.dart';
+import '../../viewmodels/auth/auth_viewmodel.dart';
 import '../../../core/utils/navigation_triggers.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {

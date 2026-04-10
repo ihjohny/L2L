@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../presentation/viewmodels/link_list_viewmodel.dart';
-import '../../../presentation/viewmodels/link_list_state.dart';
+import '../../viewmodels/link_list/link_list_viewmodel.dart';
+import '../../viewmodels/link_list/link_list_state.dart';
 import '../../../data/models/link_model.dart';
 import '../../widgets/link_card.dart';
 

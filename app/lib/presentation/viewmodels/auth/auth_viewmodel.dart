@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/repositories/auth_repository.dart';
-import '../../../core/utils/navigation_triggers.dart';
+import '../../../../data/repositories/auth_repository.dart';
+import '../../../../core/utils/navigation_triggers.dart';
 import 'auth_state.dart';
 
 /// ViewModel for authentication-related operations.

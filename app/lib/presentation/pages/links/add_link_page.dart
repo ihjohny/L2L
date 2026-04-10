@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/add_link_viewmodel.dart';
-import '../../../presentation/viewmodels/add_link_state.dart';
+import '../../viewmodels/add_link/add_link_viewmodel.dart';
+import '../../viewmodels/add_link/add_link_state.dart';
 import '../../../data/models/project_model.dart';
 
 class AddLinkPage extends ConsumerStatefulWidget {

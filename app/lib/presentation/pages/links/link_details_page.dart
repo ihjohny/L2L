@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import '../../../presentation/viewmodels/link_detail_viewmodel.dart';
+import '../../viewmodels/link_detail/link_detail_viewmodel.dart';
 import '../../../data/models/link_model.dart';
 
 class LinkDetailsPage extends ConsumerStatefulWidget {

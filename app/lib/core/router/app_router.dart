@@ -10,8 +10,8 @@ import '../../presentation/pages/links/links_list_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/edit_project_page.dart';
-import '../../presentation/viewmodels/auth_viewmodel.dart';
-import '../../presentation/viewmodels/auth_state.dart';
+import '../../presentation/viewmodels/auth/auth_viewmodel.dart';
+import '../../presentation/viewmodels/auth/auth_state.dart';
 
 // Router key for navigation
 final _rootNavigatorKey = GlobalKey<NavigatorState>();

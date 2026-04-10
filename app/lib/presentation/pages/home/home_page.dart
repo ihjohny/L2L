@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/link_list_viewmodel.dart';
-import '../../../presentation/viewmodels/projects_list_viewmodel.dart';
+import '../../viewmodels/link_list/link_list_viewmodel.dart';
+import '../../viewmodels/projects_list/projects_list_viewmodel.dart';
 import 'widgets/recent_projects_section.dart';
 import 'widgets/recent_links_section.dart';
 

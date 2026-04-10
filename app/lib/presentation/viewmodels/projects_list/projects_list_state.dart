@@ -1,4 +1,4 @@
-import '../../../data/models/project_model.dart';
+import '../../../../data/models/project_model.dart';
 
 /// Immutable state for the ProjectsListViewModel.
 class ProjectsListState {

@@ -1,6 +1,6 @@
-import '../../../data/models/project_model.dart';
-import '../../../data/models/link_model.dart';
-import '../../../core/utils/navigation_triggers.dart';
+import '../../../../data/models/project_model.dart';
+import '../../../../data/models/link_model.dart';
+import '../../../../core/utils/navigation_triggers.dart';
 
 /// Marker object to allow setting nullable values in copyWith.
 class NullValue {

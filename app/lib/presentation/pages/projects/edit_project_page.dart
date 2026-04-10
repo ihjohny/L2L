@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../presentation/viewmodels/project_details_viewmodel.dart';
+import '../../viewmodels/project_details/project_details_viewmodel.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 

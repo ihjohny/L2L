@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/repositories/project_repository.dart';
-import '../../../data/repositories/link_repository.dart';
-import '../../../core/utils/navigation_triggers.dart';
+import '../../../../data/repositories/project_repository.dart';
+import '../../../../data/repositories/link_repository.dart';
+import '../../../../core/utils/navigation_triggers.dart';
 import 'project_details_state.dart';
 
 /// ViewModel for managing project details.

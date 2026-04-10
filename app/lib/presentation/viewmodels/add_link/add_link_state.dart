@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../data/models/project_model.dart';
+import '../../../../data/models/project_model.dart';
 
 part 'add_link_state.freezed.dart';
 

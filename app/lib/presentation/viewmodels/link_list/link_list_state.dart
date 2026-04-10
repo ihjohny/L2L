@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../data/models/link_model.dart';
-import '../../../core/utils/navigation_triggers.dart';
+import '../../../../data/models/link_model.dart';
+import '../../../../core/utils/navigation_triggers.dart';
 
 part 'link_list_state.freezed.dart';
 

@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/repositories/link_repository.dart';
-import '../../../data/repositories/project_repository.dart';
+import '../../../../data/repositories/link_repository.dart';
+import '../../../../data/repositories/project_repository.dart';
 import 'add_link_state.dart';
-import 'link_list_viewmodel.dart';
-import 'projects_list_viewmodel.dart';
+import '../link_list/link_list_viewmodel.dart';
+import '../projects_list/projects_list_viewmodel.dart';
 
 /// ViewModel for add link operations.
 ///

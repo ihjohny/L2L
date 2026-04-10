@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../presentation/viewmodels/projects_list_viewmodel.dart';
+import '../../../viewmodels/projects_list/projects_list_viewmodel.dart';
 import '../../../widgets/project_card.dart';
 
 class RecentProjectsSection extends ConsumerWidget {
