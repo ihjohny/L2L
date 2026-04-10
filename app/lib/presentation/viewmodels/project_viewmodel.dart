@@ -39,7 +39,7 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
 
   /// Select a project and load its links.
   Future<void> selectProject(String projectId) async {
-    state = state.copyWith(isLoadingLinks: true, isLoadingCourse: true, error: null);
+    state = state.copyWith(isLoadingLinks: true, error: null);
 
     // Get project details
     final projectResult = await _projectRepository.getProjectById(projectId);
@@ -71,60 +71,6 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
         );
       },
     );
-
-    // Load project stats (includes course status)
-    _loadProjectStats(projectId);
-
-    // Load course if exists
-    _loadCourse(projectId);
-
-    // Load quiz if exists
-    _loadQuiz(projectId);
-  }
-
-  /// Load project statistics.
-  Future<void> _loadProjectStats(String projectId) async {
-    final result = await _projectRepository.getProjectStats(projectId);
-    if (!mounted) return;
-    result.fold(
-      (stats) {
-        state = state.copyWith(selectedProjectStats: stats);
-      },
-      (error) {
-        // Silently fail - stats are not critical
-      },
-    );
-  }
-
-  /// Load course for the selected project.
-  Future<void> _loadCourse(String projectId) async {
-    final result = await _projectRepository.getLatestCourse(projectId);
-    if (!mounted) return;
-    result.fold(
-      (course) {
-        state = state.copyWith(
-          selectedProjectCourse: course,
-          isLoadingCourse: false,
-        );
-      },
-      (error) {
-        state = state.copyWith(isLoadingCourse: false);
-      },
-    );
-  }
-
-  /// Load quiz for the selected project.
-  Future<void> _loadQuiz(String projectId) async {
-    final result = await _projectRepository.getLatestQuiz(projectId);
-    if (!mounted) return;
-    result.fold(
-      (quiz) {
-        state = state.copyWith(selectedProjectQuiz: quiz);
-      },
-      (error) {
-        // Silently fail - quiz might not exist yet
-      },
-    );
   }
 
   /// Clear selected project.
@@ -132,9 +78,6 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     state = state.copyWith(
       selectedProject: null,
       selectedProjectLinks: [],
-      selectedProjectCourse: null,
-      selectedProjectQuiz: null,
-      selectedProjectStats: null,
     );
   }
 
@@ -259,62 +202,12 @@ class ProjectViewModel extends StateNotifier<ProjectState> {
     if (!mounted) return;
     result.fold(
       (data) {
-        // Course and quiz generation started - refresh data after delay
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            _loadProjectStats(projectId);
-            _loadCourse(projectId);
-            _loadQuiz(projectId);
-          }
-        });
+        // Course and quiz generation started - could update state with job info
       },
       (error) {
         state = state.copyWith(error: error);
       },
     );
-  }
-
-  /// Sync/regenerate course for project.
-  Future<void> syncCourse(String projectId) async {
-    final result = await _projectRepository.syncCourse(projectId);
-
-    if (!mounted) return;
-    result.fold(
-      (data) {
-        // Course sync started - refresh data after delay
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            _loadProjectStats(projectId);
-            _loadCourse(projectId);
-            _loadQuiz(projectId);
-          }
-        });
-      },
-      (error) {
-        state = state.copyWith(error: error);
-      },
-    );
-  }
-
-  /// Refresh project data (links, stats, course, quiz).
-  Future<void> refreshProject(String projectId) async {
-    // Load project links
-    final linkRepo = _ref.read(linkRepositoryProvider);
-    final linksResult = await linkRepo.getLinks(projectId: projectId);
-    if (!mounted) return;
-    linksResult.fold(
-      (links) {
-        state = state.copyWith(selectedProjectLinks: links);
-      },
-      (error) {
-        state = state.copyWith(error: error);
-      },
-    );
-
-    // Load stats, course, and quiz
-    _loadProjectStats(projectId);
-    _loadCourse(projectId);
-    _loadQuiz(projectId);
   }
 
   /// Clear error.

@@ -15,10 +15,6 @@ class ProjectModel with _$ProjectModel {
     @Default([]) List<String> linkIds,
     required DateTime createdAt,
     required DateTime updatedAt,
-    @Default(false) bool courseGenerated,
-    DateTime? lastGeneratedAt,
-    @Default(0) int linkCount,
-    @Default('unknown') String courseStatus,
   }) = _ProjectModel;
 
   factory ProjectModel.fromJson(Map<String, dynamic> json) {
@@ -35,12 +31,6 @@ class ProjectModel with _$ProjectModel {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
-      courseGenerated: json['courseGenerated'] ?? json['hasCourse'] ?? false,
-      lastGeneratedAt: json['lastGeneratedAt'] != null
-          ? DateTime.parse(json['lastGeneratedAt'])
-          : null,
-      linkCount: json['linkCount'] ?? 0,
-      courseStatus: json['courseStatus'] ?? 'unknown',
     );
   }
 
@@ -55,11 +45,7 @@ class ProjectModel with _$ProjectModel {
 
 // Extension methods for computed properties
 extension ProjectModelX on ProjectModel {
-  bool get hasLinks => linkIds.isNotEmpty || linkCount > 0;
+  bool get hasLinks => linkIds.isNotEmpty;
 
-  int get totalLinkCount => linkIds.isNotEmpty ? linkIds.length : linkCount;
-
-  bool get needsSync => hasLinks && (courseGenerated || courseStatus == 'generated');
-
-  bool get canGenerateCourse => hasLinks && !courseGenerated && courseStatus != 'generated';
+  int get linkCount => linkIds.length;
 }
