@@ -120,7 +120,7 @@ class ProjectController {
     }
   }
 
-  async getLatestCourse(req: Request, res: Response, next: NextFunction) {
+  async getCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.sub;
       if (!userId) {
@@ -128,16 +128,16 @@ class ProjectController {
       }
 
       const { projectId } = req.params;
-      const course = await projectService.getLatestCourse(projectId, userId);
+      const course = await projectService.getCourse(projectId, userId);
 
-      return successResponse(res, course, 'Latest course retrieved successfully');
+      return successResponse(res, course, 'Course retrieved successfully');
     } catch (error: any) {
-      logger.error('Error in getLatestCourse controller:', error);
+      logger.error('Error in getCourse controller:', error);
       next(error);
     }
   }
 
-  async getLatestQuiz(req: Request, res: Response, next: NextFunction) {
+  async getQuiz(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.sub;
       if (!userId) {
@@ -145,11 +145,11 @@ class ProjectController {
       }
 
       const { projectId } = req.params;
-      const quiz = await projectService.getLatestQuiz(projectId, userId);
+      const quiz = await projectService.getQuiz(projectId, userId);
 
-      return successResponse(res, quiz, 'Latest quiz retrieved successfully');
+      return successResponse(res, quiz, 'Quiz retrieved successfully');
     } catch (error: any) {
-      logger.error('Error in getLatestQuiz controller:', error);
+      logger.error('Error in getQuiz controller:', error);
       next(error);
     }
   }

@@ -113,13 +113,16 @@ This document provides a high-level technical overview of the L2L platform archi
 ┌─────────────────────────────────┐   ┌─────────────────────────┐
 │           Project               │   │           Link          │
 │  id, userId, name, tags[],      │   │  id, userId, projectId, │
-│  entityIds[], aiOutputId        │   │  url, rawContent,       │
-│                                 │   │  tags[], aiOutputId,    │
-│  AI Output (Project):           │   │  status, metadata       │
-│  - course { lessons[] }         │   │                         │
-│  - quiz { courseId, questions[] │   │  AI Output (Link):      │
-│                                 │   │  - summary              │
+│  totalLinks,                    │   │  url, rawContent,       │
+│  aiOutput: {                    │   │  tags[], aiOutputId,    │
+│    courseId,                    │   │  status, metadata       │
+│    quizId                       │   │                         │
+│  },                             │   │  AI Output (Link):      │
+│  shouldSyncAiOutput             │   │  - summary              │
 │                                 │   │  - flashcards[]         │
+│  AI Output (Project):           │   │                         │
+│  - course { lessons[] }         │   │                         │
+│  - quiz { courseId, questions[] │   │                         │
 │                                 │   │                         │
 └─────────────────────────────────┘   └─────────────────────────┘
 ```

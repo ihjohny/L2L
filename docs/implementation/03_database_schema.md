@@ -77,8 +77,11 @@ db.users.createIndex({ deletedAt: 1 }, { sparse: true });
 | `name` | String | Yes | - | Text | Project name |
 | `description` | String | No | null | Text | Project description |
 | `tags` | String[] | Yes | `[]` | Multi-key | Tag labels |
-| `aiOutputId` | ObjectId | No | null | FK → ai_outputs | Course/quiz reference |
-| `linkCount` | Number | Yes | `0` | - | Denormalized count |
+| `aiOutput` | Object | No | null | - | AI output references |
+| `aiOutput.courseId` | ObjectId | No | null | FK → ai_outputs | Course reference |
+| `aiOutput.quizId` | ObjectId | No | null | FK → ai_outputs | Quiz reference |
+| `shouldSyncAiOutput` | Boolean | Yes | `false` | Indexed | Flag to regenerate course/quiz |
+| `totalLinks` | Number | Yes | `0` | - | Denormalized link count |
 | `isPublic` | Boolean | Yes | `false` | Indexed | Shareable project [P2] |
 | `shareSlug` | String | No | null | Unique | Public URL slug [P2] |
 | `collaborators` | Object[] | Yes | `[]` | - | Shared access [P2] |
@@ -95,6 +98,7 @@ db.users.createIndex({ deletedAt: 1 }, { sparse: true });
 ```javascript
 db.projects.createIndex({ userId: 1, createdAt: -1 }); // User's projects
 db.projects.createIndex({ userId: 1, deletedAt: 1 }); // Soft delete filter
+db.projects.createIndex({ shouldSyncAiOutput: 1 }); // Projects needing AI sync
 db.projects.createIndex({ tags: 1 }); // Tag filtering
 db.projects.createIndex({ isPublic: 1, shareSlug: 1 }, { sparse: true }); // Public sharing
 db.projects.createIndex({ name: 'text', description: 'text' }); // Full-text search

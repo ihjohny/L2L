@@ -1,11 +1,18 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import { BaseEntity } from '../../shared/interfaces/base.interface';
 
+export interface ProjectAiOutput {
+  courseId?: string | null;
+  quizId?: string | null;
+}
+
 export interface Project extends BaseEntity {
   userId: string;
   name: string;
   description?: string | null;
-  aiOutputId?: string | null;
+  aiOutput?: ProjectAiOutput | null;
+  shouldSyncAiOutput?: boolean;
+  totalLinks: number;
   deletedAt?: Date | null;
 }
 
@@ -39,10 +46,27 @@ const projectSchema = new Schema(
       default: null,
       trim: true
     },
-    aiOutputId: {
-      type: Schema.Types.ObjectId,
-      ref: 'AiOutput',
-      default: null
+    aiOutput: {
+      courseId: {
+        type: Schema.Types.ObjectId,
+        ref: 'AiOutput',
+        default: null
+      },
+      quizId: {
+        type: Schema.Types.ObjectId,
+        ref: 'AiOutput',
+        default: null
+      }
+    },
+    shouldSyncAiOutput: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    totalLinks: {
+      type: Number,
+      default: 0,
+      min: 0
     },
     deletedAt: {
       type: Date,
@@ -70,9 +94,63 @@ projectSchema.statics.findByIdAndUser = function (id: string, userId: string) {
   return this.findOne({ _id: id, userId, deletedAt: null });
 };
 
+projectSchema.statics.incrementLinkCount = function (projectId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { $inc: { totalLinks: 1 } },
+    { new: true }
+  );
+};
+
+projectSchema.statics.decrementLinkCount = function (projectId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { $inc: { totalLinks: -1 } },
+    { new: true }
+  );
+};
+
+projectSchema.statics.updateAiOutput = function (projectId: string, courseId: string, quizId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { aiOutput: { courseId, quizId } },
+    { new: true, upsert: true }
+  );
+};
+
+projectSchema.statics.clearAiOutput = function (projectId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { $unset: { aiOutput: '' } },
+    { new: true }
+  );
+};
+
+projectSchema.statics.markAiSyncRequired = function (projectId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { shouldSyncAiOutput: true },
+    { new: true }
+  );
+};
+
+projectSchema.statics.clearAiSyncRequired = function (projectId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { shouldSyncAiOutput: false },
+    { new: true }
+  );
+};
+
 interface ProjectModel extends Model<ProjectDocument> {
   findByUser(userId: string): Promise<ProjectDocument[]>;
   findByIdAndUser(id: string, userId: string): Promise<ProjectDocument | null>;
+  incrementLinkCount(projectId: string): Promise<ProjectDocument | null>;
+  decrementLinkCount(projectId: string): Promise<ProjectDocument | null>;
+  updateAiOutput(projectId: string, courseId: string, quizId: string): Promise<ProjectDocument | null>;
+  clearAiOutput(projectId: string): Promise<ProjectDocument | null>;
+  markAiSyncRequired(projectId: string): Promise<ProjectDocument | null>;
+  clearAiSyncRequired(projectId: string): Promise<ProjectDocument | null>;
 }
 
 const ProjectModel = mongoose.model<ProjectDocument, ProjectModel>('Project', projectSchema);

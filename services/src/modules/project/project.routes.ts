@@ -48,16 +48,16 @@ router.post('/:projectId/generate-course-quiz', authenticate, Project.generateCo
 
 /**
  * @route   GET /api/projects/:projectId/course
- * @desc    Get latest created course for a project
+ * @desc    Get course for a project
  * @access  Private
  */
-router.get('/:projectId/course', authenticate, Project.getLatestCourse);
+router.get('/:projectId/course', authenticate, Project.getCourse);
 
 /**
  * @route   GET /api/projects/:projectId/quiz
- * @desc    Get latest created quiz for a project
+ * @desc    Get quiz for a project
  * @access  Private
  */
-router.get('/:projectId/quiz', authenticate, Project.getLatestQuiz);
+router.get('/:projectId/quiz', authenticate, Project.getQuiz);
 
 export default router;

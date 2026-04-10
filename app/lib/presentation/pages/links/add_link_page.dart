@@ -228,7 +228,7 @@ class _AddLinkPageState extends ConsumerState<AddLinkPage> {
                               subtitle: project.linkIds.isNotEmpty
                                   ? Text('${project.linkIds.length} links')
                                   : null,
-                              trailing: project.aiOutputId != null
+                              trailing: project.hasCourse || project.hasQuiz
                                   ? Icon(
                                       Icons.auto_awesome,
                                       size: 18,

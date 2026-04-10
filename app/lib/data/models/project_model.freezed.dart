@@ -14,16 +14,193 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
+ProjectAiOutput _$ProjectAiOutputFromJson(Map<String, dynamic> json) {
+  return _ProjectAiOutput.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProjectAiOutput {
+  String? get courseId => throw _privateConstructorUsedError;
+  String? get quizId => throw _privateConstructorUsedError;
+
+  /// Serializes this ProjectAiOutput to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ProjectAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ProjectAiOutputCopyWith<ProjectAiOutput> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProjectAiOutputCopyWith<$Res> {
+  factory $ProjectAiOutputCopyWith(
+          ProjectAiOutput value, $Res Function(ProjectAiOutput) then) =
+      _$ProjectAiOutputCopyWithImpl<$Res, ProjectAiOutput>;
+  @useResult
+  $Res call({String? courseId, String? quizId});
+}
+
+/// @nodoc
+class _$ProjectAiOutputCopyWithImpl<$Res, $Val extends ProjectAiOutput>
+    implements $ProjectAiOutputCopyWith<$Res> {
+  _$ProjectAiOutputCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ProjectAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? courseId = freezed,
+    Object? quizId = freezed,
+  }) {
+    return _then(_value.copyWith(
+      courseId: freezed == courseId
+          ? _value.courseId
+          : courseId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      quizId: freezed == quizId
+          ? _value.quizId
+          : quizId // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ProjectAiOutputImplCopyWith<$Res>
+    implements $ProjectAiOutputCopyWith<$Res> {
+  factory _$$ProjectAiOutputImplCopyWith(_$ProjectAiOutputImpl value,
+          $Res Function(_$ProjectAiOutputImpl) then) =
+      __$$ProjectAiOutputImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? courseId, String? quizId});
+}
+
+/// @nodoc
+class __$$ProjectAiOutputImplCopyWithImpl<$Res>
+    extends _$ProjectAiOutputCopyWithImpl<$Res, _$ProjectAiOutputImpl>
+    implements _$$ProjectAiOutputImplCopyWith<$Res> {
+  __$$ProjectAiOutputImplCopyWithImpl(
+      _$ProjectAiOutputImpl _value, $Res Function(_$ProjectAiOutputImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProjectAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? courseId = freezed,
+    Object? quizId = freezed,
+  }) {
+    return _then(_$ProjectAiOutputImpl(
+      courseId: freezed == courseId
+          ? _value.courseId
+          : courseId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      quizId: freezed == quizId
+          ? _value.quizId
+          : quizId // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProjectAiOutputImpl implements _ProjectAiOutput {
+  const _$ProjectAiOutputImpl({this.courseId, this.quizId});
+
+  factory _$ProjectAiOutputImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProjectAiOutputImplFromJson(json);
+
+  @override
+  final String? courseId;
+  @override
+  final String? quizId;
+
+  @override
+  String toString() {
+    return 'ProjectAiOutput(courseId: $courseId, quizId: $quizId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProjectAiOutputImpl &&
+            (identical(other.courseId, courseId) ||
+                other.courseId == courseId) &&
+            (identical(other.quizId, quizId) || other.quizId == quizId));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, courseId, quizId);
+
+  /// Create a copy of ProjectAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProjectAiOutputImplCopyWith<_$ProjectAiOutputImpl> get copyWith =>
+      __$$ProjectAiOutputImplCopyWithImpl<_$ProjectAiOutputImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProjectAiOutputImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ProjectAiOutput implements ProjectAiOutput {
+  const factory _ProjectAiOutput(
+      {final String? courseId, final String? quizId}) = _$ProjectAiOutputImpl;
+
+  factory _ProjectAiOutput.fromJson(Map<String, dynamic> json) =
+      _$ProjectAiOutputImpl.fromJson;
+
+  @override
+  String? get courseId;
+  @override
+  String? get quizId;
+
+  /// Create a copy of ProjectAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProjectAiOutputImplCopyWith<_$ProjectAiOutputImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ProjectModel _$ProjectModelFromJson(Map<String, dynamic> json) {
+  return _ProjectModel.fromJson(json);
+}
+
 /// @nodoc
 mixin _$ProjectModel {
   String get id => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  String? get aiOutputId => throw _privateConstructorUsedError;
+  ProjectAiOutput? get aiOutput => throw _privateConstructorUsedError;
+  bool get shouldSyncAiOutput => throw _privateConstructorUsedError;
+  int get totalLinks => throw _privateConstructorUsedError;
   List<String> get linkIds => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this ProjectModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of ProjectModel
   /// with the given fields replaced by the non-null parameter values.
@@ -43,10 +220,14 @@ abstract class $ProjectModelCopyWith<$Res> {
       String userId,
       String name,
       String? description,
-      String? aiOutputId,
+      ProjectAiOutput? aiOutput,
+      bool shouldSyncAiOutput,
+      int totalLinks,
       List<String> linkIds,
       DateTime createdAt,
       DateTime updatedAt});
+
+  $ProjectAiOutputCopyWith<$Res>? get aiOutput;
 }
 
 /// @nodoc
@@ -68,7 +249,9 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
     Object? userId = null,
     Object? name = null,
     Object? description = freezed,
-    Object? aiOutputId = freezed,
+    Object? aiOutput = freezed,
+    Object? shouldSyncAiOutput = null,
+    Object? totalLinks = null,
     Object? linkIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -90,10 +273,18 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
-      aiOutputId: freezed == aiOutputId
-          ? _value.aiOutputId
-          : aiOutputId // ignore: cast_nullable_to_non_nullable
-              as String?,
+      aiOutput: freezed == aiOutput
+          ? _value.aiOutput
+          : aiOutput // ignore: cast_nullable_to_non_nullable
+              as ProjectAiOutput?,
+      shouldSyncAiOutput: null == shouldSyncAiOutput
+          ? _value.shouldSyncAiOutput
+          : shouldSyncAiOutput // ignore: cast_nullable_to_non_nullable
+              as bool,
+      totalLinks: null == totalLinks
+          ? _value.totalLinks
+          : totalLinks // ignore: cast_nullable_to_non_nullable
+              as int,
       linkIds: null == linkIds
           ? _value.linkIds
           : linkIds // ignore: cast_nullable_to_non_nullable
@@ -107,6 +298,20 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
     ) as $Val);
+  }
+
+  /// Create a copy of ProjectModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ProjectAiOutputCopyWith<$Res>? get aiOutput {
+    if (_value.aiOutput == null) {
+      return null;
+    }
+
+    return $ProjectAiOutputCopyWith<$Res>(_value.aiOutput!, (value) {
+      return _then(_value.copyWith(aiOutput: value) as $Val);
+    });
   }
 }
 
@@ -123,10 +328,15 @@ abstract class _$$ProjectModelImplCopyWith<$Res>
       String userId,
       String name,
       String? description,
-      String? aiOutputId,
+      ProjectAiOutput? aiOutput,
+      bool shouldSyncAiOutput,
+      int totalLinks,
       List<String> linkIds,
       DateTime createdAt,
       DateTime updatedAt});
+
+  @override
+  $ProjectAiOutputCopyWith<$Res>? get aiOutput;
 }
 
 /// @nodoc
@@ -146,7 +356,9 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
     Object? userId = null,
     Object? name = null,
     Object? description = freezed,
-    Object? aiOutputId = freezed,
+    Object? aiOutput = freezed,
+    Object? shouldSyncAiOutput = null,
+    Object? totalLinks = null,
     Object? linkIds = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -168,10 +380,18 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
-      aiOutputId: freezed == aiOutputId
-          ? _value.aiOutputId
-          : aiOutputId // ignore: cast_nullable_to_non_nullable
-              as String?,
+      aiOutput: freezed == aiOutput
+          ? _value.aiOutput
+          : aiOutput // ignore: cast_nullable_to_non_nullable
+              as ProjectAiOutput?,
+      shouldSyncAiOutput: null == shouldSyncAiOutput
+          ? _value.shouldSyncAiOutput
+          : shouldSyncAiOutput // ignore: cast_nullable_to_non_nullable
+              as bool,
+      totalLinks: null == totalLinks
+          ? _value.totalLinks
+          : totalLinks // ignore: cast_nullable_to_non_nullable
+              as int,
       linkIds: null == linkIds
           ? _value._linkIds
           : linkIds // ignore: cast_nullable_to_non_nullable
@@ -189,19 +409,24 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$ProjectModelImpl extends _ProjectModel {
   const _$ProjectModelImpl(
       {required this.id,
       required this.userId,
       required this.name,
       this.description,
-      this.aiOutputId,
+      this.aiOutput,
+      this.shouldSyncAiOutput = false,
+      this.totalLinks = 0,
       final List<String> linkIds = const [],
       required this.createdAt,
       required this.updatedAt})
       : _linkIds = linkIds,
         super._();
+
+  factory _$ProjectModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProjectModelImplFromJson(json);
 
   @override
   final String id;
@@ -212,7 +437,13 @@ class _$ProjectModelImpl extends _ProjectModel {
   @override
   final String? description;
   @override
-  final String? aiOutputId;
+  final ProjectAiOutput? aiOutput;
+  @override
+  @JsonKey()
+  final bool shouldSyncAiOutput;
+  @override
+  @JsonKey()
+  final int totalLinks;
   final List<String> _linkIds;
   @override
   @JsonKey()
@@ -229,7 +460,7 @@ class _$ProjectModelImpl extends _ProjectModel {
 
   @override
   String toString() {
-    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutputId: $aiOutputId, linkIds: $linkIds, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutput: $aiOutput, shouldSyncAiOutput: $shouldSyncAiOutput, totalLinks: $totalLinks, linkIds: $linkIds, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -242,8 +473,12 @@ class _$ProjectModelImpl extends _ProjectModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            (identical(other.aiOutputId, aiOutputId) ||
-                other.aiOutputId == aiOutputId) &&
+            (identical(other.aiOutput, aiOutput) ||
+                other.aiOutput == aiOutput) &&
+            (identical(other.shouldSyncAiOutput, shouldSyncAiOutput) ||
+                other.shouldSyncAiOutput == shouldSyncAiOutput) &&
+            (identical(other.totalLinks, totalLinks) ||
+                other.totalLinks == totalLinks) &&
             const DeepCollectionEquality().equals(other._linkIds, _linkIds) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -251,6 +486,7 @@ class _$ProjectModelImpl extends _ProjectModel {
                 other.updatedAt == updatedAt));
   }
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -258,7 +494,9 @@ class _$ProjectModelImpl extends _ProjectModel {
       userId,
       name,
       description,
-      aiOutputId,
+      aiOutput,
+      shouldSyncAiOutput,
+      totalLinks,
       const DeepCollectionEquality().hash(_linkIds),
       createdAt,
       updatedAt);
@@ -270,6 +508,13 @@ class _$ProjectModelImpl extends _ProjectModel {
   @pragma('vm:prefer-inline')
   _$$ProjectModelImplCopyWith<_$ProjectModelImpl> get copyWith =>
       __$$ProjectModelImplCopyWithImpl<_$ProjectModelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProjectModelImplToJson(
+      this,
+    );
+  }
 }
 
 abstract class _ProjectModel extends ProjectModel {
@@ -278,11 +523,16 @@ abstract class _ProjectModel extends ProjectModel {
       required final String userId,
       required final String name,
       final String? description,
-      final String? aiOutputId,
+      final ProjectAiOutput? aiOutput,
+      final bool shouldSyncAiOutput,
+      final int totalLinks,
       final List<String> linkIds,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$ProjectModelImpl;
   const _ProjectModel._() : super._();
+
+  factory _ProjectModel.fromJson(Map<String, dynamic> json) =
+      _$ProjectModelImpl.fromJson;
 
   @override
   String get id;
@@ -293,7 +543,11 @@ abstract class _ProjectModel extends ProjectModel {
   @override
   String? get description;
   @override
-  String? get aiOutputId;
+  ProjectAiOutput? get aiOutput;
+  @override
+  bool get shouldSyncAiOutput;
+  @override
+  int get totalLinks;
   @override
   List<String> get linkIds;
   @override

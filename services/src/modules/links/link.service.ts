@@ -1,4 +1,5 @@
 import LinkModel from '../../database/models/Link.model';
+import ProjectModel from '../../database/models/Project.model';
 import AiOutputModel from '../../database/models/AiOutput.model';
 import JobModel from '../../database/models/Job.model';
 import { logger } from '../../utils/logger';
@@ -20,6 +21,14 @@ interface UpdateLinkDto {
 class LinkService {
   async createLink(userId: string, dto: CreateLinkDto) {
     try {
+      // Verify project ownership if projectId is provided
+      if (dto.projectId) {
+        const project = await ProjectModel.findByIdAndUser(dto.projectId, userId);
+        if (!project) {
+          throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
+        }
+      }
+
       // Extract title from URL
       const title = this.extractTitleFromUrl(dto.url);
 
@@ -32,6 +41,13 @@ class LinkService {
         tags: dto.tags || [],
         status: 'pending'
       });
+
+      if (dto.projectId) {
+        // Increment project link count if link is added to a project
+        await ProjectModel.incrementLinkCount(dto.projectId);
+        // Mark project for AI sync
+        await ProjectModel.markAiSyncRequired(dto.projectId);
+      }
 
       // Queue AI processing job
       const job = await this.queueAiProcessingJob(userId, link._id.toString(), dto.url);
@@ -89,8 +105,36 @@ class LinkService {
         throw new AppError('Link not found or unauthorized', 'NOT_FOUND', 404);
       }
 
+      // Handle project changes - update link counts for old and new projects
+      if (dto.projectId !== undefined && dto.projectId !== link.projectId) {
+        const oldProjectId = link.projectId;
+        const newProjectId = dto.projectId;
+
+        // Verify ownership of the new project
+        if (newProjectId) {
+          const project = await ProjectModel.findByIdAndUser(newProjectId, userId);
+          if (!project) {
+            throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
+          }
+        }
+
+        // Update link's project
+        link.projectId = newProjectId;
+
+        // Decrement old project's link count and mark for ai sync
+        if (oldProjectId) {
+          await ProjectModel.decrementLinkCount(oldProjectId);
+          await ProjectModel.markAiSyncRequired(oldProjectId);
+        }
+
+        // Increment new project's link count and mark for ai sync
+        if (newProjectId) {
+          await ProjectModel.incrementLinkCount(newProjectId);
+          await ProjectModel.markAiSyncRequired(newProjectId);
+        }
+      }
+
       if (dto.title !== undefined) link.title = dto.title;
-      if (dto.projectId !== undefined) link.projectId = dto.projectId;
       if (dto.tags !== undefined) link.tags = dto.tags;
 
       await link.save();
@@ -112,6 +156,11 @@ class LinkService {
       // Soft delete
       link.deletedAt = new Date();
       await link.save();
+
+      // Decrement project link count if link was associated with a project
+      if (link.projectId) {
+        await ProjectModel.decrementLinkCount(link.projectId);
+      }
 
       logger.info(`Link deleted: ${linkId}`);
     } catch (error: any) {

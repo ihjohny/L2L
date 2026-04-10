@@ -64,7 +64,7 @@ class ProjectCard extends StatelessWidget {
               ),
               const Spacer(),
               // AI output indicator
-              if (project.aiOutputId != null)
+              if (project.hasCourse || project.hasQuiz)
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
@@ -131,7 +131,7 @@ class ProjectCard extends StatelessWidget {
               ),
               const Spacer(),
               // AI output indicator
-              if (project.aiOutputId != null)
+              if (project.hasCourse || project.hasQuiz)
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(

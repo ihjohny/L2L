@@ -101,6 +101,39 @@ class ProjectService {
     }
   }
 
+  async deleteOldCourseAndQuiz(projectId: string) {
+    try {
+      const project = await ProjectModel.findById(projectId);
+      if (!project) {
+        throw new AppError('Project not found', 'NOT_FOUND', 404);
+      }
+
+      const deletePromises: Promise<any>[] = [];
+
+      // Delete old course if exists
+      if (project.aiOutput?.courseId) {
+        deletePromises.push(AiOutputModel.findByIdAndDelete(project.aiOutput.courseId));
+        logger.info(`Deleting old course: ${project.aiOutput.courseId}`);
+      }
+
+      // Delete old quiz if exists
+      if (project.aiOutput?.quizId) {
+        deletePromises.push(AiOutputModel.findByIdAndDelete(project.aiOutput.quizId));
+        logger.info(`Deleting old quiz: ${project.aiOutput.quizId}`);
+      }
+
+      await Promise.all(deletePromises);
+
+      // Clear the references
+      await ProjectModel.clearAiOutput(projectId);
+
+      logger.info(`Old course and quiz deleted for project: ${projectId}`);
+    } catch (error: any) {
+      logger.error('Error in deleteOldCourseAndQuiz:', error);
+      throw error;
+    }
+  }
+
   async generateCourseQuiz(projectId: string, userId: string) {
     try {
       // Verify project ownership
@@ -134,24 +167,7 @@ class ProjectService {
     }
   }
 
-  async markCourseCompleted(projectId: string, aiOutputId: string) {
-    try {
-      const project = await ProjectModel.findById(projectId);
-      if (!project) {
-        throw new AppError('Project not found', 'NOT_FOUND', 404);
-      }
-
-      project.aiOutputId = aiOutputId;
-      await project.save();
-
-      logger.info(`Project course completed: ${projectId}`);
-    } catch (error: any) {
-      logger.error('Error in markCourseCompleted:', error);
-      throw error;
-    }
-  }
-
-  async getLatestCourse(projectId: string, userId: string) {
+  async getCourse(projectId: string, userId: string) {
     try {
       // Verify project ownership
       const project = await ProjectModel.findByIdAndUser(projectId, userId);
@@ -159,21 +175,25 @@ class ProjectService {
         throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
       }
 
-      // Get latest course
-      const course = await AiOutputModel.findLatestCourseByProject(projectId);
+      if (!project.aiOutput?.courseId) {
+        throw new AppError('No course found for this project', 'NOT_FOUND', 404);
+      }
+
+      // Get course by ID
+      const course = await AiOutputModel.findById(project.aiOutput.courseId);
 
       if (!course) {
-        throw new AppError('No course found for this project', 'NOT_FOUND', 404);
+        throw new AppError('Course not found', 'NOT_FOUND', 404);
       }
 
       return course;
     } catch (error: any) {
-      logger.error('Error in getLatestCourse:', error);
+      logger.error('Error in getCourse:', error);
       throw error;
     }
   }
 
-  async getLatestQuiz(projectId: string, userId: string) {
+  async getQuiz(projectId: string, userId: string) {
     try {
       // Verify project ownership
       const project = await ProjectModel.findByIdAndUser(projectId, userId);
@@ -181,16 +201,20 @@ class ProjectService {
         throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
       }
 
-      // Get latest quiz
-      const quiz = await AiOutputModel.findLatestQuizByProject(projectId);
+      if (!project.aiOutput?.quizId) {
+        throw new AppError('No quiz found for this project', 'NOT_FOUND', 404);
+      }
+
+      // Get quiz by ID
+      const quiz = await AiOutputModel.findById(project.aiOutput.quizId);
 
       if (!quiz) {
-        throw new AppError('No quiz found for this project', 'NOT_FOUND', 404);
+        throw new AppError('Quiz not found', 'NOT_FOUND', 404);
       }
 
       return quiz;
     } catch (error: any) {
-      logger.error('Error in getLatestQuiz:', error);
+      logger.error('Error in getQuiz:', error);
       throw error;
     }
   }
@@ -225,6 +249,24 @@ class ProjectService {
       return job;
     } catch (error: any) {
       logger.error('Error queueing course generation job:', error);
+      throw error;
+    }
+  }
+
+  async updateAiOutput(projectId: string, courseId: string, quizId: string) {
+    try {
+      const project = await ProjectModel.findById(projectId);
+      if (!project) {
+        throw new AppError('Project not found', 'NOT_FOUND', 404);
+      }
+
+      // Use the static method to update both IDs
+      await ProjectModel.updateAiOutput(projectId, courseId, quizId);
+
+      logger.info(`Project AI output updated: ${projectId}`);
+      return await ProjectModel.findById(projectId);
+    } catch (error: any) {
+      logger.error('Error in updateAiOutput:', error);
       throw error;
     }
   }

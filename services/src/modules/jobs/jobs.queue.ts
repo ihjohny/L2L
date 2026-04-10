@@ -2,6 +2,7 @@ import { Queue, Worker, Job } from 'bullmq';
 import { logger } from '../../utils/logger';
 import { config } from '../../config';
 import { aiService } from '../ai/ai.service';
+import { projectService } from '../project/project.service';
 import LinkModel from '../../database/models/Link.model';
 import ProjectModel from '../../database/models/Project.model';
 import AiOutputModel from '../../database/models/AiOutput.model';
@@ -164,8 +165,16 @@ function createGenerateCourseWorker(): void {
         await JobModel.findByIdAndUpdate(job.id, {
           status: 'active',
           attempts: job.attemptsMade,
-          progress: 10
+          progress: 5
         });
+
+        // Delete old course and quiz if they exist
+        const project = await ProjectModel.findById(projectId);
+        if (project && (project.aiOutput?.courseId || project.aiOutput?.quizId)) {
+          await projectService.deleteOldCourseAndQuiz(projectId);
+        }
+
+        await JobModel.findByIdAndUpdate(job.id, { progress: 10 });
 
         // Get all links for this project
         const links = await LinkModel.findByProject(userId, projectId);
@@ -219,10 +228,15 @@ function createGenerateCourseWorker(): void {
           tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
         });
 
-        // Update project with AI output ID
-        await ProjectModel.findByIdAndUpdate(projectId, {
-          aiOutputId: courseOutput._id
-        });
+        // Update project with course and quiz IDs
+        await projectService.updateAiOutput(
+          projectId,
+          courseOutput._id.toString(),
+          quizOutput._id.toString()
+        );
+
+        // Clear the AI sync flag
+        await ProjectModel.clearAiSyncRequired(projectId);
 
         // Update job status
         await JobModel.findByIdAndUpdate(job.id, {
