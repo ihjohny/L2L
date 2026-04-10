@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/project_model.dart';
+import '../../data/models/course_model.dart';
+import '../../data/models/quiz_model.dart';
 import '../../data/services/project_service.dart';
 import '../../core/utils/result.dart';
 
@@ -89,6 +91,26 @@ class ProjectRepository {
     try {
       final result = await _projectService.generateCourseQuiz(projectId);
       return Success(result);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Get course for a project.
+  Future<Result<CourseModel>> getCourse(String projectId) async {
+    try {
+      final course = await _projectService.getCourse(projectId);
+      return Success(course);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Get quiz for a project.
+  Future<Result<QuizModel>> getQuiz(String projectId) async {
+    try {
+      final quiz = await _projectService.getQuiz(projectId);
+      return Success(quiz);
     } catch (e) {
       return Failure(e.toString().replaceAll('Exception: ', ''));
     }

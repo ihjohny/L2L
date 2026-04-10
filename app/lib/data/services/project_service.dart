@@ -1,5 +1,7 @@
 import '../../core/network/dio_client.dart';
 import '../models/project_model.dart';
+import '../models/course_model.dart';
+import '../models/quiz_model.dart';
 
 class ProjectService {
   final DioClient _dioClient = DioClient.instance;
@@ -104,6 +106,34 @@ class ProjectService {
         return response.data['data'] as Map<String, dynamic>;
       }
       throw Exception('Failed to generate course and quiz');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
+  /// Get course for a project
+  Future<CourseModel> getCourse(String projectId) async {
+    try {
+      final response = await _dioClient.dio.get('/projects/$projectId/course');
+
+      if (response.statusCode == 200) {
+        return CourseModel.fromJson(response.data['data']);
+      }
+      throw Exception('Failed to fetch course');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
+  /// Get quiz for a project
+  Future<QuizModel> getQuiz(String projectId) async {
+    try {
+      final response = await _dioClient.dio.get('/projects/$projectId/quiz');
+
+      if (response.statusCode == 200) {
+        return QuizModel.fromJson(response.data['data']);
+      }
+      throw Exception('Failed to fetch quiz');
     } catch (e) {
       throw _dioClient.handleError(e);
     }
