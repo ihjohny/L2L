@@ -29,24 +29,29 @@ class QuizQuestionsPage extends ConsumerStatefulWidget {
 }
 
 class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
+  late QuizQuestionsViewModel _viewModel;
+
   @override
   void initState() {
     super.initState();
 
+    // Get reference to ViewModel in initState to avoid issues in dispose
+    _viewModel = ref.read(quizQuestionsViewModelProvider.notifier);
+
     Future.microtask(() {
       if (mounted) {
-        final notifier = ref.read(quizQuestionsViewModelProvider.notifier);
-
         // Use quiz data from parent if available
         if (widget.quiz != null) {
-          notifier.initializeWithQuiz(widget.quiz!);
+          _viewModel.initializeWithQuiz(widget.quiz!);
           // Start the timer automatically
-          notifier.startTimer();
+          if (mounted) {
+            _viewModel.startTimer();
+          }
         } else {
           // Load quiz from API
-          notifier.loadQuiz(widget.projectId).then((_) {
+          _viewModel.loadQuiz(widget.projectId).then((_) {
             if (mounted) {
-              notifier.startTimer();
+              _viewModel.startTimer();
             }
           });
         }
@@ -56,8 +61,8 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
 
   @override
   void dispose() {
-    // Stop timer when leaving the page
-    ref.read(quizQuestionsViewModelProvider.notifier).stopTimer();
+    // Stop timer when leaving the page using stored reference
+    _viewModel.stopTimer();
     super.dispose();
   }
 

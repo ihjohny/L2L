@@ -80,7 +80,7 @@ class _CourseDetailPageState extends ConsumerState<CourseDetailPage> {
             context.push(
               '/projects/${widget.projectId}/quiz',
               extra: {
-                'projectName': widget.projectName ?? state.course?.content.title ?? 'Course',
+                'projectName': widget.projectName ?? 'Quiz',
               },
             );
             break;

@@ -84,8 +84,10 @@ class QuizQuestionsViewModel
     state = state.copyWith(isTimerRunning: true);
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      // Critical: Check mounted before any operation
       if (!mounted) {
         timer.cancel();
+        _timer = null;
         return;
       }
 
