@@ -128,9 +128,14 @@ User
 **Acceptance Criteria:**
 - View AI-generated summary and flashcards per link
 - View AI-generated course with structured lessons per project
+  - **Lesson-by-lesson navigation** with Previous/Next controls
+  - **Interactive progress stepper** showing current position in course
+  - **Jump-to-lesson capability** via tap on progress dots or course list
+  - **Estimated reading time** per lesson (calculated from content length)
+  - **Direct quiz access** button from course viewer
 - Take quizzes with immediate feedback
 - Mark links and courses as "completed" after review
-- Clean, readable content presentation
+- Clean, readable content presentation with proper typography
 
 ### 5.2 Phase 2: Organization, Progress & Sharing
 

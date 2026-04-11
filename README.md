@@ -40,11 +40,13 @@
 | **Per-Link** | Automatic on save | Summary, 5-10 flashcards, status tracking |
 | **Per-Project** | Manual trigger | Structured course, 5-15 question quiz, learning path |
 
-### 📊 Project Management
+### 📚 Project Management
 
 - Organize links into projects with flexible tagging
 - Track processing status: `pending` → `processing` → `completed/failed`
 - Cross-project organization via tags
+- **View AI-generated courses with lesson-by-lesson navigation**
+- **Track progress through interactive stepper with estimated reading times**
 
 ### 🔌 Chrome Extension
 
@@ -393,6 +395,11 @@ docker-compose -f docker-compose.dev.yml exec redis redis-cli FLUSHALL  # Clear 
   - API endpoints reference
   - Two-tier AI processing flow
   - Verification checklist
+
+- **[Course Detail Page Implementation](docs/implementation/course_detail_page.md)** - Interactive course viewer
+  - Lesson-by-lesson navigation with progress tracking
+  - Estimated reading time calculation
+  - Combined progress stepper component design
 
 ### Recommended Reading Order
 

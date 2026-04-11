@@ -24,6 +24,7 @@ This directory contains the complete development implementation guidelines for t
 | [10](./10_testing_strategy.md) | [Testing Strategy](./10_testing_strategy.md) | Testing pyramid, coverage gates, mock strategies, load testing |
 | [11](./11_observability_operations.md) | [Observability & Operations](./11_observability_operations.md) | Logging, metrics, tracing, alerting, runbooks |
 | [12](./12_pre_launch_checklist.md) | [Pre-Launch Checklist](./12_pre_launch_checklist.md) | Prioritized blocking/high/deferrable items for each phase |
+| [Feature](./course_detail_page.md) | [Course Detail Page](./course_detail_page.md) | Interactive course viewer with lesson navigation, progress tracking, and reading time estimation |
 
 ---
 

@@ -186,7 +186,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       children: [
         // Course Section
         if (state.course != null) ...[
-          CourseSection(course: state.course!),
+          CourseSection(
+            course: state.course!,
+            projectId: widget.projectId,
+          ),
           const SizedBox(height: 16),
         ],
 

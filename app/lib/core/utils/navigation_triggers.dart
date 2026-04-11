@@ -57,3 +57,21 @@ enum LinkNavigationTrigger {
   /// Navigate to home
   toHome,
 }
+
+/// Navigation triggers for course-related ViewModels.
+enum CourseNavigationTrigger {
+  /// No navigation required
+  none,
+
+  /// Navigate to course detail
+  toCourseDetail,
+
+  /// Navigate to quiz
+  toQuiz,
+
+  /// Navigate back (pop)
+  back,
+
+  /// Navigate to home
+  toHome,
+}

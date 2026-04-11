@@ -64,6 +64,12 @@ Navigation is triggered via enum flags in ViewModel state (`AuthNavigationTrigge
 - View project links with AI processing status
 - Generate AI courses from project links
 
+- **View courses with lesson-by-lesson navigation**
+  - Progress stepper with interactive dots
+  - Estimated reading time per lesson
+  - Previous/Next navigation controls
+  - Jump to any lesson directly from the course list
+
 ### Links
 - Save links with tags and project assignment
 - View AI-generated summaries and flashcards
@@ -124,6 +130,11 @@ flutter pub run build_runner build --delete-conflicting-outputs
 flutter pub run build_runner watch
 ```
 
+## Documentation
+
+For detailed implementation information, see:
+- [Course Detail Page Implementation](../docs/implementation/course_detail_page.md) - Architecture and design decisions for the course viewer
+
 ## Project Structure
 
 ```
@@ -155,7 +166,8 @@ app/
 │       │   ├── auth/             # Login, Register screens
 │       │   ├── home/             # Main app screens
 │       │   ├── projects/         # Project list, detail, edit screens
-│       │   └── links/            # Link list, detail, add screens
+│       │   ├── links/            # Link list, detail, add screens
+│       │   └── course/           # Course detail screen with lesson navigation
 │       └── widgets/              # Reusable widgets
 ├── test/                         # Widget and unit tests
 └── pubspec.yaml                  # Dependencies
@@ -174,6 +186,8 @@ The app communicates with the backend API at `http://localhost:3000/api/v1`:
 | `/projects` | GET/POST | List/Create projects |
 | `/projects/:id` | GET/PUT/DELETE | Get/Update/Delete project |
 | `/projects/:id/generate-course-quiz` | POST | Generate AI course and quiz |
+| `/projects/:id/course` | GET | Get course for a project |
+| `/projects/:id/quiz` | GET | Get quiz for a project |
 | `/links` | GET/POST | List/Create links |
 | `/links/:id` | GET/PUT/DELETE | Get/Update/Delete link |
 | `/links/:id/retry` | POST | Retry failed link processing |
@@ -183,20 +197,21 @@ The app communicates with the backend API at `http://localhost:3000/api/v1`:
 The app uses Riverpod with MVVM architecture:
 
 - **AuthViewModel**: Manages authentication state (login, logout, register) with navigation triggers
-- **ProjectViewModel**: Manages projects list and selected project with links
+- **ProjectDetailsViewModel**: Manages project details, links, course, and quiz data
 - **LinkListViewModel**: Manages links list with filtering by project/tags (lightweight, no AI output)
 - **LinkDetailViewModel**: Manages single link with complete AI-generated content (summary, flashcards)
 - **AddLinkViewModel**: Manages form state for creating new links with optional project creation
+- **CourseDetailViewModel**: Manages course viewing with lesson navigation, reading time estimation, and progress tracking
 
 All business logic is in ViewModels. Views (pages/widgets) only:
 - Observe state via `ref.watch(viewModelProvider)`
 - Invoke commands via `ref.read(viewModelProvider.notifier).method()`
 - Handle navigation based on navigation trigger enums in state
 
-**Note on Link ViewModels:** The Link feature uses three separate ViewModels because:
-- List API returns links WITHOUT AI output (lightweight for performance)
-- Detail API returns links WITH AI output (summary, flashcards)
-- Add Link requires form state management and optional project creation
+**Note on ViewModels:**
+- **Link ViewModels**: Three separate ViewModels because the List API returns links WITHOUT AI output (lightweight) while the Detail API returns links WITH AI output (summary, flashcards)
+- **CourseDetailViewModel**: Dedicated to course viewing with lesson navigation, progress tracking, and reading time estimation
+- **AddLinkViewModel**: Manages form state and optional project creation
 
 ## Testing
 

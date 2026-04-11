@@ -10,6 +10,7 @@ import '../../presentation/pages/links/links_list_page.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/edit_project_page.dart';
+import '../../presentation/pages/course/course_detail_page.dart';
 import '../../presentation/viewmodels/auth/auth_viewmodel.dart';
 import '../../presentation/viewmodels/auth/auth_state.dart';
 
@@ -163,6 +164,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MaterialPage(
             key: state.pageKey,
             child: EditProjectPage(projectId: projectId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/projects/:projectId/course',
+        name: 'course_detail',
+        pageBuilder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          final lessonIndex =
+              int.tryParse(state.uri.queryParameters['lesson'] ?? '') ?? 0;
+          return MaterialPage(
+            key: state.pageKey,
+            child: CourseDetailPage(
+              projectId: projectId,
+              initialLessonIndex: lessonIndex,
+            ),
           );
         },
       ),

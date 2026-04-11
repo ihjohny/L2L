@@ -267,10 +267,12 @@ mobile_app/
 │   │   │       ├── screens/
 │   │   │       │   ├── projects_list_screen.dart
 │   │   │       │   ├── project_detail_screen.dart
-│   │   │       │   └── create_project_screen.dart
+│   │   │       │   ├── create_project_screen.dart
+│   │   │       │   └── course_detail_screen.dart
 │   │   │       └── widgets/
 │   │   │           ├── project_card.dart
 │   │   │           ├── generate_course_button.dart
+│   │   │           ├── course_section.dart
 │   │   │           └── course_viewer.dart
 │   │   │
 │   │   ├── links/

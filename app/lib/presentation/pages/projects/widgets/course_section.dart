@@ -5,10 +5,12 @@ import '../../../../data/models/course_model.dart';
 /// Widget displaying course content with lessons list
 class CourseSection extends StatelessWidget {
   final CourseModel course;
+  final String projectId;
 
   const CourseSection({
     super.key,
     required this.course,
+    required this.projectId,
   });
 
   @override
@@ -132,9 +134,8 @@ class CourseSection extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        // Navigate to lesson detail
-        // TODO: Update with actual lesson detail route
-        context.push('/lessons/${lesson.title}');
+        // Navigate to course detail page at specific lesson
+        context.push('/projects/$projectId/course?lesson=$index');
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(
