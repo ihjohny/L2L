@@ -33,25 +33,17 @@ class _CourseDetailPageState extends ConsumerState<CourseDetailPage> {
     // Load course when page initializes
     Future.microtask(() {
       if (mounted) {
-        ref
-            .read(courseDetailViewModelProvider.notifier)
-            .loadCourse(widget.projectId);
+        final notifier = ref.read(courseDetailViewModelProvider.notifier);
 
-        // If an initial lesson index is provided, navigate to it
-        if (widget.initialLessonIndex != null) {
-          ref
-              .read(courseDetailViewModelProvider.notifier)
-              .goToLesson(widget.initialLessonIndex!);
-        }
+        // Load course first, then navigate to initial lesson if provided
+        notifier.loadCourse(widget.projectId).then((_) {
+          if (mounted && widget.initialLessonIndex != null) {
+            // Navigate to the specific lesson after course is loaded
+            notifier.goToLesson(widget.initialLessonIndex!);
+          }
+        });
       }
     });
-  }
-
-  @override
-  void dispose() {
-    // ViewModel auto-disposes via Riverpod when screen is popped
-    // No manual cleanup needed
-    super.dispose();
   }
 
   @override
