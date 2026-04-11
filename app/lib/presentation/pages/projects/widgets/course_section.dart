@@ -6,11 +6,13 @@ import '../../../../data/models/course_model.dart';
 class CourseSection extends StatelessWidget {
   final CourseModel course;
   final String projectId;
+  final String projectName;
 
   const CourseSection({
     super.key,
     required this.course,
     required this.projectId,
+    required this.projectName,
   });
 
   @override
@@ -138,7 +140,10 @@ class CourseSection extends StatelessWidget {
         // This avoids redundant API call - course data is passed from ProjectDetailsViewModel
         context.push(
           '/projects/$projectId/course?lesson=$index',
-          extra: {'course': course},
+          extra: {
+            'course': course,
+            'projectName': projectName,
+          },
         );
       },
       borderRadius: BorderRadius.circular(8),

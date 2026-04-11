@@ -182,12 +182,17 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           CourseSection(
             course: state.course!,
             projectId: widget.projectId,
+            projectName: state.project?.name ?? 'Project',
           ),
           const SizedBox(height: 16),
         ],
 
         // Quiz Section
-        if (state.quiz != null) QuizSection(quiz: state.quiz!),
+        if (state.quiz != null) QuizSection(
+          quiz: state.quiz!,
+          projectId: widget.projectId,
+          projectName: state.project?.name ?? 'Project',
+        ),
       ],
     );
   }

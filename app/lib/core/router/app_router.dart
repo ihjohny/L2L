@@ -12,8 +12,10 @@ import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/projects/project_detail_page.dart';
 import '../../presentation/pages/projects/edit_project_page.dart';
 import '../../presentation/pages/course/course_detail_page.dart';
+import '../../presentation/pages/quiz/quiz_questions_page.dart';
 import '../../presentation/viewmodels/auth/auth_viewmodel.dart';
 import '../../presentation/viewmodels/auth/auth_state.dart';
+import '../../data/models/quiz_model.dart';
 
 // Router key for navigation
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -178,6 +180,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           // Extract course data from extra if available (passed from ProjectDetailsViewModel)
           final extra = state.extra as Map<String, dynamic>? ?? {};
           final course = extra['course'] as CourseModel?;
+          final projectName = extra['projectName'] as String?;
 
           return MaterialPage(
             key: state.pageKey,
@@ -185,6 +188,27 @@ final routerProvider = Provider<GoRouter>((ref) {
               projectId: projectId,
               initialLessonIndex: lessonIndex,
               course: course,
+              projectName: projectName,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/projects/:projectId/quiz',
+        name: 'quiz_questions',
+        pageBuilder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          // Extract quiz data from extra if available (passed from ProjectDetailsViewModel)
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final quiz = extra['quiz'] as QuizModel?;
+          final projectName = extra['projectName'] as String?;
+
+          return MaterialPage(
+            key: state.pageKey,
+            child: QuizQuestionsPage(
+              projectId: projectId,
+              quiz: quiz,
+              projectName: projectName,
             ),
           );
         },

@@ -20,12 +20,14 @@ class CourseDetailPage extends ConsumerStatefulWidget {
   final String projectId;
   final int? initialLessonIndex;
   final CourseModel? course;
+  final String? projectName;
 
   const CourseDetailPage({
     super.key,
     required this.projectId,
     this.initialLessonIndex,
     this.course,
+    this.projectName,
   });
 
   @override
@@ -75,7 +77,12 @@ class _CourseDetailPageState extends ConsumerState<CourseDetailPage> {
         switch (state.navigationTrigger) {
           case CourseNavigationTrigger.toQuiz:
             // Navigate to quiz screen
-            context.push('/projects/${widget.projectId}/quiz');
+            context.push(
+              '/projects/${widget.projectId}/quiz',
+              extra: {
+                'projectName': widget.projectName ?? state.course?.content.title ?? 'Course',
+              },
+            );
             break;
           case CourseNavigationTrigger.back:
             context.pop();
@@ -154,7 +161,7 @@ class _CourseDetailPageState extends ConsumerState<CourseDetailPage> {
     CourseDetailViewModel viewModel,
   ) {
     return AppBar(
-      title: Text(state.course?.content.title ?? 'Course'),
+      title: Text(widget.projectName ?? state.course?.content.title ?? 'Course'),
       actions: [
         // Quiz Navigation Button
         IconButton(

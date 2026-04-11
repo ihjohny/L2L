@@ -5,10 +5,14 @@ import '../../../../data/models/quiz_model.dart';
 /// Widget displaying quiz section with participation CTA
 class QuizSection extends StatelessWidget {
   final QuizModel quiz;
+  final String projectId;
+  final String projectName;
 
   const QuizSection({
     super.key,
     required this.quiz,
+    required this.projectId,
+    required this.projectName,
   });
 
   @override
@@ -81,9 +85,14 @@ class QuizSection extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  // Navigate to quiz screen
-                  // TODO: Update with actual quiz route
-                  context.push('/quizzes/${quiz.id}');
+                  // Navigate to quiz screen with quiz data for optimization
+                  context.push(
+                    '/projects/$projectId/quiz',
+                    extra: {
+                      'quiz': quiz,
+                      'projectName': projectName,
+                    },
+                  );
                 },
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Start Quiz'),
