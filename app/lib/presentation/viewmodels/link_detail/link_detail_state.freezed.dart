@@ -28,6 +28,9 @@ mixin _$LinkDetailState {
   /// Whether the content is being refreshed (pull-to-refresh)
   bool get isRefreshing => throw _privateConstructorUsedError;
 
+  /// Whether the link processing is being retried
+  bool get isRetrying => throw _privateConstructorUsedError;
+
   /// Create a copy of LinkDetailState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -42,7 +45,11 @@ abstract class $LinkDetailStateCopyWith<$Res> {
       _$LinkDetailStateCopyWithImpl<$Res, LinkDetailState>;
   @useResult
   $Res call(
-      {LinkModel? link, bool isLoading, String? error, bool isRefreshing});
+      {LinkModel? link,
+      bool isLoading,
+      String? error,
+      bool isRefreshing,
+      bool isRetrying});
 
   $LinkModelCopyWith<$Res>? get link;
 }
@@ -66,6 +73,7 @@ class _$LinkDetailStateCopyWithImpl<$Res, $Val extends LinkDetailState>
     Object? isLoading = null,
     Object? error = freezed,
     Object? isRefreshing = null,
+    Object? isRetrying = null,
   }) {
     return _then(_value.copyWith(
       link: freezed == link
@@ -83,6 +91,10 @@ class _$LinkDetailStateCopyWithImpl<$Res, $Val extends LinkDetailState>
       isRefreshing: null == isRefreshing
           ? _value.isRefreshing
           : isRefreshing // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isRetrying: null == isRetrying
+          ? _value.isRetrying
+          : isRetrying // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
@@ -111,7 +123,11 @@ abstract class _$$LinkDetailStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {LinkModel? link, bool isLoading, String? error, bool isRefreshing});
+      {LinkModel? link,
+      bool isLoading,
+      String? error,
+      bool isRefreshing,
+      bool isRetrying});
 
   @override
   $LinkModelCopyWith<$Res>? get link;
@@ -134,6 +150,7 @@ class __$$LinkDetailStateImplCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? error = freezed,
     Object? isRefreshing = null,
+    Object? isRetrying = null,
   }) {
     return _then(_$LinkDetailStateImpl(
       link: freezed == link
@@ -152,6 +169,10 @@ class __$$LinkDetailStateImplCopyWithImpl<$Res>
           ? _value.isRefreshing
           : isRefreshing // ignore: cast_nullable_to_non_nullable
               as bool,
+      isRetrying: null == isRetrying
+          ? _value.isRetrying
+          : isRetrying // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -163,7 +184,8 @@ class _$LinkDetailStateImpl implements _LinkDetailState {
       {this.link,
       this.isLoading = false,
       this.error,
-      this.isRefreshing = false});
+      this.isRefreshing = false,
+      this.isRetrying = false});
 
   /// The selected link with complete data (including AI output)
   @override
@@ -183,9 +205,14 @@ class _$LinkDetailStateImpl implements _LinkDetailState {
   @JsonKey()
   final bool isRefreshing;
 
+  /// Whether the link processing is being retried
+  @override
+  @JsonKey()
+  final bool isRetrying;
+
   @override
   String toString() {
-    return 'LinkDetailState(link: $link, isLoading: $isLoading, error: $error, isRefreshing: $isRefreshing)';
+    return 'LinkDetailState(link: $link, isLoading: $isLoading, error: $error, isRefreshing: $isRefreshing, isRetrying: $isRetrying)';
   }
 
   @override
@@ -198,12 +225,14 @@ class _$LinkDetailStateImpl implements _LinkDetailState {
                 other.isLoading == isLoading) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.isRefreshing, isRefreshing) ||
-                other.isRefreshing == isRefreshing));
+                other.isRefreshing == isRefreshing) &&
+            (identical(other.isRetrying, isRetrying) ||
+                other.isRetrying == isRetrying));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, link, isLoading, error, isRefreshing);
+  int get hashCode => Object.hash(
+      runtimeType, link, isLoading, error, isRefreshing, isRetrying);
 
   /// Create a copy of LinkDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -220,7 +249,8 @@ abstract class _LinkDetailState implements LinkDetailState {
       {final LinkModel? link,
       final bool isLoading,
       final String? error,
-      final bool isRefreshing}) = _$LinkDetailStateImpl;
+      final bool isRefreshing,
+      final bool isRetrying}) = _$LinkDetailStateImpl;
 
   /// The selected link with complete data (including AI output)
   @override
@@ -237,6 +267,10 @@ abstract class _LinkDetailState implements LinkDetailState {
   /// Whether the content is being refreshed (pull-to-refresh)
   @override
   bool get isRefreshing;
+
+  /// Whether the link processing is being retried
+  @override
+  bool get isRetrying;
 
   /// Create a copy of LinkDetailState
   /// with the given fields replaced by the non-null parameter values.

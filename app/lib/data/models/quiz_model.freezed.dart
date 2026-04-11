@@ -243,6 +243,7 @@ QuizModel _$QuizModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$QuizModel {
+// ignore: invalid_annotation_target
   @JsonKey(name: '_id')
   String get id => throw _privateConstructorUsedError;
   QuizContent get content => throw _privateConstructorUsedError;
@@ -394,6 +395,7 @@ class _$QuizModelImpl extends _QuizModel {
   factory _$QuizModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$QuizModelImplFromJson(json);
 
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: '_id')
   final String id;
@@ -454,6 +456,7 @@ abstract class _QuizModel extends QuizModel {
   factory _QuizModel.fromJson(Map<String, dynamic> json) =
       _$QuizModelImpl.fromJson;
 
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: '_id')
   String get id;

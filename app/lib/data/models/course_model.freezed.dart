@@ -205,6 +205,7 @@ CourseModel _$CourseModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CourseModel {
+// ignore: invalid_annotation_target
   @JsonKey(name: '_id')
   String get id => throw _privateConstructorUsedError;
   CourseContent get content => throw _privateConstructorUsedError;
@@ -357,6 +358,7 @@ class _$CourseModelImpl extends _CourseModel {
   factory _$CourseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$CourseModelImplFromJson(json);
 
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: '_id')
   final String id;
@@ -417,6 +419,7 @@ abstract class _CourseModel extends CourseModel {
   factory _CourseModel.fromJson(Map<String, dynamic> json) =
       _$CourseModelImpl.fromJson;
 
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: '_id')
   String get id;
