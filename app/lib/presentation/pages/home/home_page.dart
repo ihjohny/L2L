@@ -14,18 +14,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    // Load data when screen initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        ref.read(linkListViewModelProvider.notifier).loadLinks();
-        ref.read(projectsListViewModelProvider.notifier).loadProjects();
-      }
-    });
-  }
-
   /// Refresh both links and projects data
   Future<void> _refreshData() async {
     // Load both links and projects in parallel

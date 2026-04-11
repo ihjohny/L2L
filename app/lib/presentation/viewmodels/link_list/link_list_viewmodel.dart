@@ -11,9 +11,7 @@ import 'link_list_state.dart';
 class LinkListViewModel extends StateNotifier<LinkListState> {
   final LinkRepository _linkRepository;
 
-  LinkListViewModel(this._linkRepository) : super(LinkListState.initial()) {
-    loadLinks();
-  }
+  LinkListViewModel(this._linkRepository) : super(LinkListState.initial());
 
   /// Load all links (lightweight - no AI output).
   Future<void> loadLinks() async {
