@@ -67,7 +67,7 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(link.displayTitle),
+        title: const Text('Link Details'),
         actions: [
           IconButton(
             icon: const Icon(Icons.open_in_new),

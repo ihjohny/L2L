@@ -8,6 +8,7 @@ import { getQueue, QUEUE_NAMES } from '../jobs/jobs.queue';
 
 interface CreateLinkDto {
   url: string;
+  title?: string;
   projectId?: string | null;
   tags?: string[];
 }
@@ -29,8 +30,8 @@ class LinkService {
         }
       }
 
-      // Extract title from URL
-      const title = this.extractTitleFromUrl(dto.url);
+      // Use provided title or extract from URL
+      const title = dto.title || this.extractTitleFromUrl(dto.url);
 
       // Create link with initial data
       const link = await LinkModel.create({

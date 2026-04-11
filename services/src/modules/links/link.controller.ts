@@ -5,6 +5,7 @@ import { successResponse, errorResponse, createdResponse } from '../../utils/res
 
 interface CreateLinkBody {
   url: string;
+  title?: string;
   projectId?: string | null;
   tags?: string[];
 }
