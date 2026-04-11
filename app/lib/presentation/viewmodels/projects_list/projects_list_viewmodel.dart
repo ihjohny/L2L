@@ -9,7 +9,9 @@ class ProjectsListViewModel extends StateNotifier<ProjectsListState> {
   final ProjectRepository _projectRepository;
 
   ProjectsListViewModel(this._projectRepository)
-      : super(const ProjectsListState(isLoading: true));
+      : super(const ProjectsListState(isLoading: true)) {
+    loadProjects();
+  }
 
   /// Load all projects.
   Future<void> loadProjects() async {
