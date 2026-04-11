@@ -95,6 +95,16 @@ class LinkRepository {
       return Failure(e.toString().replaceAll('Exception: ', ''));
     }
   }
+
+  /// Retry failed link processing.
+  Future<Result<Unit>> retryLinkProcessing(String linkId) async {
+    try {
+      await _linkService.retryLinkProcessing(linkId);
+      return const Success(Unit.value);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
 }
 
 /// A unit type for operations that don't return meaningful data.

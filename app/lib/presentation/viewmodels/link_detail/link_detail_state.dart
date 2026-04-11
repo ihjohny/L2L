@@ -18,6 +18,9 @@ class LinkDetailState with _$LinkDetailState {
 
     /// Whether the content is being refreshed (pull-to-refresh)
     @Default(false) bool isRefreshing,
+
+    /// Whether the link processing is being retried
+    @Default(false) bool isRetrying,
   }) = _LinkDetailState;
 
   /// Initial state
@@ -25,6 +28,7 @@ class LinkDetailState with _$LinkDetailState {
         link: null,
         isLoading: true,
         error: null,
+        isRetrying: false,
       );
 }
 

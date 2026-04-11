@@ -97,6 +97,23 @@ class LinkController {
       next(error);
     }
   }
+
+  async retryLinkProcessing(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.sub;
+      if (!userId) {
+        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
+      }
+
+      const { linkId } = req.params;
+      const result = await linkService.retryLinkProcessing(linkId, userId);
+
+      return createdResponse(res, result, 'Link processing queued successfully');
+    } catch (error: any) {
+      logger.error('Error in retryLinkProcessing controller:', error);
+      next(error);
+    }
+  }
 }
 
 const linkController = new LinkController();

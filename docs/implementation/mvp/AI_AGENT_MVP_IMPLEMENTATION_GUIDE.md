@@ -502,7 +502,36 @@ onJobFailed(job, error) {
   // If attempts < maxAttempts: retry with backoff
   // If max attempts reached: move to DLQ
   // Update job status: "failed"
+  // Update link status: "failed" with error message
   // Emit notification event
+}
+```
+
+**Manual Retry for Failed Links:**
+```typescript
+// POST /api/v1/links/:linkId/retry
+retryLinkProcessing(linkId, userId) {
+  // Verify link ownership and failed status
+  // Reset link status to "pending"
+  // Clear statusMessage
+  // Create new job in PROCESS_LINK queue
+  // Return link with new jobId
+}
+```
+
+**Flutter UI - Retry Button:**
+```dart
+// In LinkDetailsPage, show retry button when status is failed
+if (link.status == LinkStatus.failed) {
+  ElevatedButton.icon(
+    icon: Icon(Icons.refresh),
+    label: Text('Retry'),
+    onPressed: () async {
+      await linkDetailViewModel.retryLinkProcessing(linkId);
+      // Show success snackbar
+      // Refresh link data after delay
+    },
+  )
 }
 ```
 
@@ -754,6 +783,7 @@ docker-compose -f docker-compose.prod.yml up -d --scale api=3
 | GET | `/links/:id` | Yes | Get link |
 | PUT | `/links/:id` | Yes | Update link |
 | DELETE | `/links/:id` | Yes | Delete link |
+| POST | `/links/:id/retry` | Yes | Retry failed link processing |
 | GET | `/jobs/:jobId` | Yes | Job status |
 
 ---

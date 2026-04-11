@@ -39,4 +39,11 @@ router.put('/:linkId', authenticate, Link.updateLink);
  */
 router.delete('/:linkId', authenticate, Link.deleteLink);
 
+/**
+ * @route   POST /api/links/:linkId/retry
+ * @desc    Retry failed link processing
+ * @access  Private
+ */
+router.post('/:linkId/retry', authenticate, Link.retryLinkProcessing);
+
 export default router;

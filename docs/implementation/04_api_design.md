@@ -70,6 +70,7 @@ Link: </api/v2/links>; rel="successor-version"
 | GET | `/links/:id` | Yes | User | - | `{ link, aiOutput }` | 200, 401, 403, 404 | MVP |
 | PUT | `/links/:id` | Yes | User | `{ projectId?, tags?, title? }` | `{ link }` | 200, 400, 401, 403, 404 | MVP |
 | DELETE | `/links/:id` | Yes | User | - | `{ success }` | 200, 401, 403, 404 | MVP |
+| POST | `/links/:id/retry` | Yes | User | - | `{ link, jobId }` | 201, 400, 401, 403, 404 | MVP |
 | GET | `/links/:id/summary` | Yes | User | - | `{ summary }` | 200, 404 | MVP |
 | GET | `/links/:id/flashcards` | Yes | User | - | `{ flashcards }` | 200, 404 | MVP |
 | POST | `/links/bulk` | Yes | User | `{ urls, projectId?, tags? }` | `{ jobId }` | 202, 400, 401 | P2 |

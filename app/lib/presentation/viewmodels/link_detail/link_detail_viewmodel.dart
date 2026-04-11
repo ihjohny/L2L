@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/repositories/link_repository.dart';
+import '../../../../core/constants/app_constants.dart';
 import 'link_detail_state.dart';
 
 /// ViewModel for link detail operations.
@@ -49,6 +50,32 @@ class LinkDetailViewModel extends StateNotifier<LinkDetailState> {
       (error) {
         state = state.copyWith(
           isRefreshing: false,
+          error: error,
+        );
+      },
+    );
+  }
+
+  /// Retry failed link processing.
+  Future<void> retryLinkProcessing(String linkId) async {
+    state = state.copyWith(isRetrying: true, error: null);
+
+    final result = await _linkRepository.retryLinkProcessing(linkId);
+    if (!mounted) return;
+    result.fold(
+      (success) async {
+        state = state.copyWith(
+          isRetrying: false,
+        );
+        // Wait for job to be queued, then reload link data
+        await Future.delayed(const Duration(seconds: AppConstants.retryDelaySeconds));
+        if (mounted) {
+          await loadLink(linkId);
+        }
+      },
+      (error) {
+        state = state.copyWith(
+          isRetrying: false,
           error: error,
         );
       },

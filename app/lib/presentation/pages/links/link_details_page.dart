@@ -148,6 +148,8 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
   }
 
   Widget _buildStatusCard(LinkModel link, BuildContext context) {
+    final state = ref.watch(linkDetailViewModelProvider);
+
     IconData statusIcon;
     Color statusColor;
     String statusText;
@@ -177,6 +179,7 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
 
     final isProcessed = link.status == LinkStatus.completed;
     final isProcessing = link.status == LinkStatus.processing;
+    final isFailed = link.status == LinkStatus.failed;
 
     return Card(
       color: statusColor.withOpacity(0.1),
@@ -216,6 +219,37 @@ class _LinkDetailsPageState extends ConsumerState<LinkDetailsPage> {
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            if (isFailed)
+              ElevatedButton.icon(
+                onPressed: state.isRetrying
+                    ? null
+                    : () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        await ref
+                            .read(linkDetailViewModelProvider.notifier)
+                            .retryLinkProcessing(link.id);
+                        if (mounted) {
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Link processing retry queued successfully'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                icon: state.isRetrying
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+                label: Text(state.isRetrying ? 'Retrying...' : 'Retry'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: statusColor,
+                  foregroundColor: Colors.white,
+                ),
               ),
           ],
         ),

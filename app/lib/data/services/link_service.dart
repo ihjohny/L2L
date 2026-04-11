@@ -108,4 +108,18 @@ class LinkService {
       throw _dioClient.handleError(e);
     }
   }
+
+  /// Retry failed link processing
+  Future<void> retryLinkProcessing(String linkId) async {
+    try {
+      final response = await _dioClient.dio.post('/links/$linkId/retry');
+
+      if (response.statusCode == 201) {
+        return;
+      }
+      throw Exception('Failed to retry link processing');
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
 }

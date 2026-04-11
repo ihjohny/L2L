@@ -3,6 +3,7 @@ import 'package:l2l_app/data/models/project_model.dart';
 import '../../../../data/repositories/project_repository.dart';
 import '../../../../data/repositories/link_repository.dart';
 import '../../../../core/utils/navigation_triggers.dart';
+import '../../../../core/constants/app_constants.dart';
 import 'project_details_state.dart';
 
 /// ViewModel for managing project details.
@@ -148,6 +149,7 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
 
     result.fold(
       (data) async {
+        await Future.delayed(const Duration(seconds: AppConstants.reloadDelaySeconds));
         // Course and quiz generation started - reload project to get updated IDs
         await _reloadProjectData(projectId);
       },

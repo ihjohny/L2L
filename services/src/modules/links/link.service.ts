@@ -256,6 +256,42 @@ class LinkService {
       return 'Untitled';
     }
   }
+
+  async retryLinkProcessing(linkId: string, userId: string) {
+    try {
+      const link = await LinkModel.findOne({ _id: linkId, userId, deletedAt: null });
+      if (!link) {
+        throw new AppError('Link not found or unauthorized', 'NOT_FOUND', 404);
+      }
+
+      // Only allow retry for failed links
+      if (link.status !== 'failed') {
+        throw new AppError(
+          'Only failed links can be retried',
+          'BAD_REQUEST',
+          400
+        );
+      }
+
+      // Reset link status to pending
+      link.status = 'pending';
+      link.statusMessage = undefined;
+      await link.save();
+
+      // Queue AI processing job
+      const job = await this.queueAiProcessingJob(userId, link._id.toString(), link.url);
+
+      logger.info(`Link processing retry queued: ${link._id} by user ${userId}, job queued: ${job._id}`);
+
+      return {
+        ...link.toObject(),
+        jobId: job._id
+      };
+    } catch (error: any) {
+      logger.error('Error in retryLinkProcessing:', error);
+      throw error;
+    }
+  }
 }
 
 const linkService = new LinkService();

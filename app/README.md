@@ -68,6 +68,7 @@ Navigation is triggered via enum flags in ViewModel state (`AuthNavigationTrigge
 - Save links with tags and project assignment
 - View AI-generated summaries and flashcards
 - Track link processing status (pending, processing, completed, failed)
+- Retry failed link processing with a single tap
 
 ## Setup
 
@@ -175,6 +176,7 @@ The app communicates with the backend API at `http://localhost:3000/api/v1`:
 | `/projects/:id/generate-course-quiz` | POST | Generate AI course and quiz |
 | `/links` | GET/POST | List/Create links |
 | `/links/:id` | GET/PUT/DELETE | Get/Update/Delete link |
+| `/links/:id/retry` | POST | Retry failed link processing |
 
 ## State Management
 

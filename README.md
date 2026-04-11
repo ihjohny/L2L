@@ -250,6 +250,7 @@ OPENAI_MODEL=gpt-4o
 | GET | `/api/v1/links/:id` | Get link with AI output |
 | PUT | `/api/v1/links/:id` | Update link |
 | DELETE | `/api/v1/links/:id` | Delete link |
+| POST | `/api/v1/links/:id/retry` | Retry failed link processing |
 
 ### Jobs
 
