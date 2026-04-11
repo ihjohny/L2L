@@ -420,11 +420,17 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
               const SizedBox(height: 16),
 
               // Question text
-              Text(
-                currentQuestion.question,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      currentQuestion.question,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
