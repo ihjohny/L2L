@@ -134,8 +134,12 @@ class CourseSection extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        // Navigate to course detail page at specific lesson
-        context.push('/projects/$projectId/course?lesson=$index');
+        // Navigate to course detail page with course data
+        // This avoids redundant API call - course data is passed from ProjectDetailsViewModel
+        context.push(
+          '/projects/$projectId/course?lesson=$index',
+          extra: {'course': course},
+        );
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(

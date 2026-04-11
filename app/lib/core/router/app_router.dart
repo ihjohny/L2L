@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/models/course_model.dart';
 import '../../presentation/pages/auth/login_page.dart';
 import '../../presentation/pages/auth/register_page.dart';
 import '../../presentation/pages/main_container/main_container_page.dart';
@@ -174,11 +175,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           final projectId = state.pathParameters['projectId'] ?? '';
           final lessonIndex =
               int.tryParse(state.uri.queryParameters['lesson'] ?? '') ?? 0;
+          // Extract course data from extra if available (passed from ProjectDetailsViewModel)
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final course = extra['course'] as CourseModel?;
+
           return MaterialPage(
             key: state.pageKey,
             child: CourseDetailPage(
               projectId: projectId,
               initialLessonIndex: lessonIndex,
+              course: course,
             ),
           );
         },

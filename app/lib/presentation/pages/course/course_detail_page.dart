@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../viewmodels/course_detail/course_detail_viewmodel.dart';
 import '../../viewmodels/course_detail/course_detail_state.dart';
 import '../../../core/utils/navigation_triggers.dart';
+import '../../../data/models/course_model.dart';
 
 /// Course Detail Page - Displays individual lessons with navigation.
 ///
@@ -12,14 +13,19 @@ import '../../../core/utils/navigation_triggers.dart';
 /// - Progress stepper showing current lesson
 /// - Lesson content with estimated reading time
 /// - Previous/Next navigation controls
+///
+/// Optimization: Receives course data from ProjectDetailsViewModel
+/// to avoid redundant API calls.
 class CourseDetailPage extends ConsumerStatefulWidget {
   final String projectId;
   final int? initialLessonIndex;
+  final CourseModel? course;
 
   const CourseDetailPage({
     super.key,
     required this.projectId,
     this.initialLessonIndex,
+    this.course,
   });
 
   @override
@@ -30,18 +36,30 @@ class _CourseDetailPageState extends ConsumerState<CourseDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Load course when page initializes
+
     Future.microtask(() {
       if (mounted) {
         final notifier = ref.read(courseDetailViewModelProvider.notifier);
 
-        // Load course first, then navigate to initial lesson if provided
-        notifier.loadCourse(widget.projectId).then((_) {
-          if (mounted && widget.initialLessonIndex != null) {
-            // Navigate to the specific lesson after course is loaded
+        // Optimization: Use course data from ProjectDetailsViewModel if available
+        // This avoids redundant API call when navigating from project details
+        if (widget.course != null) {
+          // Initialize with existing course data
+          notifier.initializeWithCourse(widget.course!);
+
+          // Navigate to initial lesson if provided
+          if (widget.initialLessonIndex != null) {
             notifier.goToLesson(widget.initialLessonIndex!);
           }
-        });
+        } else {
+          // Fallback: Load course from API if not provided
+          // (e.g., when accessed directly via URL)
+          notifier.loadCourse(widget.projectId).then((_) {
+            if (mounted && widget.initialLessonIndex != null) {
+              notifier.goToLesson(widget.initialLessonIndex!);
+            }
+          });
+        }
       }
     });
   }

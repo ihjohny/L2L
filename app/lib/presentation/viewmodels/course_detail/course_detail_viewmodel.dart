@@ -49,6 +49,26 @@ class CourseDetailViewModel
     );
   }
 
+  /// Initialize ViewModel with existing course data (no API call).
+  ///
+  /// Used when course data is already available from ProjectDetailsViewModel
+  /// to avoid redundant API calls.
+  void initializeWithCourse(CourseModel course) {
+    // Calculate estimated reading time for the first lesson
+    final lessons = course.sortedLessons;
+    final estimatedMinutes = lessons.isNotEmpty
+        ? _calculateReadingTime(lessons[0].content)
+        : 0;
+
+    state = state.copyWith(
+      course: course,
+      isLoading: false,
+      currentLessonIndex: 0,
+      estimatedReadingMinutes: estimatedMinutes,
+      error: CourseDetailState.nullValue,
+    );
+  }
+
   /// Navigate to a specific lesson by index.
   void goToLesson(int lessonIndex) {
     final course = state.course;
