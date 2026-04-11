@@ -731,25 +731,43 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
 
           const SizedBox(height: 32),
 
-          // Actions
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => viewModel.backToQuestions(),
-                  icon: const Icon(Icons.visibility_outlined),
-                  label: const Text('Review Answers'),
-                ),
+          // Question Review Section
+          Container(
+            constraints: const BoxConstraints(maxHeight: 400),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Answer Review',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...List.generate(state.totalQuestions, (index) {
+                    return _buildQuestionReviewItem(
+                      context,
+                      questionIndex: index,
+                      result: result,
+                      theme: theme,
+                    );
+                  }),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => viewModel.restartQuiz(),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Retry Quiz'),
-                ),
-              ),
-            ],
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Retry Quiz Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => viewModel.restartQuiz(),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry Quiz'),
+            ),
           ),
         ],
       ),
@@ -791,5 +809,178 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60);
     return '${minutes}m ${seconds}s';
+  }
+
+  /// Build a question review item for the result view
+  Widget _buildQuestionReviewItem(
+    BuildContext context, {
+    required int questionIndex,
+    required QuizResult result,
+    required ThemeData theme,
+  }) {
+    final state = ref.watch(quizQuestionsViewModelProvider);
+    final quiz = state.quiz;
+    if (quiz == null || !quiz.hasQuestions) return const SizedBox();
+
+    final question = quiz.content.questions[questionIndex];
+    final selectedAnswer = result.selectedAnswers[questionIndex];
+    final isCorrect = selectedAnswer == question.correct;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isCorrect
+            ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+            : theme.colorScheme.errorContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isCorrect
+              ? theme.colorScheme.primary.withOpacity(0.3)
+              : theme.colorScheme.error.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Question header with status
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: isCorrect
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.error,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Icon(
+                    isCorrect ? Icons.check : Icons.close,
+                    color: theme.colorScheme.onPrimary,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Question ${questionIndex + 1}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Text(
+                isCorrect ? 'Correct' : 'Incorrect',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: isCorrect
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Question text
+          Text(
+            question.question,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // User's answer
+          Row(
+            children: [
+              Icon(
+                Icons.person_outline,
+                size: 16,
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Your answer: ${selectedAnswer >= 0 && selectedAnswer < question.options.length ? question.options[selectedAnswer] : 'Not answered'}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: isCorrect
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.error,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+
+          // Show correct answer if wrong
+          if (!isCorrect) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 16,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Correct answer: ${question.correct >= 0 && question.correct < question.options.length ? question.options[question.correct] : 'N/A'}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          // Show explanation if available
+          if (question.explanation != null && question.explanation!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.lightbulb_outline,
+                        size: 16,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Explanation',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    question.explanation!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
