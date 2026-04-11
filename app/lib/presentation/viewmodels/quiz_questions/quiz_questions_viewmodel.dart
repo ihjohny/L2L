@@ -223,6 +223,9 @@ class QuizQuestionsViewModel
       result: QuizQuestionsState.nullValue,
       error: QuizQuestionsState.nullValue,
     );
+
+    // Start the timer again
+    startTimer();
   }
 
   /// Clear error message.
