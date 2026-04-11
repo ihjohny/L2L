@@ -22,7 +22,7 @@ class CourseModel with _$CourseModel {
   const CourseModel._();
 
   const factory CourseModel({
-    required String id,
+    @JsonKey(name: '_id') required String id,
     required CourseContent content,
     required DateTime createdAt,
     required DateTime updatedAt,

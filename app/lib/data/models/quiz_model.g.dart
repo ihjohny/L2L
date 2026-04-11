@@ -25,7 +25,7 @@ Map<String, dynamic> _$$QuizQuestionImplToJson(_$QuizQuestionImpl instance) =>
 
 _$QuizModelImpl _$$QuizModelImplFromJson(Map<String, dynamic> json) =>
     _$QuizModelImpl(
-      id: json['id'] as String,
+      id: json['_id'] as String,
       content: QuizContent.fromJson(json['content'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -33,7 +33,7 @@ _$QuizModelImpl _$$QuizModelImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$QuizModelImplToJson(_$QuizModelImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      '_id': instance.id,
       'content': instance.content,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),

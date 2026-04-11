@@ -243,6 +243,7 @@ QuizModel _$QuizModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$QuizModel {
+  @JsonKey(name: '_id')
   String get id => throw _privateConstructorUsedError;
   QuizContent get content => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -264,7 +265,10 @@ abstract class $QuizModelCopyWith<$Res> {
       _$QuizModelCopyWithImpl<$Res, QuizModel>;
   @useResult
   $Res call(
-      {String id, QuizContent content, DateTime createdAt, DateTime updatedAt});
+      {@JsonKey(name: '_id') String id,
+      QuizContent content,
+      DateTime createdAt,
+      DateTime updatedAt});
 
   $QuizContentCopyWith<$Res> get content;
 }
@@ -329,7 +333,10 @@ abstract class _$$QuizModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id, QuizContent content, DateTime createdAt, DateTime updatedAt});
+      {@JsonKey(name: '_id') String id,
+      QuizContent content,
+      DateTime createdAt,
+      DateTime updatedAt});
 
   @override
   $QuizContentCopyWith<$Res> get content;
@@ -378,7 +385,7 @@ class __$$QuizModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$QuizModelImpl extends _QuizModel {
   const _$QuizModelImpl(
-      {required this.id,
+      {@JsonKey(name: '_id') required this.id,
       required this.content,
       required this.createdAt,
       required this.updatedAt})
@@ -388,6 +395,7 @@ class _$QuizModelImpl extends _QuizModel {
       _$$QuizModelImplFromJson(json);
 
   @override
+  @JsonKey(name: '_id')
   final String id;
   @override
   final QuizContent content;
@@ -437,7 +445,7 @@ class _$QuizModelImpl extends _QuizModel {
 
 abstract class _QuizModel extends QuizModel {
   const factory _QuizModel(
-      {required final String id,
+      {@JsonKey(name: '_id') required final String id,
       required final QuizContent content,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$QuizModelImpl;
@@ -447,6 +455,7 @@ abstract class _QuizModel extends QuizModel {
       _$QuizModelImpl.fromJson;
 
   @override
+  @JsonKey(name: '_id')
   String get id;
   @override
   QuizContent get content;

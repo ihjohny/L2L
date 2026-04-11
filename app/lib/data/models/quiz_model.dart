@@ -23,7 +23,7 @@ class QuizModel with _$QuizModel {
   const QuizModel._();
 
   const factory QuizModel({
-    required String id,
+    @JsonKey(name: '_id') required String id,
     required QuizContent content,
     required DateTime createdAt,
     required DateTime updatedAt,

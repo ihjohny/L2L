@@ -205,6 +205,7 @@ CourseModel _$CourseModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CourseModel {
+  @JsonKey(name: '_id')
   String get id => throw _privateConstructorUsedError;
   CourseContent get content => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -227,7 +228,7 @@ abstract class $CourseModelCopyWith<$Res> {
       _$CourseModelCopyWithImpl<$Res, CourseModel>;
   @useResult
   $Res call(
-      {String id,
+      {@JsonKey(name: '_id') String id,
       CourseContent content,
       DateTime createdAt,
       DateTime updatedAt});
@@ -295,7 +296,7 @@ abstract class _$$CourseModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id,
+      {@JsonKey(name: '_id') String id,
       CourseContent content,
       DateTime createdAt,
       DateTime updatedAt});
@@ -347,7 +348,7 @@ class __$$CourseModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CourseModelImpl extends _CourseModel {
   const _$CourseModelImpl(
-      {required this.id,
+      {@JsonKey(name: '_id') required this.id,
       required this.content,
       required this.createdAt,
       required this.updatedAt})
@@ -357,6 +358,7 @@ class _$CourseModelImpl extends _CourseModel {
       _$$CourseModelImplFromJson(json);
 
   @override
+  @JsonKey(name: '_id')
   final String id;
   @override
   final CourseContent content;
@@ -406,7 +408,7 @@ class _$CourseModelImpl extends _CourseModel {
 
 abstract class _CourseModel extends CourseModel {
   const factory _CourseModel(
-      {required final String id,
+      {@JsonKey(name: '_id') required final String id,
       required final CourseContent content,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$CourseModelImpl;
@@ -416,6 +418,7 @@ abstract class _CourseModel extends CourseModel {
       _$CourseModelImpl.fromJson;
 
   @override
+  @JsonKey(name: '_id')
   String get id;
   @override
   CourseContent get content;

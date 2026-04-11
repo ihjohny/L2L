@@ -22,7 +22,7 @@ Map<String, dynamic> _$$CourseLessonImplToJson(_$CourseLessonImpl instance) =>
 
 _$CourseModelImpl _$$CourseModelImplFromJson(Map<String, dynamic> json) =>
     _$CourseModelImpl(
-      id: json['id'] as String,
+      id: json['_id'] as String,
       content: CourseContent.fromJson(json['content'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -30,7 +30,7 @@ _$CourseModelImpl _$$CourseModelImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$CourseModelImplToJson(_$CourseModelImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      '_id': instance.id,
       'content': instance.content,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
