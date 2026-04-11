@@ -22,6 +22,7 @@ class CourseModel with _$CourseModel {
   const CourseModel._();
 
   const factory CourseModel({
+    // ignore: invalid_annotation_target
     @JsonKey(name: '_id') required String id,
     required CourseContent content,
     required DateTime createdAt,

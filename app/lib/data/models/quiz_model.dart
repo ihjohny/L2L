@@ -23,6 +23,7 @@ class QuizModel with _$QuizModel {
   const QuizModel._();
 
   const factory QuizModel({
+    // ignore: invalid_annotation_target
     @JsonKey(name: '_id') required String id,
     required QuizContent content,
     required DateTime createdAt,
