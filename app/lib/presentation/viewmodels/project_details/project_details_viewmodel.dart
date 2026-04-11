@@ -107,11 +107,17 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
 
   /// Clear selected project.
   void clearSelectedProject() {
-    state = state.copyWith(
-      project: ProjectDetailsState.nullValue,
+    state = const ProjectDetailsState(
+      project: null,
       projectLinks: [],
-      course: ProjectDetailsState.nullValue,
-      quiz: ProjectDetailsState.nullValue,
+      course: null,
+      quiz: null,
+      isLoading: false,
+      isLoadingLinks: false,
+      isLoadingCourse: false,
+      isLoadingQuiz: false,
+      error: null,
+      navigationTrigger: ProjectNavigationTrigger.none,
     );
   }
 
@@ -216,8 +222,8 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
 }
 
 /// Provider for ProjectDetailsViewModel.
-final projectDetailsViewModelProvider =
-    StateNotifierProvider<ProjectDetailsViewModel, ProjectDetailsState>((ref) {
+final projectDetailsViewModelProvider = StateNotifierProvider.autoDispose<
+    ProjectDetailsViewModel, ProjectDetailsState>((ref) {
   final repository = ref.watch(projectRepositoryProvider);
   return ProjectDetailsViewModel(repository, ref);
 });

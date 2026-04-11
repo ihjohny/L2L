@@ -94,8 +94,9 @@ class LinkDetailViewModel extends StateNotifier<LinkDetailState> {
 }
 
 /// Provider for LinkDetailViewModel.
-final linkDetailViewModelProvider =
-    StateNotifierProvider<LinkDetailViewModel, LinkDetailState>((ref) {
+/// Auto-disposes when the screen is popped to prevent data leakage.
+final linkDetailViewModelProvider = StateNotifierProvider.autoDispose<
+    LinkDetailViewModel, LinkDetailState>((ref) {
   final repository = ref.watch(linkRepositoryProvider);
   return LinkDetailViewModel(repository);
 });

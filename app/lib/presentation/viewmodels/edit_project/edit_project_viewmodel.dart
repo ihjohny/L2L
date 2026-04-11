@@ -90,8 +90,9 @@ class EditProjectViewModel extends StateNotifier<EditProjectState> {
 }
 
 /// Provider for EditProjectViewModel.
-final editProjectViewModelProvider =
-    StateNotifierProvider<EditProjectViewModel, EditProjectState>((ref) {
+/// Auto-disposes when the screen is popped to prevent data leakage.
+final editProjectViewModelProvider = StateNotifierProvider.autoDispose<
+    EditProjectViewModel, EditProjectState>((ref) {
   final repository = ref.watch(projectRepositoryProvider);
   return EditProjectViewModel(repository);
 });

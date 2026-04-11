@@ -49,8 +49,8 @@ class _CourseDetailPageState extends ConsumerState<CourseDetailPage> {
 
   @override
   void dispose() {
-    // Reset state when navigating away
-    ref.read(courseDetailViewModelProvider.notifier).reset();
+    // ViewModel auto-disposes via Riverpod when screen is popped
+    // No manual cleanup needed
     super.dispose();
   }
 

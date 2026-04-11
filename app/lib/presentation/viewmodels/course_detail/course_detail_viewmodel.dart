@@ -126,8 +126,9 @@ class CourseDetailViewModel
 }
 
 /// Provider for CourseDetailViewModel.
-final courseDetailViewModelProvider =
-    StateNotifierProvider<CourseDetailViewModel, CourseDetailState>((ref) {
+/// Auto-disposes when the screen is popped to prevent data leakage.
+final courseDetailViewModelProvider = StateNotifierProvider.autoDispose<
+    CourseDetailViewModel, CourseDetailState>((ref) {
   final repository = ref.watch(projectRepositoryProvider);
   return CourseDetailViewModel(repository);
 });

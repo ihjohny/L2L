@@ -36,13 +36,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   }
 
   @override
-  void dispose() {
-    // Clear selected project when leaving page
-    ref.read(projectDetailsViewModelProvider.notifier).clearSelectedProject();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(projectDetailsViewModelProvider.notifier);
     final state = ref.watch(projectDetailsViewModelProvider);
