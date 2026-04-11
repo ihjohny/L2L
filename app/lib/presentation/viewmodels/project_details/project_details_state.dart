@@ -24,11 +24,6 @@ class ProjectDetailsState {
   final bool isLoadingCourse;
   final bool isLoadingQuiz;
 
-  // Form state for editing
-  final String? editingProjectId;
-  final String formName;
-  final String formDescription;
-
   /// Marker for explicitly setting nullable values to null
   static const nullValue = NullValue();
 
@@ -43,9 +38,6 @@ class ProjectDetailsState {
     this.quiz,
     this.isLoadingCourse = false,
     this.isLoadingQuiz = false,
-    this.editingProjectId,
-    this.formName = '',
-    this.formDescription = '',
   });
 
   ProjectDetailsState copyWith({
@@ -59,9 +51,6 @@ class ProjectDetailsState {
     Object? quiz = nullValue,
     bool? isLoadingCourse,
     bool? isLoadingQuiz,
-    Object? editingProjectId = nullValue,
-    String? formName,
-    String? formDescription,
   }) {
     return ProjectDetailsState(
       project: project is NullValue ? this.project : project as ProjectModel?,
@@ -74,20 +63,12 @@ class ProjectDetailsState {
       quiz: quiz is NullValue ? this.quiz : quiz as QuizModel?,
       isLoadingCourse: isLoadingCourse ?? this.isLoadingCourse,
       isLoadingQuiz: isLoadingQuiz ?? this.isLoadingQuiz,
-      editingProjectId: editingProjectId is NullValue ? this.editingProjectId : editingProjectId as String?,
-      formName: formName ?? this.formName,
-      formDescription: formDescription ?? this.formDescription,
     );
   }
 }
 
 /// Extension methods for ProjectDetailsState.
 extension ProjectDetailsStateX on ProjectDetailsState {
-  /// Whether the form is valid for save
-  bool get canSaveProject => !isLoading && formName.isNotEmpty;
-
-  /// Whether currently editing a project
-  bool get isEditing => editingProjectId != null;
 
   /// Whether AI output (course/quiz) exists
   bool get hasAiOutput => course != null || quiz != null;

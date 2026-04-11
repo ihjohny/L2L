@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../viewmodels/project_details/project_details_viewmodel.dart';
+import '../../viewmodels/edit_project/edit_project_viewmodel.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 
@@ -26,7 +26,7 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
     // Load project when page initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        ref.read(projectDetailsViewModelProvider.notifier).selectProject(widget.projectId);
+        ref.read(editProjectViewModelProvider.notifier).loadProject(widget.projectId);
       }
     });
     _nameController = TextEditingController();
@@ -42,7 +42,7 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(projectDetailsViewModelProvider);
+    final state = ref.watch(editProjectViewModelProvider);
     final project = state.project;
 
     // Update controllers when project loads
@@ -122,24 +122,33 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
       final name = _nameController.text.trim();
       final description = _descriptionController.text.trim();
 
-      // Set form fields first
-      final viewModel = ref.read(projectDetailsViewModelProvider.notifier);
+      // Set form fields
+      final viewModel = ref.read(editProjectViewModelProvider.notifier);
       viewModel.setFormName(name);
-      if (description.isNotEmpty) {
-        viewModel.setFormDescription(description);
-      }
+      viewModel.setFormDescription(description);
 
-      // Update project using form state
-      await viewModel.updateProject();
+      // Update project
+      final success = await viewModel.updateProject();
 
       if (mounted) {
-        context.pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Project updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (success) {
+          context.pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Project updated successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          // Watch the state again to get the error
+          final errorState = ref.read(editProjectViewModelProvider);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${errorState.error ?? "Failed to update project"}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

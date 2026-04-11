@@ -111,67 +111,6 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
       projectLinks: [],
       course: ProjectDetailsState.nullValue,
       quiz: ProjectDetailsState.nullValue,
-      editingProjectId: ProjectDetailsState.nullValue,
-      formName: '',
-      formDescription: '',
-    );
-  }
-
-  /// Set form fields for editing project name.
-  void setFormName(String name) {
-    state = state.copyWith(formName: name, error: ProjectDetailsState.nullValue);
-  }
-
-  /// Set form fields for project description.
-  void setFormDescription(String description) {
-    state = state.copyWith(formDescription: description, error: ProjectDetailsState.nullValue);
-  }
-
-  /// Prepare form for editing the currently selected project.
-  void prepareEditProject() {
-    final project = state.project;
-    if (project != null) {
-      state = state.copyWith(
-        editingProjectId: project.id,
-        formName: project.name,
-        formDescription: project.description ?? '',
-      );
-    }
-  }
-
-  /// Update an existing project.
-  Future<void> updateProject() async {
-    if (!state.canSaveProject || !state.isEditing || state.editingProjectId == null) {
-      return;
-    }
-
-    state = state.copyWith(isLoading: true, error: ProjectDetailsState.nullValue);
-
-    final result = await _projectRepository.updateProject(
-      projectId: state.editingProjectId!,
-      name: state.formName,
-      description: state.formDescription.isEmpty ? null : state.formDescription,
-    );
-
-    if (!mounted) return;
-
-    result.fold(
-      (updatedProject) {
-        state = state.copyWith(
-          project: updatedProject,
-          isLoading: false,
-          editingProjectId: ProjectDetailsState.nullValue,
-          formName: '',
-          formDescription: '',
-          navigationTrigger: ProjectNavigationTrigger.toProjectDetail,
-        );
-      },
-      (error) {
-        state = state.copyWith(
-          isLoading: false,
-          error: error,
-        );
-      },
     );
   }
 
@@ -271,15 +210,6 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
   /// Reset navigation trigger.
   void resetNavigationTrigger() {
     state = state.copyWith(navigationTrigger: ProjectNavigationTrigger.none);
-  }
-
-  /// Clear form state.
-  void clearForm() {
-    state = state.copyWith(
-      editingProjectId: ProjectDetailsState.nullValue,
-      formName: '',
-      formDescription: '',
-    );
   }
 }
 
