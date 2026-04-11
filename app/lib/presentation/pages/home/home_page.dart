@@ -26,6 +26,15 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   }
 
+  /// Refresh both links and projects data
+  Future<void> _refreshData() async {
+    // Load both links and projects in parallel
+    await Future.wait([
+      ref.read(linkListViewModelProvider.notifier).loadLinks(),
+      ref.read(projectsListViewModelProvider.notifier).loadProjects(),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,17 +50,20 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Recent Projects Section (Horizontal Scrollable)
-            RecentProjectsSection(),
-            SizedBox(height: 24),
-            // Recent Saved Links Section (Vertical List)
-            RecentLinksSection(),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: const SingleChildScrollView(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Recent Projects Section (Horizontal Scrollable)
+              RecentProjectsSection(),
+              SizedBox(height: 24),
+              // Recent Saved Links Section (Vertical List)
+              RecentLinksSection(),
+            ],
+          ),
         ),
       ),
     );
