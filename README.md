@@ -47,6 +47,8 @@
 - Cross-project organization via tags
 - **View AI-generated courses with lesson-by-lesson navigation**
 - **Track progress through interactive stepper with estimated reading times**
+- **Take interactive quizzes with timer and progress tracking**
+- **View detailed results with score, correct answers, and time taken**
 
 ### 🔌 Chrome Extension
 
@@ -400,6 +402,13 @@ docker-compose -f docker-compose.dev.yml exec redis redis-cli FLUSHALL  # Clear 
   - Lesson-by-lesson navigation with progress tracking
   - Estimated reading time calculation
   - Combined progress stepper component design
+
+- **[Quiz Questions Page Implementation](docs/implementation/quiz_questions_page.md)** - Interactive quiz system
+  - Real-time timer with elapsed time tracking
+  - Progress stepper with answered/unanswered indicators
+  - Multiple choice questions with visual feedback
+  - Result view with score, correct answers, and time taken
+  - Review answers and retry quiz functionality
 
 ### Recommended Reading Order
 

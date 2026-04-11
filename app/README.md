@@ -45,6 +45,8 @@ The app uses Riverpod with the Result pattern:
 - **LinkListViewModel**: Manages links list with filtering by project/tags (no AI output)
 - **LinkDetailViewModel**: Manages single link with complete AI-generated content
 - **AddLinkViewModel**: Manages form state for creating new links
+- **CourseDetailViewModel**: Manages course viewing with lesson navigation and reading time estimation
+- **QuizQuestionsViewModel**: Manages quiz taking with timer, progress tracking, and result calculation
 
 All repository methods return `Result<T>` (sealed class with `Success`/`Failure`) to enforce explicit error handling.
 
@@ -62,13 +64,27 @@ Navigation is triggered via enum flags in ViewModel state (`AuthNavigationTrigge
 ### Projects
 - Create, view, update, delete projects
 - View project links with AI processing status
-- Generate AI courses from project links
+- Generate AI courses and quizzes from project links
 
 - **View courses with lesson-by-lesson navigation**
   - Progress stepper with interactive dots
   - Estimated reading time per lesson
   - Previous/Next navigation controls
   - Jump to any lesson directly from the course list
+
+- **Take interactive quizzes**
+  - Real-time timer showing elapsed time
+  - Progress stepper with answered/unanswered indicators
+  - Multiple choice questions with visual feedback
+  - Result view with score and time taken
+  - Review answers and retry quiz functionality
+
+- **Take interactive quizzes with timer and progress tracking**
+  - Real-time timer showing elapsed time
+  - Progress stepper with answered/unanswered indicators
+  - Multiple choice questions with visual feedback
+  - Result view with score, correct answers, and time taken
+  - Review answers and retry quiz functionality
 
 ### Links
 - Save links with tags and project assignment
@@ -134,6 +150,7 @@ flutter pub run build_runner watch
 
 For detailed implementation information, see:
 - [Course Detail Page Implementation](../docs/implementation/course_detail_page.md) - Architecture and design decisions for the course viewer
+- [Quiz Questions Page Implementation](../docs/implementation/quiz_questions_page.md) - Architecture and design decisions for the quiz system with timer and results
 
 ## Project Structure
 
@@ -167,7 +184,8 @@ app/
 │       │   ├── home/             # Main app screens
 │       │   ├── projects/         # Project list, detail, edit screens
 │       │   ├── links/            # Link list, detail, add screens
-│       │   └── course/           # Course detail screen with lesson navigation
+│       │   ├── course/           # Course detail screen with lesson navigation
+│       │   └── quiz/             # Quiz questions screen with timer and results
 │       └── widgets/              # Reusable widgets
 ├── test/                         # Widget and unit tests
 └── pubspec.yaml                  # Dependencies

@@ -25,6 +25,7 @@ This directory contains the complete development implementation guidelines for t
 | [11](./11_observability_operations.md) | [Observability & Operations](./11_observability_operations.md) | Logging, metrics, tracing, alerting, runbooks |
 | [12](./12_pre_launch_checklist.md) | [Pre-Launch Checklist](./12_pre_launch_checklist.md) | Prioritized blocking/high/deferrable items for each phase |
 | [Feature](./course_detail_page.md) | [Course Detail Page](./course_detail_page.md) | Interactive course viewer with lesson navigation, progress tracking, and reading time estimation |
+| [Feature](./quiz_questions_page.md) | [Quiz Questions Page](./quiz_questions_page.md) | Interactive quiz system with timer, progress tracking, and comprehensive result view |
 
 ---
 

@@ -40,7 +40,7 @@ The Course Detail Page provides an interactive, user-friendly interface for view
 ## UI Features
 
 ### 1. Top Bar (AppBar)
-- Course title
+- Project name as title
 - Quiz button (icon) for direct navigation to quiz screen
 
 ### 2. Progress Stepper
@@ -74,16 +74,18 @@ Course Detail Page (at specific lesson)
     ↓ (tap dots in stepper)
 Navigate to any lesson
     ↓ (tap quiz button)
-Quiz Screen (future feature)
-    ↓ (complete all lessons)
-Course completion
+Quiz Questions Page (with timer and progress)
+    ↓ (complete quiz, submit)
+Quiz Result View
+    ↓ (tap Back or navigate away)
+Return to Course Detail Page
 ```
 
 ## Routes
 
 | Route | Parameters | Purpose |
 |-------|-----------|---------|
-| `/projects/:projectId/course` | `projectId` (path), `lesson` (query) | View course with optional starting lesson |
+| `/projects/:projectId/course` | `projectId` (path), `lesson` (query), `projectName` (extra) | View course with optional starting lesson |
 
 **Example:** `/projects/abc123/course?lesson=2` starts at lesson 3 (0-indexed)
 
@@ -109,12 +111,17 @@ Course completion
 - **Navigation controls**: Previous/Next buttons at bottom
 - **State persistence**: Current lesson tracked in ViewModel state
 
+### 5. Project Name Display
+- **Decision**: Show project name instead of course title in toolbar
+- **Rationale**: Consistent branding across course and quiz pages
+- **Implementation**: Pass `projectName` parameter through navigation chain
+
 ## Integration Points
 
 ### Updated Files
-1. `lib/core/router/app_router.dart` - Added course detail route
-2. `lib/presentation/pages/projects/widgets/course_section.dart` - Added projectId parameter, navigation to course detail
-3. `lib/presentation/pages/projects/project_detail_page.dart` - Pass projectId to CourseSection
+1. `lib/core/router/app_router.dart` - Added course detail route with projectName support
+2. `lib/presentation/pages/projects/widgets/course_section.dart` - Added projectId and projectName parameters, navigation to course detail
+3. `lib/presentation/pages/projects/project_detail_page.dart` - Pass projectId and projectName to CourseSection
 
 ### Dependencies
 - Uses existing `ProjectRepository.getCourse()` API
@@ -123,7 +130,7 @@ Course completion
 
 ## Future Enhancements
 
-- [ ] Quiz screen integration
+- [x] Quiz screen integration ✅ (Implemented April 2026)
 - [ ] Lesson completion tracking (mark lessons as done)
 - [ ] Bookmarks/highlighting within lessons
 - [ ] Font size controls
@@ -142,7 +149,8 @@ Course completion
 - [x] Buttons disable correctly at boundaries
 - [x] State persists during navigation
 - [x] Error handling for missing course
-- [ ] Integration with quiz screen (pending quiz implementation)
+- [x] Integration with quiz screen ✅ (Implemented April 2026)
+- [x] Project name displays correctly in toolbar
 
 ## Files Changed
 
@@ -153,9 +161,15 @@ Course completion
 
 ### Modified
 - `lib/core/utils/navigation_triggers.dart` (added CourseNavigationTrigger)
-- `lib/core/router/app_router.dart` (added route)
-- `lib/presentation/pages/projects/widgets/course_section.dart` (navigation + projectId)
-- `lib/presentation/pages/projects/project_detail_page.dart` (pass projectId)
+- `lib/core/router/app_router.dart` (added route with projectName support)
+- `lib/presentation/pages/projects/widgets/course_section.dart` (navigation + projectId + projectName)
+- `lib/presentation/pages/projects/project_detail_page.dart` (pass projectId and projectName)
+
+## Related Documentation
+
+- [Quiz Questions Page Implementation](quiz_questions_page.md) - Quiz system with timer and results
+- [API Design](04_api_design.md) - Course API endpoints
+- [Flutter MVP Implementation Guide](mvp/FLUTTER_MVP_IMPLEMENTATION_GUIDE.md) - MVVM pattern
 
 ---
 
