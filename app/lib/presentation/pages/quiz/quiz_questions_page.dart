@@ -61,8 +61,8 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
 
   @override
   void dispose() {
-    // Stop timer when leaving the page using stored reference
-    _viewModel.stopTimer();
+    // Note: Timer will be stopped automatically when ViewModel is disposed
+    // We don't call stopTimer() here to avoid state modification during widget tree disposal
     super.dispose();
   }
 

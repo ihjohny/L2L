@@ -96,11 +96,16 @@ class QuizQuestionsViewModel
     });
   }
 
-  /// Stop the quiz timer.
+  /// Stop the quiz timer and update state.
   void stopTimer() {
+    _cancelTimer();
+    state = state.copyWith(isTimerRunning: false);
+  }
+
+  /// Cancel timer without updating state (for dispose).
+  void _cancelTimer() {
     _timer?.cancel();
     _timer = null;
-    state = state.copyWith(isTimerRunning: false);
   }
 
   /// Reset the quiz timer.
@@ -233,7 +238,7 @@ class QuizQuestionsViewModel
 
   @override
   void dispose() {
-    stopTimer();
+    _cancelTimer();
     super.dispose();
   }
 }
