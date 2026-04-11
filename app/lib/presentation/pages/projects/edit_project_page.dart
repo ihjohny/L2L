@@ -43,7 +43,7 @@ class _EditProjectPageState extends ConsumerState<EditProjectPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(projectDetailsViewModelProvider);
-    final project = state.selectedProject;
+    final project = state.project;
 
     // Update controllers when project loads
     if (project != null &&

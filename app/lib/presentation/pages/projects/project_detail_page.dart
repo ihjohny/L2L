@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../viewmodels/project_details/project_details_viewmodel.dart';
+import '../../viewmodels/project_details/project_details_state.dart';
+import '../../../data/models/project_model.dart';
 import '../../../core/utils/navigation_triggers.dart';
 import '../../widgets/loading_widget.dart';
-import '../../widgets/app_button.dart';
-import '../../widgets/link_card.dart';
+import 'widgets/project_info_section.dart';
+import 'widgets/project_sources_section.dart';
+import 'widgets/course_section.dart';
+import 'widgets/quiz_section.dart';
+import 'widgets/generate_ai_output_section.dart';
 
 class ProjectDetailPage extends ConsumerStatefulWidget {
   final String projectId;
@@ -43,25 +48,28 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     final state = ref.watch(projectDetailsViewModelProvider);
 
     // Show loading while project data is being fetched
-    if (state.isLoading && state.selectedProject == null) {
+    if (state.isLoading && state.project == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Project')),
+        appBar: AppBar(title: const Text('Project Details')),
         body: const LoadingWidget(),
       );
     }
 
-    final project = state.selectedProject;
+    final project = state.project;
     if (project == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Project')),
+        appBar: AppBar(title: const Text('Project Details')),
         body: const LoadingWidget(),
       );
     }
 
-    // Show loading while links are being fetched for the first time
-    if (state.isLoadingLinks && state.selectedProjectLinks.isEmpty) {
+    // Show loading while data is being fetched for the first time
+    if ((state.isLoadingLinks || state.isLoadingCourse || state.isLoadingQuiz) &&
+        state.projectLinks.isEmpty &&
+        state.course == null &&
+        state.quiz == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(project.name)),
+        appBar: AppBar(title: const Text('Project Details')),
         body: const LoadingWidget(),
       );
     }
@@ -85,7 +93,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(project.name),
+        title: const Text('Project Details'),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -97,150 +105,94 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Project Info Card
-            _buildProjectInfoCard(project),
+      body: RefreshIndicator(
+        onRefresh: () => viewModel.selectProject(widget.projectId),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Project Info Section with sync status
+              ProjectInfoSection(project: project),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Generate Course Button
-            _buildGenerateCourseSection(),
-
-            const SizedBox(height: 24),
-
-            // Links Section
-            Text(
-              'Links (${state.selectedProjectLinks.length})',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-
-            const SizedBox(height: 12),
-
-            if (state.selectedProjectLinks.isEmpty)
-              _buildEmptyLinksState()
-            else
-              _buildLinksList(state.selectedProjectLinks),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProjectInfoCard(project) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              project.name,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            if (project.description != null && project.description!.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                project.description!,
-                style: Theme.of(context).textTheme.bodyMedium,
+              // Sources/Links Section
+              ProjectSourcesSection(
+                links: state.projectLinks,
+                linkCount: project.totalLinks,
               ),
+
+              const SizedBox(height: 24),
+
+              // AI Output Section - CTA or Course/Quiz based on state
+              _buildAiOutputSection(context, state, project),
+
+              const SizedBox(height: 24),
             ],
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Icon(Icons.info_outline, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 8),
-                Text(
-                  'Created ${_formatDate(project.createdAt)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildGenerateCourseSection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.school, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 12),
-                Text(
-                  'AI Course & Quiz Generation',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Generate a structured course and quiz from all links in this project',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton(
-                text: _isGeneratingCourse ? 'Generating...' : 'Generate Course & Quiz',
-                onPressed: _isGeneratingCourse ? null : _generateCourseQuiz,
-                isLoading: _isGeneratingCourse,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildAiOutputSection(
+    BuildContext context,
+    ProjectDetailsState state,
+    ProjectModel project,
+  ) {
+    // Initial state - no AI output yet
+    if (!state.hasAiOutput) {
+      return GenerateAiOutputSection(
+        isGenerating: _isGeneratingCourse,
+        needsSync: false,
+        onGenerate: _generateCourseQuiz,
+      );
+    }
 
-  Widget _buildEmptyLinksState() {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
+    // Sync required state
+    if (state.needsAiSync) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.link_off, size: 48, color: Colors.grey[400]),
-          const SizedBox(height: 12),
-          Text(
-            'No links yet',
-            style: Theme.of(context).textTheme.bodyMedium,
+          // Show sync needed CTA at the top
+          GenerateAiOutputSection(
+            isGenerating: _isGeneratingCourse,
+            needsSync: true,
+            onGenerate: _generateCourseQuiz,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Add links to this project from the links page',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
+          if (state.course != null || state.quiz != null) ...[
+            const SizedBox(height: 24),
+            Text(
+              'Current Content (Outdated)',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  ),
             ),
-            textAlign: TextAlign.center,
-          ),
+            const SizedBox(height: 12),
+            _buildCourseAndQuizContent(context, state),
+          ],
         ],
-      ),
-    );
+      );
+    }
+
+    // Sync completed state - show course and quiz
+    return _buildCourseAndQuizContent(context, state);
   }
 
-  Widget _buildLinksList(projectLinks) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: projectLinks.length,
-      itemBuilder: (context, index) {
-        final link = projectLinks[index];
-        return LinkCard(link: link);
-      },
+  Widget _buildCourseAndQuizContent(BuildContext context, ProjectDetailsState state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Course Section
+        if (state.course != null) ...[
+          CourseSection(course: state.course!),
+          const SizedBox(height: 16),
+        ],
+
+        // Quiz Section
+        if (state.quiz != null) QuizSection(quiz: state.quiz!),
+      ],
     );
   }
 
@@ -300,9 +252,5 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

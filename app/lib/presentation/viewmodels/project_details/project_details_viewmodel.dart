@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:l2l_app/data/models/project_model.dart';
 import '../../../../data/repositories/project_repository.dart';
 import '../../../../data/repositories/link_repository.dart';
 import '../../../../core/utils/navigation_triggers.dart';
@@ -15,26 +16,38 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
   ProjectDetailsViewModel(this._projectRepository, this._ref)
       : super(const ProjectDetailsState());
 
-  /// Select a project and load its details and links.
+  /// Select a project and load its details, links, course and quiz.
   Future<void> selectProject(String projectId) async {
-    state = state.copyWith(isLoading: true, isLoadingLinks: true, error: ProjectDetailsState.nullValue);
+    state = state.copyWith(
+      isLoading: true,
+      isLoadingLinks: true,
+      isLoadingCourse: true,
+      isLoadingQuiz: true,
+      error: ProjectDetailsState.nullValue,
+    );
 
     // Get project details
     final projectResult = await _projectRepository.getProjectById(projectId);
     if (!mounted) return;
 
+    ProjectModel? project;
     projectResult.fold(
-      (project) {
-        state = state.copyWith(selectedProject: project, isLoading: false);
+      (p) {
+        project = p;
+        state = state.copyWith(project: project, isLoading: false);
       },
       (error) {
         state = state.copyWith(
           isLoading: false,
           isLoadingLinks: false,
+          isLoadingCourse: false,
+          isLoadingQuiz: false,
           error: error,
         );
       },
     );
+
+    if (project == null) return;
 
     // Load project links
     final linkRepo = _ref.read(linkRepositoryProvider);
@@ -44,7 +57,7 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
     linksResult.fold(
       (links) {
         state = state.copyWith(
-          selectedProjectLinks: links,
+          projectLinks: links,
           isLoadingLinks: false,
         );
       },
@@ -55,13 +68,49 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
         );
       },
     );
+
+    // Load course if available
+    if (project!.hasCourse) {
+      final courseResult = await _projectRepository.getCourse(projectId);
+      if (!mounted) return;
+
+      courseResult.fold(
+        (course) {
+          state = state.copyWith(course: course, isLoadingCourse: false);
+        },
+        (error) {
+          state = state.copyWith(isLoadingCourse: false);
+        },
+      );
+    } else {
+      state = state.copyWith(isLoadingCourse: false);
+    }
+
+    // Load quiz if available
+    if (project!.hasQuiz) {
+      final quizResult = await _projectRepository.getQuiz(projectId);
+      if (!mounted) return;
+
+      quizResult.fold(
+        (quiz) {
+          state = state.copyWith(quiz: quiz, isLoadingQuiz: false);
+        },
+        (error) {
+          state = state.copyWith(isLoadingQuiz: false);
+        },
+      );
+    } else {
+      state = state.copyWith(isLoadingQuiz: false);
+    }
   }
 
   /// Clear selected project.
   void clearSelectedProject() {
     state = state.copyWith(
-      selectedProject: ProjectDetailsState.nullValue,
-      selectedProjectLinks: [],
+      project: ProjectDetailsState.nullValue,
+      projectLinks: [],
+      course: ProjectDetailsState.nullValue,
+      quiz: ProjectDetailsState.nullValue,
       editingProjectId: ProjectDetailsState.nullValue,
       formName: '',
       formDescription: '',
@@ -80,7 +129,7 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
 
   /// Prepare form for editing the currently selected project.
   void prepareEditProject() {
-    final project = state.selectedProject;
+    final project = state.project;
     if (project != null) {
       state = state.copyWith(
         editingProjectId: project.id,
@@ -109,7 +158,7 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
     result.fold(
       (updatedProject) {
         state = state.copyWith(
-          selectedProject: updatedProject,
+          project: updatedProject,
           isLoading: false,
           editingProjectId: ProjectDetailsState.nullValue,
           formName: '',
@@ -128,7 +177,7 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
 
   /// Delete the currently selected project.
   Future<void> deleteProject() async {
-    final projectId = state.selectedProject?.id;
+    final projectId = state.project?.id;
     if (projectId == null) return;
 
     state = state.copyWith(isLoading: true, error: ProjectDetailsState.nullValue);
@@ -159,11 +208,57 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
     if (!mounted) return;
 
     result.fold(
-      (data) {
-        // Course and quiz generation started - could update state with job info
+      (data) async {
+        // Course and quiz generation started - reload project to get updated IDs
+        await _reloadProjectData(projectId);
       },
       (error) {
         state = state.copyWith(error: error);
+      },
+    );
+  }
+
+  /// Reload project data including course and quiz after generation
+  Future<void> _reloadProjectData(String projectId) async {
+    final projectResult = await _projectRepository.getProjectById(projectId);
+    if (!mounted) return;
+
+    projectResult.fold(
+      (project) async {
+        state = state.copyWith(project: project);
+
+        // Load course if available
+        if (project.hasCourse) {
+          final courseResult = await _projectRepository.getCourse(projectId);
+          if (!mounted) return;
+
+          courseResult.fold(
+            (course) {
+              state = state.copyWith(course: course);
+            },
+            (error) {
+              // Ignore error
+            },
+          );
+        }
+
+        // Load quiz if available
+        if (project.hasQuiz) {
+          final quizResult = await _projectRepository.getQuiz(projectId);
+          if (!mounted) return;
+
+          quizResult.fold(
+            (quiz) {
+              state = state.copyWith(quiz: quiz);
+            },
+            (error) {
+              // Ignore error
+            },
+          );
+        }
+      },
+      (error) {
+        // Ignore error
       },
     );
   }

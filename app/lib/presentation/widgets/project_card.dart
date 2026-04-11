@@ -63,6 +63,17 @@ class ProjectCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              if (project.linkCount > 0) ...[
+                Text(
+                  '${project.linkCount} ${project.linkCount == 1 ? 'link' : 'links'}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[500],
+                      ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              const SizedBox(width: 4),
               // AI output indicator
               if (project.hasCourse || project.hasQuiz)
                 Container(
@@ -89,18 +100,6 @@ class ProjectCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          // Link count (only if > 0)
-          if (project.linkCount > 0) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${project.linkCount} ${project.linkCount == 1 ? 'link' : 'links'}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[500],
-                  ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
         ],
       ),
     );
@@ -130,6 +129,17 @@ class ProjectCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              if (project.linkCount > 0) ...[
+                Text(
+                  '${project.linkCount} ${project.linkCount == 1 ? 'link' : 'links'}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[500],
+                      ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              const SizedBox(width: 4),
               // AI output indicator
               if (project.hasCourse || project.hasQuiz)
                 Container(
@@ -167,14 +177,7 @@ class ProjectCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 )
-              : project.linkCount > 0
-                  ? Text(
-                      '${project.linkCount} ${project.linkCount == 1 ? 'link' : 'links'}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[500],
-                          ),
-                    )
-                  : const SizedBox.shrink(),
+              : const SizedBox.shrink(),
         ],
       ),
     );
