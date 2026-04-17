@@ -427,6 +427,76 @@ mobile_app/
 // Extract URL from SharedMediaFile, call linkNotifier.saveLink()
 ```
 
+#### Course Detail Screen Implementation
+
+**Instruction:** Interactive course viewer with lesson navigation, progress tracking, and reading time estimation.
+
+**State Management:**
+```dart
+// lib/features/course/detail/data/course_detail_state.dart
+// CourseDetailState: course, currentLessonIndex, estimatedReadingMinutes
+// Computed: currentLesson, hasPreviousLesson, hasNextLesson, progress (0.0-1.0)
+// formattedReadingTime: "X min read"
+```
+
+**UI Components:**
+- **Progress Stepper**: Combined component with horizontal track line, progress fill, and interactive dots
+  - Current lesson: Larger (32px), primary color
+  - Completed lessons: Checkmark icon
+  - Future lessons: Smaller (24px), neutral color
+  - Tap any dot to jump directly to that lesson
+- **Reading Time Badge**: Calculated from content length (~200 words/minute, clamped 1-60 min)
+- **Navigation Controls**: Previous/Next buttons at bottom, disabled at boundaries
+- **Direct Quiz Access**: Quiz button in AppBar for direct navigation
+
+**Navigation Pattern:**
+```dart
+// Route: /projects/:projectId/course?lesson=2
+// Pass projectName parameter for consistent toolbar title
+// Support jump-to-lesson via query parameter and stepper taps
+```
+
+#### Quiz Screen Implementation
+
+**Instruction:** Interactive quiz system with timer, progress tracking, and comprehensive result view.
+
+**State Management:**
+```dart
+// lib/features/quiz/data/quiz_questions_state.dart
+// QuizQuestionsState: quiz, currentQuestionIndex, selectedOptionIndex
+// selectedAnswers[], viewState (questions/result), result?
+// Timer: elapsedTime, isTimerRunning
+// Computed: currentQuestion, hasPreviousQuestion, hasNextQuestion, progress
+// formattedElapsedTime: "MM:SS", isCurrentQuestionAnswered, areAllQuestionsAnswered
+```
+
+**UI Components:**
+- **Timer Display**: Live timer in AppBar (MM:SS format), auto-starts on load, stops on submit
+- **Progress Stepper**: Matches course page design with question-specific states
+  - Current question: Larger (32px), primary color
+  - Answered questions: Checkmark icon
+  - Unanswered questions: Question number
+- **Question Cards**: Numbered label, question text, multiple choice options (A, B, C, D...)
+- **Navigation Controls**: Previous/Next buttons, "Submit" on last question
+- **Result View**: Trophy icon, score percentage, breakdown card (correct count, time taken)
+- **Action Buttons**: Review Answers (returns to questions), Retry Quiz (resets)
+
+**Timer Management:**
+```dart
+// Timer.periodic with 1-second intervals
+// Lifecycle: Start on load, stop on submit, reset on retry, dispose on exit
+// Stored in state, updates every second
+```
+
+**Route Pattern:**
+```dart
+// Route: /projects/:projectId/quiz
+// Pass quiz and projectName via extra parameter to avoid redundant API call
+// Integration: Both project details and course details can navigate to quiz
+```
+
+---
+
 #### Offline Strategy (Hive)
 
 **Instruction:** Use Hive for local caching of links and projects. Cache content with timestamp, check staleness after 1 hour.
@@ -444,11 +514,14 @@ mobile_app/
 > - go_router for navigation (modern, declarative routing)
 > - Hive for offline caching (lightweight, Flutter-native)
 > - iOS share extension requires App Group configuration
+> - Combined progress stepper design for consistency across course and quiz screens
 >
 > 🚩 **RISKS & OPEN DECISIONS:**
 > - **Risk:** Share extension complexity on iOS → **Mitigation:** Test early, use receive_sharing_intent plugin
 > - **Risk:** Offline sync conflicts → **Open:** Decide on conflict resolution strategy (last-write-wins vs. manual)
+> - **Risk:** Timer management complexity → **Mitigation:** Proper cleanup in dispose, state-based timer control
 > - **Decision:** Folder structure by feature → **Confirmed:** Enables team scaling, clear ownership
+> - **Decision:** Combined progress component → **Confirmed:** Cleaner UI, better UX, visual consistency
 
 ---
 

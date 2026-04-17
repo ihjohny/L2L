@@ -24,8 +24,6 @@ This directory contains the complete development implementation guidelines for t
 | [10](./10_testing_strategy.md) | [Testing Strategy](./10_testing_strategy.md) | Testing pyramid, coverage gates, mock strategies, load testing |
 | [11](./11_observability_operations.md) | [Observability & Operations](./11_observability_operations.md) | Logging, metrics, tracing, alerting, runbooks |
 | [12](./12_pre_launch_checklist.md) | [Pre-Launch Checklist](./12_pre_launch_checklist.md) | Prioritized blocking/high/deferrable items for each phase |
-| [Feature](./course_detail_page.md) | [Course Detail Page](./course_detail_page.md) | Interactive course viewer with lesson navigation, progress tracking, and reading time estimation |
-| [Feature](./quiz_questions_page.md) | [Quiz Questions Page](./quiz_questions_page.md) | Interactive quiz system with timer, progress tracking, and comprehensive result view |
 
 ---
 
@@ -74,7 +72,7 @@ This directory contains the complete development implementation guidelines for t
 
 2. **For Backend Development:** Reference [Section 2a](./02_implementation_details.md#2a-backend-nodejs-monolith), [Section 3](./03_database_schema.md), and [Section 4](./04_api_design.md).
 
-3. **For Frontend Development:** Reference [Section 2b](./02_implementation_details.md#2b-flutter-application) and [Section 4](./04_api_design.md).
+3. **For Frontend Development:** Reference [Section 2b](./02_implementation_details.md#2b-flutter-application) and [Section 4](./04_api_design.md). Course and quiz screen implementations are detailed in the Flutter Application section.
 
 4. **For Extension Development:** Reference [Section 2c](./02_implementation_details.md#2c-chrome-extension-manifest-v3).
 
