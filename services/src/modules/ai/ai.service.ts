@@ -7,9 +7,8 @@ import {
   CourseContent,
   QuizContent
 } from '../../database/models/AiOutput.model';
-import * as cheerio from 'cheerio';
-import axios from 'axios';
 import mongoose from 'mongoose';
+import { extractorService } from '../extractor';
 
 class AiService {
   private openai: OpenAI | null = null;
@@ -25,69 +24,19 @@ class AiService {
   }
 
   /**
-   * Fetch and extract content from URL
-   */
-  async fetchContent(url: string): Promise<string> {
-    try {
-      logger.info(`Fetching content from URL: ${url}`);
-
-      const response = await axios.get(url, {
-        timeout: 10000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; L2L/1.0)'
-        }
-      });
-
-      const $ = cheerio.load(response.data);
-
-      // Remove script, style, and nav elements
-      $('script').remove();
-      $('style').remove();
-      $('nav').remove();
-      $('header').remove();
-      $('footer').remove();
-
-      // Get main content (try common selectors first)
-      let content = '';
-      const mainSelectors = ['article', 'main', '.content', '.post', '.article', '#content'];
-
-      for (const selector of mainSelectors) {
-        const element = $(selector).first();
-        if (element.length > 0) {
-          content = element.text();
-          break;
-        }
-      }
-
-      // Fallback to body
-      if (!content) {
-        content = $('body').text();
-      }
-
-      // Clean up whitespace
-      content = content.replace(/\s+/g, ' ').trim();
-
-      // Limit content length for AI processing (token limit)
-      const maxContentLength = 8000;
-      return content.substring(0, maxContentLength);
-    } catch (error: any) {
-      logger.error(`Error fetching content from ${url}:`, error.message);
-      throw new Error(`Failed to fetch content: ${error.message}`);
-    }
-  }
-
-  /**
    * Process a link: Generate summary and flashcards
    */
   async processLink(url: string): Promise<{ summary: SummaryContent; flashcards: FlashcardsContent }> {
     try {
       logger.info(`Processing link with AI: ${url}`);
 
-      // Fetch content
-      const content = await this.fetchContent(url);
+      // Fetch content using extractor module
+      const content = await extractorService.fetchContent(url);
 
-      if (!content || content.length < 50) {
-        throw new Error('Content too short or empty');
+      // Validate content
+      const validation = extractorService.validateContent(content);
+      if (!validation.valid) {
+        throw new Error(validation.reason);
       }
 
       // Generate summary and flashcards in parallel

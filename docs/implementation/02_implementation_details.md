@@ -21,7 +21,8 @@ This section provides detailed implementation specifications for the backend mon
 | **Auth** | User registration, login, JWT, password reset | `auth.controller.ts`, `auth.service.ts`, `jwt.strategy.ts` | MVP |
 | **Link** | Link CRUD, URL validation, metadata | `link.controller.ts`, `link.service.ts`, `link.schema.ts` | MVP |
 | **Project** | Project CRUD, link aggregation | `project.controller.ts`, `project.service.ts` | MVP |
-| **AI** | Content extraction, OpenAI integration | `ai.service.ts`, `scraper.service.ts`, `prompts/` | MVP |
+| **AI** | OpenAI integration, content generation | `ai.service.ts`, `prompts/` | MVP |
+| **Extractor** | Web scraping, content extraction | `extractor.service.ts` | MVP |
 | **Job** | BullMQ queues, workers, DLQ | `job.service.ts`, `workers/`, `queues/` | MVP |
 | **Analytics** | Events, dashboards, heatmaps | `analytics.service.ts`, `analytics.controller.ts` | P2 |
 | **Subscription** | Stripe integration, plans | `subscription.service.ts`, `stripe.webhook.ts` | P2 |
@@ -88,7 +89,6 @@ backend/
 │   │   ├── ai/
 │   │   │   ├── ai.service.ts
 │   │   │   ├── ai.module.ts
-│   │   │   ├── scraper.service.ts
 │   │   │   ├── prompts/
 │   │   │   │   ├── summary.prompt.ts
 │   │   │   │   ├── flashcard.prompt.ts
@@ -97,6 +97,10 @@ backend/
 │   │   │   └── validators/
 │   │   │       ├── summary.validator.ts
 │   │   │       └── flashcard.validator.ts
+│   │   │
+│   │   ├── extractor/
+│   │   │   ├── extractor.service.ts
+│   │   │   └── index.ts
 │   │   │
 │   │   ├── job/
 │   │   │   ├── job.controller.ts

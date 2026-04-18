@@ -336,7 +336,7 @@ retryLink(linkId, userId) {
 **Service Patterns:**
 ```typescript
 processLink(url) {
-  // Extract content (Playwright/Cheerio) → clean text
+  // contentFetcher.fetchContent(url) → get cleaned text
   // generateSummary(content) → generateFlashcards(content)
   // Store AI outputs → return {summary, flashcards}
 }
@@ -364,6 +364,38 @@ generateQuiz(courseContent, courseId) {
 ```
 
 **Prompt Strategy:** JSON output | exact structure | length limits | quality criteria
+
+### 4.6 Extractor Module (`services/src/modules/extractor/`)
+
+**Service Patterns:**
+```typescript
+fetchContent(url, options?) {
+  // HTTP GET with user agent → Cheerio parse
+  // Remove script/style/nav → extract main content
+  // Clean whitespace → truncate to max length
+  // Return cleaned text
+}
+
+fetchContentWithMetadata(url, options?) {
+  // Fetch content → extract metadata (title, description)
+  // Return {content, url, fetchedAt, metadata}
+}
+
+validateContent(content) {
+  // Check length and quality → return {valid, reason?}
+}
+
+fetchMultiple(urls, options?) {
+  // Batch processing (5 concurrent) → Map<url, content>
+}
+```
+
+**Features:**
+- Smart content extraction (tries multiple selectors)
+- Metadata extraction (title, description, word count)
+- Content validation (min length requirements)
+- Batch processing with rate limiting
+- Configurable timeout and content length limits
 
 ### 4.6 Jobs Module (`services/src/modules/jobs/`)
 

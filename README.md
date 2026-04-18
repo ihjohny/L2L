@@ -287,6 +287,7 @@ L2L/
 │       │   ├── links/                 # Link CRUD + AI processing
 │       │   ├── projects/              # Project CRUD + course generation
 │       │   ├── ai/                    # OpenAI integration
+│       │   ├── extractor/             # Web content extraction
 │       │   └── jobs/                  # BullMQ job queues
 │       ├── database/                  # Mongoose models
 │       ├── middleware/                # Express middleware
