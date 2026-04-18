@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { logger } from '../../utils/logger';
-import { config } from '../../config';
+import { extractorDebug } from './extractor-debug';
 
 export interface FetchContentOptions {
   timeout?: number;
@@ -17,6 +17,7 @@ export interface FetchContentResult {
     title?: string;
     description?: string;
     wordCount?: number;
+    contentLength?: number;
   };
 }
 
@@ -42,6 +43,8 @@ class ExtractorService {
           'User-Agent': opts.userAgent
         }
       });
+
+      await extractorDebug.writeRawHtml(url, response.data);
 
       const $ = cheerio.load(response.data);
 
@@ -80,10 +83,15 @@ class ExtractorService {
 
       // Clean up whitespace
       content = content.replace(/\s+/g, ' ').trim();
+      const processedContent = content.substring(0, opts.maxContentLength);
 
-      // Limit content length for AI processing (token limit)
-      return content.substring(0, opts.maxContentLength);
+      await extractorDebug.writeProcessedContent(url, processedContent, {
+        contentLength: processedContent.length
+      });
+
+      return processedContent;
     } catch (error: any) {
+      await extractorDebug.writeError(url, error);
       logger.error(`Error fetching content from ${url}:`, error.message);
       throw new Error(`Failed to fetch content: ${error.message}`);
     }
@@ -104,6 +112,8 @@ class ExtractorService {
           'User-Agent': opts.userAgent
         }
       });
+
+      await extractorDebug.writeRawHtml(url, response.data);
 
       const $ = cheerio.load(response.data);
 
@@ -155,17 +165,23 @@ class ExtractorService {
       // Limit content length for AI processing (token limit)
       const truncatedContent = content.substring(0, opts.maxContentLength);
 
-      return {
+      const result: FetchContentResult = {
         content: truncatedContent,
         url,
         fetchedAt: new Date(),
         metadata: {
           title: title?.trim(),
           description: description?.trim(),
-          wordCount: content.split(/\s+/).length
+          wordCount: content.split(/\s+/).length,
+          contentLength: truncatedContent.length
         }
       };
+
+      await extractorDebug.writeProcessedContent(url, result.content, result.metadata);
+
+      return result;
     } catch (error: any) {
+      await extractorDebug.writeError(url, error);
       logger.error(`Error fetching content with metadata from ${url}:`, error.message);
       throw new Error(`Failed to fetch content: ${error.message}`);
     }

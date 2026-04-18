@@ -38,5 +38,8 @@ tmp/
 temp/
 *.tmp
 
+# Debug content
+debug-content/
+
 # Docker
 .dockerignore
