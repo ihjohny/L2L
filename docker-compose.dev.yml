@@ -53,6 +53,7 @@ services:
       REDIS_URL: redis://redis:6379
     volumes:
       - ./services/src:/app/src:ro
+      - ./services/debug-content:/app/debug-content
     networks:
       - l2l-network
     depends_on:
