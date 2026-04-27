@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { GoogleGenAI } from '@google/genai';
 import { logger } from '../../utils/logger';
 import { config } from '../../config';
 import {
@@ -8,19 +8,26 @@ import {
   QuizContent
 } from '../../database/models/AiOutput.model';
 import mongoose from 'mongoose';
-import { extractorService } from '../extractor';
 
 class AiService {
-  private openai: OpenAI | null = null;
+  private ai: GoogleGenAI | null = null;
+  private model: string;
 
   constructor() {
-    if (config.openai.apiKey) {
-      this.openai = new OpenAI({
-        apiKey: config.openai.apiKey
-      });
+    this.model = config.gemini.model || 'gemini-2.5-flash';
+    if (config.gemini.apiKey) {
+      this.ai = new GoogleGenAI({ apiKey: config.gemini.apiKey });
     } else {
-      logger.warn('OpenAI API key not configured. AI features will use mock data.');
+      logger.warn('Gemini API key not configured. AI features will use mock data.');
     }
+  }
+
+  /**
+   * Strip markdown code fences that Gemini sometimes wraps around JSON
+   */
+  private parseJson<T>(raw: string): T {
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+    return JSON.parse(cleaned) as T;
   }
 
   /**
@@ -28,43 +35,45 @@ class AiService {
    */
   async generateSummary(content: string): Promise<SummaryContent> {
     try {
-      if (!this.openai) {
+      if (!this.ai) {
         return this.mockSummary(content);
       }
 
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert at summarizing educational content. Output JSON only.'
-          },
-          {
-            role: 'user',
-            content: `Summarize the following content in JSON format:
+      const prompt = `You are an expert educational content analyst. Your task is to produce a concise, structured summary of the provided article or webpage content.
+
+Return ONLY valid JSON — no markdown, no explanation, no code fences.
+
+Required JSON schema:
 {
-  "keyPoints": string[],  // 3-5 main points
-  "mainArgument": string,  // Central thesis in 1-2 sentences
-  "takeaways": string[]  // 3-5 practical takeaways
+  "keyPoints": string[],     // 3-5 distinct, specific main points from the content
+  "mainArgument": string,    // The central thesis or purpose in 1-2 clear sentences
+  "takeaways": string[]      // 3-5 actionable or memorable insights a reader should retain
 }
 
-Content: ${content.substring(0, 4000)}`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500
+Rules:
+- keyPoints and takeaways must be concrete and specific to the content, not generic
+- mainArgument must accurately capture the core message
+- Do not include any text outside the JSON object
+
+Content to summarize (first 5000 characters):
+---
+${content.substring(0, 5000)}
+---`;
+
+      const response = await this.ai.models.generateContent({
+        model: this.model,
+        contents: prompt
       });
 
-      const contentText = response.choices[0].message.content;
-      if (!contentText) {
-        throw new Error('Empty response from OpenAI');
+      const responseText = response.text ?? '';
+      if (!responseText) {
+        throw new Error('Empty response from Gemini');
       }
 
-      const parsed = JSON.parse(contentText) as SummaryContent;
+      const parsed = this.parseJson<SummaryContent>(responseText);
 
-      // Validate structure
       if (!parsed.keyPoints || !parsed.mainArgument || !parsed.takeaways) {
-        throw new Error('Invalid summary structure');
+        throw new Error('Invalid summary structure returned by Gemini');
       }
 
       return parsed;
@@ -79,47 +88,50 @@ Content: ${content.substring(0, 4000)}`
    */
   async generateFlashcards(content: string): Promise<FlashcardsContent> {
     try {
-      if (!this.openai) {
+      if (!this.ai) {
         return this.mockFlashcards(content);
       }
 
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert at creating educational flashcards. Output JSON only.'
-          },
-          {
-            role: 'user',
-            content: `Generate 5-10 flashcards in JSON format:
+      const prompt = `You are an expert educational flashcard creator. Generate study flashcards from the provided content that test genuine understanding, not trivia.
+
+Return ONLY valid JSON — no markdown, no explanation, no code fences.
+
+Required JSON schema:
 {
   "flashcards": [
     {
-      "question": string,
-      "answer": string,
-      "difficulty": "easy" | "medium" | "hard"
+      "question": string,                          // A clear, specific question targeting a key concept
+      "answer": string,                            // A concise, accurate answer (1-3 sentences)
+      "difficulty": "easy" | "medium" | "hard"    // Calibrated to how core/complex the concept is
     }
   ]
 }
 
-Content: ${content.substring(0, 4000)}`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 800
+Rules:
+- Generate between 5 and 10 flashcards
+- Progressively cover easy conceptual questions through harder application/analysis questions
+- Questions must be directly answerable from the provided content
+- Do not include any text outside the JSON object
+
+Content (first 5000 characters):
+---
+${content.substring(0, 5000)}
+---`;
+
+      const response = await this.ai.models.generateContent({
+        model: this.model,
+        contents: prompt
       });
 
-      const contentText = response.choices[0].message.content;
-      if (!contentText) {
-        throw new Error('Empty response from OpenAI');
+      const responseText = response.text ?? '';
+      if (!responseText) {
+        throw new Error('Empty response from Gemini');
       }
 
-      const parsed = JSON.parse(contentText) as FlashcardsContent;
+      const parsed = this.parseJson<FlashcardsContent>(responseText);
 
-      // Validate structure
       if (!parsed.flashcards || parsed.flashcards.length < 3) {
-        throw new Error('Not enough flashcards generated');
+        throw new Error('Not enough flashcards generated by Gemini');
       }
 
       return parsed;
@@ -134,54 +146,58 @@ Content: ${content.substring(0, 4000)}`
    */
   async generateCourse(summaries: SummaryContent[]): Promise<CourseContent> {
     try {
-      if (!this.openai) {
+      if (!this.ai) {
         return this.mockCourse(summaries);
       }
 
       const summariesText = summaries
-        .map(s => `- Main: ${s.mainArgument}\n  Points: ${s.keyPoints.join(', ')}`)
-        .join('\n');
+        .map((s, i) =>
+          `[Source ${i + 1}]\nMain argument: ${s.mainArgument}\nKey points:\n${s.keyPoints.map(p => `  - ${p}`).join('\n')}\nTakeaways:\n${s.takeaways.map(t => `  - ${t}`).join('\n')}`
+        )
+        .join('\n\n');
 
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert curriculum designer. Create structured courses from multiple summaries. Output JSON only.'
-          },
-          {
-            role: 'user',
-            content: `Synthesize a course from these summaries in JSON format:
+      const prompt = `You are a senior curriculum designer. Synthesize the following learning resource summaries into a single cohesive course with clearly structured lessons.
+
+Return ONLY valid JSON — no markdown, no explanation, no code fences.
+
+Required JSON schema:
 {
-  "title": string,
-  "description": string,
+  "title": string,           // A compelling, specific course title reflecting the combined content
+  "description": string,     // 2-3 sentence overview of what students will learn and why it matters
   "lessons": [
     {
-      "title": string,
-      "content": string,
-      "order": number
+      "title": string,       // Descriptive lesson title
+      "content": string,     // Rich lesson body (at least 3-5 sentences) synthesising relevant source material
+      "order": number        // 1-indexed lesson order
     }
   ]
 }
 
-Summaries:
-${summariesText}`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1500
+Rules:
+- Produce at least 3 lessons, one per major theme that emerges from the sources
+- Lessons must flow logically from foundational concepts to advanced application
+- Each lesson content must be educational prose, not just bullet points
+- Do not include any text outside the JSON object
+
+Source summaries:
+---
+${summariesText}
+---`;
+
+      const response = await this.ai.models.generateContent({
+        model: this.model,
+        contents: prompt
       });
 
-      const contentText = response.choices[0].message.content;
-      if (!contentText) {
-        throw new Error('Empty response from OpenAI');
+      const responseText = response.text ?? '';
+      if (!responseText) {
+        throw new Error('Empty response from Gemini');
       }
 
-      const parsed = JSON.parse(contentText) as CourseContent;
+      const parsed = this.parseJson<CourseContent>(responseText);
 
-      // Validate structure
       if (!parsed.title || !parsed.lessons || parsed.lessons.length < 2) {
-        throw new Error('Invalid course structure');
+        throw new Error('Invalid course structure returned by Gemini');
       }
 
       return parsed;
@@ -196,56 +212,60 @@ ${summariesText}`
    */
   async generateQuiz(courseContent: CourseContent, courseId?: mongoose.Types.ObjectId): Promise<QuizContent> {
     try {
-      if (!this.openai) {
+      if (!this.ai) {
         return this.mockQuiz(courseContent, courseId);
       }
 
       const lessonsText = courseContent.lessons
-        .map(l => `${l.title}: ${l.content.substring(0, 200)}`)
-        .join('\n');
+        .map(l => `Lesson ${l.order} — ${l.title}:\n${l.content.substring(0, 400)}`)
+        .join('\n\n');
 
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert at creating educational quizzes. Output JSON only.'
-          },
-          {
-            role: 'user',
-            content: `Generate a quiz (5-15 questions) in JSON format:
+      const prompt = `You are an expert educational assessment designer. Create a multiple-choice quiz that rigorously tests understanding of the course material below.
+
+Return ONLY valid JSON — no markdown, no explanation, no code fences.
+
+Required JSON schema:
 {
   "questions": [
     {
-      "question": string,
-      "options": string[],
-      "correct": number,
-      "explanation": string
+      "question": string,      // A clear, unambiguous question about the lesson content
+      "options": string[],     // Exactly 4 options — one correct, three plausible distractors
+      "correct": number,       // 0-based index of the correct option in the options array
+      "explanation": string    // 1-2 sentence explanation of why the correct answer is right
     }
   ]
 }
 
-Course content:
-${lessonsText.substring(0, 3000)}`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000
+Rules:
+- Generate between 5 and 15 questions, proportional to the number of lessons
+- Each lesson must be covered by at least one question
+- Distractors must be plausible (not obviously wrong)
+- Questions must test comprehension and application, not just recall
+- Do not include any text outside the JSON object
+
+Course: ${courseContent.title}
+
+Lessons:
+---
+${lessonsText.substring(0, 4000)}
+---`;
+
+      const response = await this.ai.models.generateContent({
+        model: this.model,
+        contents: prompt
       });
 
-      const contentText = response.choices[0].message.content;
-      if (!contentText) {
-        throw new Error('Empty response from OpenAI');
+      const responseText = response.text ?? '';
+      if (!responseText) {
+        throw new Error('Empty response from Gemini');
       }
 
-      const parsed = JSON.parse(contentText) as QuizContent;
+      const parsed = this.parseJson<QuizContent>(responseText);
 
-      // Validate structure
       if (!parsed.questions || parsed.questions.length < 3) {
-        throw new Error('Not enough quiz questions generated');
+        throw new Error('Not enough quiz questions generated by Gemini');
       }
 
-      // Add courseId to the content
       if (courseId) {
         parsed.courseId = courseId;
       }
@@ -257,7 +277,7 @@ ${lessonsText.substring(0, 3000)}`
     }
   }
 
-  // Mock implementations for when OpenAI is not configured
+  // Mock implementations for when Gemini is not configured
   private mockSummary(content: string): SummaryContent {
     const words = content.split(' ').slice(0, 100);
     return {
