@@ -35,10 +35,17 @@ class ExtractorFacade {
 
   /**
    * Validate if content is sufficient for AI processing
-   * (Delegates to CheerioExtractor since the logic is identical and basic)
    */
   validateContent(content: string): { valid: boolean; reason?: string } {
-    return cheerioExtractorService.validateContent(content);
+    if (!content || content.length < 50) {
+      return { valid: false, reason: 'Content too short or empty' };
+    }
+
+    if (content.length < 100) {
+      return { valid: false, reason: 'Content insufficient for quality processing' };
+    }
+
+    return { valid: true };
   }
 
   /**

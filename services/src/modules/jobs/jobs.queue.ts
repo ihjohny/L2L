@@ -6,7 +6,9 @@ import { projectService } from '../project/project.service';
 import LinkModel from '../../database/models/Link.model';
 import ProjectModel from '../../database/models/Project.model';
 import AiOutputModel from '../../database/models/AiOutput.model';
+import ExtractedDataModel from '../../database/models/ExtractedData.model';
 import JobModel from '../../database/models/Job.model';
+import { extractorService } from '../extractor';
 
 // Queue name constants
 export const QUEUE_NAMES = {
@@ -75,27 +77,57 @@ function createProcessLinkWorker(): void {
 
         // Update link status
         await LinkModel.findByIdAndUpdate(linkId, { status: 'processing' });
+        await JobModel.findByIdAndUpdate(job.id, { progress: 10 });
 
-        // Process with AI
-        const { summary, flashcards } = await aiService.processLink(url);
+        // Step 1: Check/Fetch Extracted Content
+        let extractedData = await ExtractedDataModel.findByLink(linkId);
+        if (!extractedData) {
+          logger.info(`Extracting content for link: ${linkId} (${url})`);
+          const extractedText = await extractorService.fetchContent(url);
+          
+          const validation = extractorService.validateContent(extractedText);
+          if (!validation.valid) {
+            throw new Error(validation.reason);
+          }
 
-        // Store AI outputs
-        const [summaryOutput, flashcardsOutput] = await Promise.all([
-          AiOutputModel.create({
+          extractedData = await ExtractedDataModel.create({
+            linkId,
+            url,
+            content: extractedText
+          });
+        }
+
+        await JobModel.findByIdAndUpdate(job.id, { progress: 33 });
+
+        // Step 2: Check/Generate Summary
+        let summaryOutput = await AiOutputModel.findSummaryByLink(linkId);
+        if (!summaryOutput) {
+          logger.info(`Generating summary for link: ${linkId}`);
+          const summary = await aiService.generateSummary(extractedData.content);
+          summaryOutput = await AiOutputModel.create({
             sourceType: 'link',
             sourceId: linkId,
             type: 'summary',
             content: summary,
             tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
-          }),
-          AiOutputModel.create({
+          });
+        }
+
+        await JobModel.findByIdAndUpdate(job.id, { progress: 66 });
+
+        // Step 3: Check/Generate Flashcards
+        let flashcardsOutput = await AiOutputModel.findFlashcardsByLink(linkId);
+        if (!flashcardsOutput) {
+          logger.info(`Generating flashcards for link: ${linkId}`);
+          const flashcards = await aiService.generateFlashcards(extractedData.content);
+          flashcardsOutput = await AiOutputModel.create({
             sourceType: 'link',
             sourceId: linkId,
             type: 'flashcards',
             content: flashcards,
             tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
-          })
-        ]);
+          });
+        }
 
         // Update link with AI output ID (use summary as main output)
         await LinkModel.findByIdAndUpdate(linkId, {

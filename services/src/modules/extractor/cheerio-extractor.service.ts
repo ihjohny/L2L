@@ -188,20 +188,7 @@ class CheerioExtractorService {
     }
   }
 
-  /**
-   * Validate if content is sufficient for AI processing
-   */
-  validateContent(content: string): { valid: boolean; reason?: string } {
-    if (!content || content.length < 50) {
-      return { valid: false, reason: 'Content too short or empty' };
-    }
 
-    if (content.length < 100) {
-      return { valid: false, reason: 'Content insufficient for quality processing' };
-    }
-
-    return { valid: true };
-  }
 }
 
 const cheerioExtractorService = new CheerioExtractorService();

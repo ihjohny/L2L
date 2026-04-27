@@ -24,35 +24,6 @@ class AiService {
   }
 
   /**
-   * Process a link: Generate summary and flashcards
-   */
-  async processLink(url: string): Promise<{ summary: SummaryContent; flashcards: FlashcardsContent }> {
-    try {
-      logger.info(`Processing link with AI: ${url}`);
-
-      // Fetch content using extractor module
-      const content = await extractorService.fetchContent(url);
-
-      // Validate content
-      const validation = extractorService.validateContent(content);
-      if (!validation.valid) {
-        throw new Error(validation.reason);
-      }
-
-      // Generate summary and flashcards in parallel
-      const [summary, flashcards] = await Promise.all([
-        this.generateSummary(content),
-        this.generateFlashcards(content)
-      ]);
-
-      return { summary, flashcards };
-    } catch (error: any) {
-      logger.error('Error in processLink:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Generate summary from content
    */
   async generateSummary(content: string): Promise<SummaryContent> {
