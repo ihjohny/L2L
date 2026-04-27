@@ -15,9 +15,9 @@ class ExtractorFacade {
 
     if (useAi) {
       return await aiExtractorService.fetchContent(url, options);
+    } else {
+      return cheerioExtractorService.fetchContent(url, options);
     }
-
-    return cheerioExtractorService.fetchContent(url, options);
   }
 
   /**
@@ -28,9 +28,9 @@ class ExtractorFacade {
 
     if (useAi) {
       return await aiExtractorService.fetchContentWithMetadata(url, options);
+    } else {
+      return cheerioExtractorService.fetchContentWithMetadata(url, options);
     }
-
-    return cheerioExtractorService.fetchContentWithMetadata(url, options);
   }
 
   /**
