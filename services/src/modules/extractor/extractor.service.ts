@@ -1,205 +1,54 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+import { config } from '../../config';
 import { logger } from '../../utils/logger';
-import { extractorDebug } from './extractor-debug';
+import cheerioExtractorService from './cheerio-extractor.service';
+import aiExtractorService from './ai-extractor.service';
+import { FetchContentOptions, FetchContentResult } from './cheerio-extractor.service';
 
-export interface FetchContentOptions {
-  timeout?: number;
-  maxContentLength?: number;
-  userAgent?: string;
-}
+export { FetchContentOptions, FetchContentResult };
 
-export interface FetchContentResult {
-  content: string;
-  url: string;
-  fetchedAt: Date;
-  metadata?: {
-    title?: string;
-    description?: string;
-    wordCount?: number;
-    contentLength?: number;
-  };
-}
-
-class ExtractorService {
-  private readonly defaultOptions: Required<FetchContentOptions> = {
-    timeout: 10000,
-    maxContentLength: 8000,
-    userAgent: 'Mozilla/5.0 (compatible; L2L/1.0)'
-  };
-
+class ExtractorFacade {
   /**
    * Fetch and extract content from URL
    */
   async fetchContent(url: string, options: FetchContentOptions = {}): Promise<string> {
-    const opts = { ...this.defaultOptions, ...options };
+    const useAi = options.useAiExtractor !== undefined ? options.useAiExtractor : config.extractor.useAiExtractor;
 
-    try {
-      logger.info(`Fetching content from URL: ${url}`);
-
-      const response = await axios.get(url, {
-        timeout: opts.timeout,
-        headers: {
-          'User-Agent': opts.userAgent
-        }
-      });
-
-      await extractorDebug.writeRawHtml(url, response.data);
-
-      const $ = cheerio.load(response.data);
-
-      // Remove script, style, and nav elements
-      $('script').remove();
-      $('style').remove();
-      $('nav').remove();
-      $('header').remove();
-      $('footer').remove();
-
-      // Get main content (try common selectors first)
-      let content = '';
-      const mainSelectors = [
-        'article',
-        'main',
-        '.content',
-        '.post',
-        '.article',
-        '#content',
-        '[role="main"]',
-        '.main-content'
-      ];
-
-      for (const selector of mainSelectors) {
-        const element = $(selector).first();
-        if (element.length > 0 && element.text().trim().length > 100) {
-          content = element.text();
-          break;
-        }
+    if (useAi) {
+      try {
+        return await aiExtractorService.fetchContent(url, options);
+      } catch (error: any) {
+        logger.warn(`AI Extractor failed for ${url}, falling back to Cheerio. Error: ${error.message}`);
+        return cheerioExtractorService.fetchContent(url, options);
       }
-
-      // Fallback to body
-      if (!content || content.trim().length < 50) {
-        content = $('body').text();
-      }
-
-      // Clean up whitespace
-      content = content.replace(/\s+/g, ' ').trim();
-      const processedContent = content.substring(0, opts.maxContentLength);
-
-      await extractorDebug.writeProcessedContent(url, processedContent, {
-        contentLength: processedContent.length
-      });
-
-      return processedContent;
-    } catch (error: any) {
-      await extractorDebug.writeError(url, error);
-      logger.error(`Error fetching content from ${url}:`, error.message);
-      throw new Error(`Failed to fetch content: ${error.message}`);
     }
+
+    return cheerioExtractorService.fetchContent(url, options);
   }
 
   /**
    * Fetch content with metadata
    */
   async fetchContentWithMetadata(url: string, options: FetchContentOptions = {}): Promise<FetchContentResult> {
-    const opts = { ...this.defaultOptions, ...options };
+    const useAi = options.useAiExtractor !== undefined ? options.useAiExtractor : config.extractor.useAiExtractor;
 
-    try {
-      logger.info(`Fetching content with metadata from URL: ${url}`);
-
-      const response = await axios.get(url, {
-        timeout: opts.timeout,
-        headers: {
-          'User-Agent': opts.userAgent
-        }
-      });
-
-      await extractorDebug.writeRawHtml(url, response.data);
-
-      const $ = cheerio.load(response.data);
-
-      // Extract metadata
-      const title = $('title').first().text() ||
-                    $('meta[property="og:title"]').attr('content') ||
-                    $('h1').first().text();
-
-      const description = $('meta[name="description"]').attr('content') ||
-                          $('meta[property="og:description"]').attr('content') || '';
-
-      // Remove script, style, and nav elements
-      $('script').remove();
-      $('style').remove();
-      $('nav').remove();
-      $('header').remove();
-      $('footer').remove();
-      $('aside').remove();
-
-      // Get main content (try common selectors first)
-      let content = '';
-      const mainSelectors = [
-        'article',
-        'main',
-        '.content',
-        '.post',
-        '.article',
-        '#content',
-        '[role="main"]',
-        '.main-content'
-      ];
-
-      for (const selector of mainSelectors) {
-        const element = $(selector).first();
-        if (element.length > 0 && element.text().trim().length > 100) {
-          content = element.text();
-          break;
-        }
+    if (useAi) {
+      try {
+        return await aiExtractorService.fetchContentWithMetadata(url, options);
+      } catch (error: any) {
+        logger.warn(`AI Extractor failed for ${url}, falling back to Cheerio. Error: ${error.message}`);
+        return cheerioExtractorService.fetchContentWithMetadata(url, options);
       }
-
-      // Fallback to body
-      if (!content || content.trim().length < 50) {
-        content = $('body').text();
-      }
-
-      // Clean up whitespace
-      content = content.replace(/\s+/g, ' ').trim();
-
-      // Limit content length for AI processing (token limit)
-      const truncatedContent = content.substring(0, opts.maxContentLength);
-
-      const result: FetchContentResult = {
-        content: truncatedContent,
-        url,
-        fetchedAt: new Date(),
-        metadata: {
-          title: title?.trim(),
-          description: description?.trim(),
-          wordCount: content.split(/\s+/).length,
-          contentLength: truncatedContent.length
-        }
-      };
-
-      await extractorDebug.writeProcessedContent(url, result.content, result.metadata);
-
-      return result;
-    } catch (error: any) {
-      await extractorDebug.writeError(url, error);
-      logger.error(`Error fetching content with metadata from ${url}:`, error.message);
-      throw new Error(`Failed to fetch content: ${error.message}`);
     }
+
+    return cheerioExtractorService.fetchContentWithMetadata(url, options);
   }
 
   /**
    * Validate if content is sufficient for AI processing
+   * (Delegates to CheerioExtractor since the logic is identical and basic)
    */
   validateContent(content: string): { valid: boolean; reason?: string } {
-    if (!content || content.length < 50) {
-      return { valid: false, reason: 'Content too short or empty' };
-    }
-
-    if (content.length < 100) {
-      return { valid: false, reason: 'Content insufficient for quality processing' };
-    }
-
-    return { valid: true };
+    return cheerioExtractorService.validateContent(content);
   }
 
   /**
@@ -207,7 +56,6 @@ class ExtractorService {
    */
   async fetchMultiple(urls: string[], options: FetchContentOptions = {}): Promise<Map<string, string>> {
     const results = new Map<string, string>();
-    const opts = { ...this.defaultOptions, ...options };
 
     // Process in batches to avoid overwhelming servers
     const batchSize = 5;
@@ -215,7 +63,7 @@ class ExtractorService {
       const batch = urls.slice(i, i + batchSize);
       const promises = batch.map(async (url) => {
         try {
-          const content = await this.fetchContent(url, opts);
+          const content = await this.fetchContent(url, options);
           results.set(url, content);
         } catch (error) {
           logger.warn(`Failed to fetch ${url}:`, error);
@@ -230,6 +78,6 @@ class ExtractorService {
   }
 }
 
-const extractorService = new ExtractorService();
+const extractorService = new ExtractorFacade();
 export default extractorService;
 export { extractorService };

@@ -27,6 +27,7 @@
   "author": "L2L Team",
   "license": "MIT",
   "dependencies": {
+    "@google/genai": "^1.50.1",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
     "bull": "^4.12.0",

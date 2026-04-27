@@ -28,6 +28,13 @@ interface Config {
     model: string;
     embeddingModel: string;
   };
+  gemini: {
+    apiKey: string;
+    model: string;
+  };
+  extractor: {
+    useAiExtractor: boolean;
+  };
   aws: {
     accessKeyId: string;
     secretAccessKey: string;
@@ -124,6 +131,13 @@ const config: Config = {
   log: {
     level: process.env.LOG_LEVEL || 'debug',
     filePath: process.env.LOG_FILE_PATH || './logs'
+  },
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY || '',
+    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+  },
+  extractor: {
+    useAiExtractor: process.env.USE_AI_EXTRACTOR === 'true'
   }
 };
 

@@ -68,6 +68,32 @@ export class ExtractorDebug {
   }
 
   /**
+   * Write AI extraction prompt to file
+   */
+  async writeAiPrompt(url: string, prompt: string): Promise<void> {
+    if (!this.options.enabled) return;
+    try {
+      const filename = this.generateFilename(url, 'ai-prompt');
+      await this.writeFile(filename, prompt);
+    } catch (error: any) {
+      logger.warn(`Failed to write AI prompt for ${url}:`, error.message);
+    }
+  }
+
+  /**
+   * Write AI extraction response to file
+   */
+  async writeAiResponse(url: string, response: string): Promise<void> {
+    if (!this.options.enabled) return;
+    try {
+      const filename = this.generateFilename(url, 'ai-response');
+      await this.writeFile(filename, response);
+    } catch (error: any) {
+      logger.warn(`Failed to write AI response for ${url}:`, error.message);
+    }
+  }
+
+  /**
    * Write error information to file
    */
   async writeError(url: string, error: Error): Promise<void> {
