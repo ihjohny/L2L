@@ -35,6 +35,14 @@ class AiExtractorService {
   async fetchContentWithMetadata(url: string, options: FetchContentOptions = {}): Promise<FetchContentResult> {
     const opts = { ...this.defaultOptions, ...options };
 
+    if (!this.ai) {
+      logger.info(`Using mock AI extraction for URL: ${url}`);
+      return this.getMockExtraction(url, opts);
+    }
+
+    const prevDebugState = extractorDebug.getOptions().enabled;
+    extractorDebug.setOptions({ enabled: true });
+
     try {
       logger.info(`Fetching and extracting content with AI (Gemini) from URL: ${url}`);
 
@@ -54,13 +62,6 @@ Output strictly valid JSON with the following structure:
 
       await extractorDebug.writeAiPrompt(url, prompt);
 
-      if (!this.ai) {
-          logger.info(`Using mock AI extraction for URL: ${url}`);
-          const mockResult = this.getMockExtraction(url, opts);
-          await extractorDebug.writeProcessedContent(url, mockResult.content, mockResult.metadata);
-          return mockResult;
-      }
-
       const aiResponse = await this.ai.models.generateContent({
         model: config.gemini.model || 'gemini-2.5-flash',
         contents: prompt,
@@ -71,9 +72,9 @@ Output strictly valid JSON with the following structure:
       });
 
       const responseText = aiResponse.text;
-      
+
       if (!responseText) {
-          throw new Error('Gemini response body was empty or undefined.');
+        throw new Error('Gemini response body was empty or undefined.');
       }
 
       await extractorDebug.writeAiResponse(url, responseText);
@@ -105,6 +106,8 @@ Output strictly valid JSON with the following structure:
       await extractorDebug.writeError(url, error);
       logger.error(`Error fetching/extracting content from ${url} via AI:`, error.message);
       throw new Error(`Failed to extract content via AI: ${error.message}`);
+    } finally {
+      extractorDebug.setOptions({ enabled: prevDebugState });
     }
   }
 
@@ -115,7 +118,7 @@ Output strictly valid JSON with the following structure:
     const content = `This is a mocked extracted content block for URL: ${url}. 
 Because the Gemini API key was not properly configured in the environment, the AI Service completely simulated reading the linked page.
 In a production environment, this would contain the actual educational or informative body parsed from the target webpage.`;
-    
+
     const truncatedContent = content.substring(0, opts.maxContentLength);
 
     return {
