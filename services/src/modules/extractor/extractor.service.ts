@@ -14,12 +14,7 @@ class ExtractorFacade {
     const useAi = options.useAiExtractor !== undefined ? options.useAiExtractor : config.extractor.useAiExtractor;
 
     if (useAi) {
-      try {
-        return await aiExtractorService.fetchContent(url, options);
-      } catch (error: any) {
-        logger.warn(`AI Extractor failed for ${url}, falling back to Cheerio. Error: ${error.message}`);
-        return cheerioExtractorService.fetchContent(url, options);
-      }
+      return await aiExtractorService.fetchContent(url, options);
     }
 
     return cheerioExtractorService.fetchContent(url, options);
@@ -32,12 +27,7 @@ class ExtractorFacade {
     const useAi = options.useAiExtractor !== undefined ? options.useAiExtractor : config.extractor.useAiExtractor;
 
     if (useAi) {
-      try {
-        return await aiExtractorService.fetchContentWithMetadata(url, options);
-      } catch (error: any) {
-        logger.warn(`AI Extractor failed for ${url}, falling back to Cheerio. Error: ${error.message}`);
-        return cheerioExtractorService.fetchContentWithMetadata(url, options);
-      }
+      return await aiExtractorService.fetchContentWithMetadata(url, options);
     }
 
     return cheerioExtractorService.fetchContentWithMetadata(url, options);
