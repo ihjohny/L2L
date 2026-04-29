@@ -12,17 +12,6 @@ export interface ExtractedContent extends BaseEntity {
   contentLength: number;
 }
 
-// Interface for creation DTO
-export interface CreateExtractedContentDto {
-  linkId: string;
-  url: string;
-  fetchedAt: Date;
-  title?: string | null;
-  description?: string | null;
-  mainContent: string;
-  contentLength: number;
-}
-
 // Schema Document interface
 interface ExtractedContentDocument extends Omit<ExtractedContent, '_id'>, Document {}
 
