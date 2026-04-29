@@ -8,6 +8,7 @@ export interface Link extends BaseEntity {
   projectId?: string | null;
   url: string;
   title: string | null;
+  userTitle: boolean;
   aiOutputId?: string | null;
   tags: string[];
   status: LinkStatus;
@@ -17,12 +18,14 @@ export interface Link extends BaseEntity {
 
 export interface CreateLinkDto {
   url: string;
+  title?: string;
   projectId?: string;
   tags?: string[];
 }
 
 export interface UpdateLinkDto {
   title?: string;
+  userTitle?: boolean;
   tags?: string[];
   status?: LinkStatus;
   statusMessage?: string;
@@ -53,6 +56,10 @@ const linkSchema = new Schema(
       type: String,
       default: null,
       trim: true
+    },
+    userTitle: {
+      type: Boolean,
+      default: false
     },
     aiOutputId: {
       type: Schema.Types.ObjectId,

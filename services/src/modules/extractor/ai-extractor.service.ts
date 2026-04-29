@@ -3,13 +3,13 @@ import { GoogleGenAI } from '@google/genai';
 import { logger } from '../../utils/logger';
 import { config } from '../../config';
 import { extractorDebug } from './extractor-debug';
-import { FetchContentOptions, FetchContentResult } from './cheerio-extractor.service';
+import type { FetchContentOptions, FetchContentResult } from './extractor.service';
 
 class AiExtractorService {
   private ai: GoogleGenAI | null = null;
   private readonly defaultOptions: Required<Omit<FetchContentOptions, 'useAiExtractor'>> = {
-    timeout: 15000, // slightly higher timeout for AI
-    maxContentLength: 50000, // larger token window max
+    timeout: 15000,
+    maxContentLength: 25000,
     userAgent: 'Mozilla/5.0 (compatible; L2L-AI/1.0)'
   };
 
@@ -19,14 +19,6 @@ class AiExtractorService {
     } else {
       logger.warn('Google Gemini API key not configured properly. AI extraction will use mock data.');
     }
-  }
-
-  /**
-   * Fetch and extract content from URL using Gemini AI
-   */
-  async fetchContent(url: string, options: FetchContentOptions = {}): Promise<string> {
-    const result = await this.fetchContentWithMetadata(url, options);
-    return result.content;
   }
 
   /**
@@ -48,7 +40,7 @@ class AiExtractorService {
 
       const prompt = `You are an expert web scraper and data extraction AI.
 Visit the following URL and extract the main educational, informative, or article content found on that page.
-Do your best to retrieve the actual text from the webpage.
+Do your best to retrieve the actual text and data from the webpage.
 Exclude any navigation headers, footers, advertisements, sidebars, or unrelated elements.
 
 URL: ${url}
@@ -88,18 +80,19 @@ Output strictly valid JSON with the following structure:
       const truncatedContent = content.substring(0, opts.maxContentLength);
 
       const result: FetchContentResult = {
-        content: truncatedContent,
         url,
         fetchedAt: new Date(),
-        metadata: {
-          title: title.trim(),
-          description: description.trim(),
-          wordCount: content.split(/\s+/).length,
-          contentLength: truncatedContent.length
-        }
+        title: title.trim() || null,
+        description: description.trim() || null,
+        mainContent: truncatedContent,
+        contentLength: truncatedContent.length
       };
 
-      await extractorDebug.writeProcessedContent(url, result.content, result.metadata);
+      await extractorDebug.writeProcessedContent(url, result.mainContent, {
+        title: result.title ?? undefined,
+        description: result.description ?? undefined,
+        contentLength: result.contentLength
+      });
 
       return result;
     } catch (error: any) {
@@ -122,15 +115,12 @@ In a production environment, this would contain the actual educational or inform
     const truncatedContent = content.substring(0, opts.maxContentLength);
 
     return {
-      content: truncatedContent,
       url,
       fetchedAt: new Date(),
-      metadata: {
-        title: 'Mocked AI Extractor Title',
-        description: 'Mocked AI description for testing extraction pipelines',
-        wordCount: truncatedContent.split(/\s+/).length,
-        contentLength: truncatedContent.length
-      }
+      title: 'Mocked AI Extractor Title',
+      description: 'Mocked AI description for testing extraction pipelines',
+      mainContent: truncatedContent,
+      contentLength: truncatedContent.length
     };
   }
 }

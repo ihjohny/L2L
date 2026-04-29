@@ -6,7 +6,7 @@ import { projectService } from '../project/project.service';
 import LinkModel from '../../database/models/Link.model';
 import ProjectModel from '../../database/models/Project.model';
 import AiOutputModel from '../../database/models/AiOutput.model';
-import ExtractedDataModel from '../../database/models/ExtractedData.model';
+import ExtractedContentModel from '../../database/models/ExtractedContent.model';
 import JobModel from '../../database/models/Job.model';
 import { extractorService } from '../extractor';
 
@@ -80,21 +80,33 @@ function createProcessLinkWorker(): void {
         await JobModel.findByIdAndUpdate(job.id, { progress: 10 });
 
         // Step 1: Check/Fetch Extracted Content
-        let extractedData = await ExtractedDataModel.findByLink(linkId);
-        if (!extractedData) {
+        let extractedContent = await ExtractedContentModel.findByLink(linkId);
+        if (!extractedContent) {
           logger.info(`Extracting content for link: ${linkId} (${url})`);
-          const extractedText = await extractorService.fetchContent(url);
+          const fetchResult = await extractorService.fetchContentWithMetadata(url);
           
-          const validation = extractorService.validateContent(extractedText);
+          const validation = extractorService.validateContent(fetchResult.mainContent);
           if (!validation.valid) {
             throw new Error(validation.reason);
           }
 
-          extractedData = await ExtractedDataModel.create({
+          extractedContent = await ExtractedContentModel.create({
             linkId,
             url,
-            content: extractedText
+            fetchedAt: fetchResult.fetchedAt,
+            title: fetchResult.title,
+            description: fetchResult.description,
+            mainContent: fetchResult.mainContent,
+            contentLength: fetchResult.contentLength
           });
+
+          // Auto-fill link title from extracted content if user hasn't set one
+          const link = await LinkModel.findById(linkId);
+          if (link && !link.userTitle && extractedContent.title) {
+            link.title = extractedContent.title;
+            await link.save();
+            logger.info(`Auto-filled link title from extracted content: "${extractedContent.title}"`);
+          }
         }
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 33 });
@@ -103,7 +115,7 @@ function createProcessLinkWorker(): void {
         let summaryOutput = await AiOutputModel.findSummaryByLink(linkId);
         if (!summaryOutput) {
           logger.info(`Generating summary for link: ${linkId}`);
-          const summary = await aiService.generateSummary(extractedData.content);
+          const summary = await aiService.generateSummary(extractedContent.mainContent);
           summaryOutput = await AiOutputModel.create({
             sourceType: 'link',
             sourceId: linkId,
@@ -119,7 +131,7 @@ function createProcessLinkWorker(): void {
         let flashcardsOutput = await AiOutputModel.findFlashcardsByLink(linkId);
         if (!flashcardsOutput) {
           logger.info(`Generating flashcards for link: ${linkId}`);
-          const flashcards = await aiService.generateFlashcards(extractedData.content);
+          const flashcards = await aiService.generateFlashcards(extractedContent.mainContent);
           flashcardsOutput = await AiOutputModel.create({
             sourceType: 'link',
             sourceId: linkId,

@@ -1,22 +1,35 @@
 import { config } from '../../config';
-import { logger } from '../../utils/logger';
 import cheerioExtractorService from './cheerio-extractor.service';
 import aiExtractorService from './ai-extractor.service';
-import { FetchContentOptions, FetchContentResult } from './cheerio-extractor.service';
 
-export { FetchContentOptions, FetchContentResult };
+export interface FetchContentOptions {
+  timeout?: number;
+  maxContentLength?: number;
+  userAgent?: string;
+  useAiExtractor?: boolean;
+}
+
+export interface FetchContentResult {
+  url: string;
+  fetchedAt: Date;
+  title: string | null;
+  description: string | null;
+  mainContent: string;
+  contentLength: number;
+}
 
 class ExtractorFacade {
+
   /**
-   * Fetch and extract content from URL
+   * Fetch content with metadata (title, description, content length, etc.)
    */
-  async fetchContent(url: string, options: FetchContentOptions = {}): Promise<string> {
+  async fetchContentWithMetadata(url: string, options: FetchContentOptions = {}): Promise<FetchContentResult> {
     const useAi = options.useAiExtractor !== undefined ? options.useAiExtractor : config.extractor.useAiExtractor;
 
     if (useAi) {
-      return await aiExtractorService.fetchContent(url, options);
+      return await aiExtractorService.fetchContentWithMetadata(url, options);
     } else {
-      return cheerioExtractorService.fetchContent(url, options);
+      return cheerioExtractorService.fetchContentWithMetadata(url, options);
     }
   }
 
@@ -35,31 +48,6 @@ class ExtractorFacade {
     return { valid: true };
   }
 
-  /**
-   * Fetch multiple URLs in parallel with rate limiting
-   */
-  async fetchMultiple(urls: string[], options: FetchContentOptions = {}): Promise<Map<string, string>> {
-    const results = new Map<string, string>();
-
-    // Process in batches to avoid overwhelming servers
-    const batchSize = 5;
-    for (let i = 0; i < urls.length; i += batchSize) {
-      const batch = urls.slice(i, i + batchSize);
-      const promises = batch.map(async (url) => {
-        try {
-          const content = await this.fetchContent(url, options);
-          results.set(url, content);
-        } catch (error) {
-          logger.warn(`Failed to fetch ${url}:`, error);
-          results.set(url, '');
-        }
-      });
-
-      await Promise.all(promises);
-    }
-
-    return results;
-  }
 }
 
 const extractorService = new ExtractorFacade();

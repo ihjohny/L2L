@@ -30,7 +30,8 @@ class LinkService {
         }
       }
 
-      // Use provided title or extract from URL
+      // Use provided title or extract from URL as placeholder
+      const hasUserTitle = !!dto.title;
       const title = dto.title || this.extractTitleFromUrl(dto.url);
 
       // Create link with initial data
@@ -39,6 +40,7 @@ class LinkService {
         projectId: dto.projectId || null,
         url: dto.url,
         title,
+        userTitle: hasUserTitle,
         tags: dto.tags || [],
         status: 'pending'
       });
@@ -135,7 +137,10 @@ class LinkService {
         }
       }
 
-      if (dto.title !== undefined) link.title = dto.title;
+      if (dto.title !== undefined) {
+        link.title = dto.title;
+        link.userTitle = true; // User explicitly set the title
+      }
       if (dto.tags !== undefined) link.tags = dto.tags;
 
       await link.save();
