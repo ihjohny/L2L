@@ -8,7 +8,7 @@ export interface ExtractedContent extends BaseEntity {
   fetchedAt: Date;
   title: string | null;
   description: string | null;
-  mainContent: string; // The cleaned extracted text
+  mainContent: string;
   contentLength: number;
 }
 

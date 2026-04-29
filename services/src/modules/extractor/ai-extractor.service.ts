@@ -48,7 +48,7 @@ URL: ${url}
 Output strictly valid JSON with the following structure:
 {
   "title": "The parsed main title of the page",
-  "description": "A brief summary or the meta description of the page",
+  "description": "A summary or the meta description of the page",
   "content": "The cleaned, completely extracted text content of the primary article or body without HTML tags"
 }`;
 
