@@ -21,19 +21,6 @@ class ExtractorFacade {
   }
 
   /**
-   * Fetch content with metadata
-   */
-  async fetchContentWithMetadata(url: string, options: FetchContentOptions = {}): Promise<FetchContentResult> {
-    const useAi = options.useAiExtractor !== undefined ? options.useAiExtractor : config.extractor.useAiExtractor;
-
-    if (useAi) {
-      return await aiExtractorService.fetchContentWithMetadata(url, options);
-    } else {
-      return cheerioExtractorService.fetchContentWithMetadata(url, options);
-    }
-  }
-
-  /**
    * Validate if content is sufficient for AI processing
    */
   validateContent(content: string): { valid: boolean; reason?: string } {
