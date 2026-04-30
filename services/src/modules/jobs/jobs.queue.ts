@@ -206,17 +206,13 @@ function createGenerateCourseWorker(): void {
 
       try {
         // Update job status
-        await JobModel.findByIdAndUpdate(job.id, {
+        const dbJob = await JobModel.findByIdAndUpdate(job.id, {
           status: 'active',
           attempts: job.attemptsMade,
           progress: 5
         });
 
-        // Delete old course and quiz if they exist
-        const project = await ProjectModel.findById(projectId);
-        if (project && (project.aiOutput?.courseId || project.aiOutput?.quizId)) {
-          await projectService.deleteOldCourseAndQuiz(projectId);
-        }
+        const jobCreatedAt = dbJob?.createdAt || new Date(job.timestamp);
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 10 });
 
@@ -242,35 +238,59 @@ function createGenerateCourseWorker(): void {
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 30 });
 
-        // Generate course
-        const courseContent = await aiService.generateCourse(validSummaries);
+        // Step 1: Check/Generate Course
+        let courseOutput = await AiOutputModel.findLatestCourseByProject(projectId);
+        const isCourseFresh = courseOutput && courseOutput.createdAt && courseOutput.createdAt >= jobCreatedAt;
 
-        await JobModel.findByIdAndUpdate(job.id, { progress: 60 });
-
-        // Store course output first to get the ID
-        const courseOutput = await AiOutputModel.create({
-          sourceType: 'project',
-          sourceId: projectId,
-          type: 'course',
-          content: courseContent,
-          tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
-        });
+        if (!courseOutput || !isCourseFresh) {
+          logger.info(`Generating course for project: ${projectId}`);
+          const courseContent = await aiService.generateCourse(validSummaries);
+          courseOutput = await AiOutputModel.create({
+            sourceType: 'project',
+            sourceId: projectId,
+            type: 'course',
+            content: courseContent,
+            tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
+          });
+        } else {
+          logger.info(`Fresh course already exists for project: ${projectId}, skipping generation`);
+        }
 
         await JobModel.findByIdAndUpdate(job.id, { progress: 70 });
 
-        // Generate quiz (pass course ID for reference)
-        const quizContent = await aiService.generateQuiz(courseContent, courseOutput._id);
+        // Step 2: Check/Generate Quiz
+        let quizOutput = await AiOutputModel.findLatestQuizByProject(projectId);
+        const isQuizFresh = quizOutput && quizOutput.createdAt && quizOutput.createdAt >= jobCreatedAt;
 
-        await JobModel.findByIdAndUpdate(job.id, { progress: 80 });
+        if (!quizOutput || !isQuizFresh) {
+          logger.info(`Generating quiz for project: ${projectId}`);
+          const courseContent = courseOutput.content as any;
+          const quizContent = await aiService.generateQuiz(courseContent, courseOutput._id);
+          quizOutput = await AiOutputModel.create({
+            sourceType: 'project',
+            sourceId: projectId,
+            type: 'quiz',
+            content: quizContent,
+            tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
+          });
+        } else {
+          logger.info(`Fresh quiz already exists for project: ${projectId}, skipping generation`);
+        }
 
-        // Store quiz output
-        const quizOutput = await AiOutputModel.create({
-          sourceType: 'project',
-          sourceId: projectId,
-          type: 'quiz',
-          content: quizContent,
-          tokenUsage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }
-        });
+        await JobModel.findByIdAndUpdate(job.id, { progress: 85 });
+
+        // Delete old course and quiz AFTER new ones are safely stored
+        const project = await ProjectModel.findById(projectId);
+        if (project && (project.aiOutput?.courseId || project.aiOutput?.quizId)) {
+          // Only delete if the old IDs differ from the freshly generated ones
+          const oldCourseId = project.aiOutput?.courseId?.toString();
+          const oldQuizId = project.aiOutput?.quizId?.toString();
+          const newCourseId = courseOutput._id.toString();
+          const newQuizId = quizOutput._id.toString();
+          if (oldCourseId !== newCourseId || oldQuizId !== newQuizId) {
+            await projectService.deleteOldCourseAndQuiz(projectId);
+          }
+        }
 
         // Update project with course and quiz IDs
         await projectService.updateAiOutput(
