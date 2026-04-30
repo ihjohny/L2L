@@ -147,10 +147,10 @@ const config: Config = {
     useAiExtractor: process.env.USE_AI_EXTRACTOR === 'true'
   },
   jobs: {
-    attempts: parseInt(process.env.JOB_ATTEMPTS || '3', 10),
+    attempts: parseInt(process.env.JOB_ATTEMPTS || '5', 10),
     backoff: {
       type: process.env.JOB_BACKOFF_TYPE || 'exponential',
-      delay: parseInt(process.env.JOB_BACKOFF_DELAY || '2000', 10)
+      delay: parseInt(process.env.JOB_BACKOFF_DELAY || '3000', 10)
     }
   }
 };
