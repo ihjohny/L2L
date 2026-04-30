@@ -168,7 +168,7 @@ Required JSON schema:
   "description": string,     // 2-3 sentence overview of what students will learn and why it matters
   "lessons": [
     {
-      "title": string,       // Descriptive lesson title
+      "title": string,       // lesson title, keep it concise and catchy
       "content": string,     // Rich lesson body (at least 3-5 sentences) synthesising relevant source material
       "order": number        // 1-indexed lesson order
     }
