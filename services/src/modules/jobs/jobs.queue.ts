@@ -144,6 +144,7 @@ function createProcessLinkWorker(): void {
         // Update link with AI output ID (use summary as main output)
         await LinkModel.findByIdAndUpdate(linkId, {
           status: 'completed',
+          statusMessage: null,
           aiOutputId: summaryOutput._id
         });
 
