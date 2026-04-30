@@ -5,6 +5,7 @@ import JobModel from '../../database/models/Job.model';
 import { logger } from '../../utils/logger';
 import { AppError } from '../../utils/errors';
 import { getQueue, QUEUE_NAMES } from '../jobs/jobs.queue';
+import { config } from '../../config';
 
 interface CreateProjectDto {
   name: string;
@@ -230,10 +231,10 @@ class ProjectService {
         projectId
       }, {
         jobId: job._id.toString(),
-        attempts: 3,
+        attempts: config.jobs.attempts,
         backoff: {
-          type: 'exponential',
-          delay: 2000
+          type: config.jobs.backoff.type,
+          delay: config.jobs.backoff.delay
         },
         removeOnComplete: 100
       });
