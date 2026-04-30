@@ -11,7 +11,10 @@ export interface Project extends BaseEntity {
   name: string;
   description?: string | null;
   aiOutput?: ProjectAiOutput | null;
-  shouldSyncAiOutput?: boolean;
+  syncAiOutput?: {
+    course: boolean;
+    quiz: boolean;
+  };
   totalLinks: number;
   deletedAt?: Date | null;
 }
@@ -58,10 +61,15 @@ const projectSchema = new Schema(
         default: null
       }
     },
-    shouldSyncAiOutput: {
-      type: Boolean,
-      default: false,
-      index: true
+    syncAiOutput: {
+      course: {
+        type: Boolean,
+        default: false
+      },
+      quiz: {
+        type: Boolean,
+        default: false
+      }
     },
     totalLinks: {
       type: Number,
@@ -129,15 +137,23 @@ projectSchema.statics.clearAiOutput = function (projectId: string) {
 projectSchema.statics.markAiSyncRequired = function (projectId: string) {
   return this.findByIdAndUpdate(
     projectId,
-    { shouldSyncAiOutput: true },
+    { 'syncAiOutput.course': true, 'syncAiOutput.quiz': true },
     { new: true }
   );
 };
 
-projectSchema.statics.clearAiSyncRequired = function (projectId: string) {
+projectSchema.statics.clearCourseSyncRequired = function (projectId: string) {
   return this.findByIdAndUpdate(
     projectId,
-    { shouldSyncAiOutput: false },
+    { 'syncAiOutput.course': false },
+    { new: true }
+  );
+};
+
+projectSchema.statics.clearQuizSyncRequired = function (projectId: string) {
+  return this.findByIdAndUpdate(
+    projectId,
+    { 'syncAiOutput.quiz': false },
     { new: true }
   );
 };
@@ -150,7 +166,8 @@ interface ProjectModel extends Model<ProjectDocument> {
   updateAiOutput(projectId: string, courseId: string, quizId: string): Promise<ProjectDocument | null>;
   clearAiOutput(projectId: string): Promise<ProjectDocument | null>;
   markAiSyncRequired(projectId: string): Promise<ProjectDocument | null>;
-  clearAiSyncRequired(projectId: string): Promise<ProjectDocument | null>;
+  clearCourseSyncRequired(projectId: string): Promise<ProjectDocument | null>;
+  clearQuizSyncRequired(projectId: string): Promise<ProjectDocument | null>;
 }
 
 const ProjectModel = mongoose.model<ProjectDocument, ProjectModel>('Project', projectSchema);
