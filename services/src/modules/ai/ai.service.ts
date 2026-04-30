@@ -9,6 +9,8 @@ import {
 } from '../../database/models/AiOutput.model';
 import mongoose from 'mongoose';
 
+const MAX_CONTENT_LENGTH = 10000;
+
 class AiService {
   private ai: GoogleGenAI | null = null;
   private model: string;
@@ -55,9 +57,9 @@ Rules:
 - mainArgument must accurately capture the core message
 - Do not include any text outside the JSON object
 
-Content to summarize (first 5000 characters):
+Content to summarize (up to ${MAX_CONTENT_LENGTH} characters):
 ---
-${content.substring(0, 5000)}
+${content.substring(0, MAX_CONTENT_LENGTH)}
 ---`;
 
       const response = await this.ai.models.generateContent({
@@ -113,9 +115,9 @@ Rules:
 - Questions must be directly answerable from the provided content
 - Do not include any text outside the JSON object
 
-Content (first 5000 characters):
+Content (up to ${MAX_CONTENT_LENGTH} characters):
 ---
-${content.substring(0, 5000)}
+${content.substring(0, MAX_CONTENT_LENGTH)}
 ---`;
 
       const response = await this.ai.models.generateContent({
