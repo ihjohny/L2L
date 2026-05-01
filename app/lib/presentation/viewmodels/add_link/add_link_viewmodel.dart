@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/repositories/link_repository.dart';
 import '../../../../data/repositories/project_repository.dart';
+import '../../../../data/providers/projects_provider.dart';
+import '../../../../data/models/project_model.dart';
 import 'add_link_state.dart';
+
 import '../link_list/link_list_viewmodel.dart';
-import '../projects_list/projects_list_viewmodel.dart';
 
 /// ViewModel for add link operations.
 ///
@@ -18,21 +20,22 @@ class AddLinkViewModel extends StateNotifier<AddLinkState> {
     this._projectRepository,
     this._ref,
   ) : super(AddLinkState.initial()) {
-    loadProjects();
+    
+    // Listen to the common data source and sync local state
+    _ref.listen<AsyncValue<List<ProjectModel>>>(
+      projectsProvider,
+      (previous, next) {
+        if (next is AsyncData) {
+          state = state.copyWith(projects: next.value ?? []);
+        }
+      },
+      fireImmediately: true,
+    );
   }
 
-  /// Load existing projects for autocomplete.
+  /// Load existing projects for autocomplete via the common data source.
   Future<void> loadProjects() async {
-    final result = await _projectRepository.getProjects();
-    if (!mounted) return;
-    result.fold(
-      (projects) {
-        state = state.copyWith(projects: projects);
-      },
-      (_) {
-        // Silently fail - projects will be empty
-      },
-    );
+    await _ref.read(projectsProvider.notifier).fetchProjects();
   }
 
   /// Set URL field.
@@ -135,9 +138,9 @@ class AddLinkViewModel extends StateNotifier<AddLinkState> {
         newProjectName: null,
       );
 
-      // Refresh link list and project list to include the new link
+      // Refresh link list and project list to include the new link/project
       _ref.read(linkListViewModelProvider.notifier).loadLinks();
-      _ref.read(projectsListViewModelProvider.notifier).loadProjects();
+      _ref.read(projectsProvider.notifier).fetchProjects();
 
       return true;
     } catch (e) {

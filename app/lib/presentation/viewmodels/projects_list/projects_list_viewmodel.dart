@@ -1,39 +1,47 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../data/repositories/project_repository.dart';
+import '../../../../data/models/project_model.dart';
+import '../../../../data/providers/projects_provider.dart';
 import 'projects_list_state.dart';
 
 /// ViewModel for managing the list of projects.
 ///
 /// Handles loading and displaying all projects.
 class ProjectsListViewModel extends StateNotifier<ProjectsListState> {
-  final ProjectRepository _projectRepository;
+  final Ref _ref;
 
-  ProjectsListViewModel(this._projectRepository)
+  ProjectsListViewModel(this._ref)
       : super(const ProjectsListState(isLoading: true)) {
-    loadProjects();
+    
+    // Listen to the common data source and sync local state
+    _ref.listen<AsyncValue<List<ProjectModel>>>(
+      projectsProvider,
+      (previous, next) {
+        next.when(
+          data: (projects) {
+            state = state.copyWith(
+              projects: projects,
+              isLoading: false,
+              error: null,
+            );
+          },
+          error: (error, stackTrace) {
+            state = state.copyWith(
+              isLoading: false,
+              error: error.toString(),
+            );
+          },
+          loading: () {
+            state = state.copyWith(isLoading: true, error: null);
+          },
+        );
+      },
+      fireImmediately: true,
+    );
   }
 
-  /// Load all projects.
+  /// Load all projects via the common data source.
   Future<void> loadProjects() async {
-    state = state.copyWith(isLoading: true, error: null);
-
-    final result = await _projectRepository.getProjects();
-    if (!mounted) return;
-
-    result.fold(
-      (projects) {
-        state = state.copyWith(
-          projects: projects,
-          isLoading: false,
-        );
-      },
-      (error) {
-        state = state.copyWith(
-          isLoading: false,
-          error: error,
-        );
-      },
-    );
+    await _ref.read(projectsProvider.notifier).fetchProjects();
   }
 
   /// Clear error message.
@@ -45,6 +53,5 @@ class ProjectsListViewModel extends StateNotifier<ProjectsListState> {
 /// Provider for ProjectsListViewModel.
 final projectsListViewModelProvider =
     StateNotifierProvider<ProjectsListViewModel, ProjectsListState>((ref) {
-  final repository = ref.watch(projectRepositoryProvider);
-  return ProjectsListViewModel(repository);
+  return ProjectsListViewModel(ref);
 });
