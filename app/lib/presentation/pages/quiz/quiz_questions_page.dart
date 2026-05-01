@@ -902,13 +902,15 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
                 color: theme.colorScheme.onSurface.withOpacity(0.6),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Your answer: ${selectedAnswer >= 0 && selectedAnswer < question.options.length ? question.options[selectedAnswer] : 'Not answered'}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: isCorrect
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.error,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  'Your answer: ${selectedAnswer >= 0 && selectedAnswer < question.options.length ? question.options[selectedAnswer] : 'Not answered'}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: isCorrect
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.error,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -925,11 +927,13 @@ class _QuizQuestionsPageState extends ConsumerState<QuizQuestionsPage> {
                   color: theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  'Correct answer: ${question.correct >= 0 && question.correct < question.options.length ? question.options[question.correct] : 'N/A'}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    'Correct answer: ${question.correct >= 0 && question.correct < question.options.length ? question.options[question.correct] : 'N/A'}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
