@@ -166,7 +166,7 @@ class AddLinkViewModel extends StateNotifier<AddLinkState> {
 
 /// Provider for AddLinkViewModel.
 final addLinkViewModelProvider =
-    StateNotifierProvider<AddLinkViewModel, AddLinkState>((ref) {
+    StateNotifierProvider.autoDispose<AddLinkViewModel, AddLinkState>((ref) {
   final linkRepository = ref.watch(linkRepositoryProvider);
   final projectRepository = ref.watch(projectRepositoryProvider);
   return AddLinkViewModel(linkRepository, projectRepository, ref);
