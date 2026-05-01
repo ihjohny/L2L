@@ -96,6 +96,16 @@ class ProjectRepository {
     }
   }
 
+  /// Get the current status of course and quiz generation.
+  Future<Result<Map<String, dynamic>?>> getGenerationStatus(String projectId) async {
+    try {
+      final status = await _projectService.getGenerationStatus(projectId);
+      return Success(status);
+    } catch (e) {
+      return Failure(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
   /// Get course for a project.
   Future<Result<CourseModel>> getCourse(String projectId) async {
     try {

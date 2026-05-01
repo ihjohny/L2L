@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:l2l_app/data/models/project_model.dart';
 import '../../../../data/repositories/project_repository.dart';
 import '../../../../data/repositories/link_repository.dart';
 import '../../../../core/utils/navigation_triggers.dart';
-import '../../../../core/constants/app_constants.dart';
 import 'project_details_state.dart';
 
 /// ViewModel for managing project details.
@@ -13,9 +13,16 @@ import 'project_details_state.dart';
 class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
   final ProjectRepository _projectRepository;
   final Ref _ref;
+  Timer? _pollingTimer;
 
   ProjectDetailsViewModel(this._projectRepository, this._ref)
       : super(const ProjectDetailsState());
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
 
   /// Select a project and load its details, links, course and quiz.
   Future<void> selectProject(String projectId) async {
@@ -103,10 +110,34 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
     } else {
       state = state.copyWith(isLoadingQuiz: false);
     }
+
+    // Check if there is an active generation job
+    await _checkInitialGenerationStatus(projectId);
+  }
+
+  Future<void> _checkInitialGenerationStatus(String projectId) async {
+    final result = await _projectRepository.getGenerationStatus(projectId);
+    result.fold(
+      (statusData) {
+        if (statusData != null) {
+          final status = statusData['status'] as String?;
+          if (status == 'waiting' || status == 'active') {
+            final progress = statusData['progress'] as int? ?? 0;
+            state = state.copyWith(
+              isGenerating: true,
+              generationProgress: progress,
+            );
+            _startPolling(projectId);
+          }
+        }
+      },
+      (_) {},
+    );
   }
 
   /// Clear selected project.
   void clearSelectedProject() {
+    _pollingTimer?.cancel();
     state = const ProjectDetailsState(
       project: null,
       projectLinks: [],
@@ -148,21 +179,59 @@ class ProjectDetailsViewModel extends StateNotifier<ProjectDetailsState> {
   }
 
   /// Generate course and quiz from project links.
+  /// Generate course and quiz from project links.
   Future<void> generateCourseQuiz(String projectId) async {
+    state = state.copyWith(isGenerating: true, generationProgress: 0, error: ProjectDetailsState.nullValue);
     final result = await _projectRepository.generateCourseQuiz(projectId);
 
     if (!mounted) return;
 
     result.fold(
-      (data) async {
-        await Future.delayed(const Duration(seconds: AppConstants.reloadDelaySeconds));
-        // Course and quiz generation started - reload project to get updated IDs
-        await _reloadProjectData(projectId);
+      (data) {
+        // Start polling the backend for job status
+        _startPolling(projectId);
       },
       (error) {
-        state = state.copyWith(error: error);
+        state = state.copyWith(isGenerating: false, error: error);
       },
     );
+  }
+
+  void _startPolling(String projectId) {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+      final result = await _projectRepository.getGenerationStatus(projectId);
+      
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      result.fold(
+        (statusData) async {
+          if (statusData == null) return;
+          
+          final status = statusData['status'] as String?;
+          final progress = statusData['progress'] as int? ?? 0;
+
+          if (status == 'completed') {
+            timer.cancel();
+            state = state.copyWith(isGenerating: false, generationProgress: 100);
+            await _reloadProjectData(projectId);
+          } else if (status == 'failed') {
+            timer.cancel();
+            final failedReason = statusData['failedReason'] as String? ?? 'Generation failed';
+            state = state.copyWith(isGenerating: false, error: failedReason);
+          } else {
+            // Still waiting or active
+            state = state.copyWith(generationProgress: progress);
+          }
+        },
+        (error) {
+          // Could log polling error, but let's not break the loop immediately unless critical
+        },
+      );
+    });
   }
 
   /// Reload project data including course and quiz after generation

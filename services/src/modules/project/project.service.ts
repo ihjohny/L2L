@@ -212,6 +212,39 @@ class ProjectService {
     }
   }
 
+  async getGenerationStatus(projectId: string, userId: string) {
+    try {
+      // Verify project ownership
+      const project = await ProjectModel.findByIdAndUser(projectId, userId);
+      if (!project) {
+        throw new AppError('Project not found or unauthorized', 'NOT_FOUND', 404);
+      }
+
+      // Find the most recent generate_course job for this project
+      const job = await JobModel.findOne({
+        type: 'generate_course',
+        sourceType: 'project',
+        sourceId: projectId
+      }).sort({ createdAt: -1 });
+
+      if (!job) {
+        return null;
+      }
+
+      return {
+        jobId: job._id,
+        status: job.status,
+        progress: job.progress,
+        failedReason: job.failedReason,
+        createdAt: job.createdAt,
+        updatedAt: job.updatedAt
+      };
+    } catch (error: any) {
+      logger.error('Error in getGenerationStatus:', error);
+      throw error;
+    }
+  }
+
   private async queueCourseGenerationJob(userId: string, projectId: string) {
     try {
       const queue = await getQueue(QUEUE_NAMES.GENERATE_COURSE);

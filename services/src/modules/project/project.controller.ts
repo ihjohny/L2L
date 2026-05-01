@@ -115,6 +115,23 @@ class ProjectController {
     }
   }
 
+  async getGenerationStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.sub;
+      if (!userId) {
+        return errorResponse(res, 'UNAUTHORIZED', 'User not authenticated', 401);
+      }
+
+      const { projectId } = req.params;
+      const status = await projectService.getGenerationStatus(projectId, userId);
+
+      return successResponse(res, status, 'Generation status retrieved successfully');
+    } catch (error: any) {
+      logger.error('Error in getGenerationStatus controller:', error);
+      next(error);
+    }
+  }
+
   async getCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.sub;

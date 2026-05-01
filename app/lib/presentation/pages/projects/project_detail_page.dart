@@ -22,7 +22,6 @@ class ProjectDetailPage extends ConsumerStatefulWidget {
 }
 
 class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
-  bool _isGeneratingCourse = false;
 
   @override
   void initState() {
@@ -84,6 +83,28 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
       }
     });
 
+    // Listen to state changes for error messages and generation start
+    ref.listen<ProjectDetailsState>(projectDetailsViewModelProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${next.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        viewModel.clearError();
+      }
+      
+      if (previous?.isGenerating == false && next.isGenerating == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Course and quiz generation started!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Project Details'),
@@ -137,7 +158,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
     // Initial state - no AI output yet
     if (!state.hasAiOutput) {
       return GenerateAiOutputSection(
-        isGenerating: _isGeneratingCourse,
+        isGenerating: state.isGenerating,
+        progress: state.generationProgress,
         needsSync: false,
         onGenerate: _generateCourseQuiz,
       );
@@ -150,7 +172,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
         children: [
           // Show sync needed CTA at the top
           GenerateAiOutputSection(
-            isGenerating: _isGeneratingCourse,
+            isGenerating: state.isGenerating,
+            progress: state.generationProgress,
             needsSync: true,
             onGenerate: _generateCourseQuiz,
           ),
@@ -198,35 +221,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> {
   }
 
   Future<void> _generateCourseQuiz() async {
-    setState(() => _isGeneratingCourse = true);
-
-    try {
-      await ref
-          .read(projectDetailsViewModelProvider.notifier)
-          .generateCourseQuiz(widget.projectId);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Course and quiz generation started!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString().replaceAll("Exception: ", "")}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isGeneratingCourse = false);
-      }
-    }
+    await ref
+        .read(projectDetailsViewModelProvider.notifier)
+        .generateCourseQuiz(widget.projectId);
   }
 
   void _showDeleteConfirmation(BuildContext context) {

@@ -111,6 +111,22 @@ class ProjectService {
     }
   }
 
+  /// Get the current status of course and quiz generation
+  Future<Map<String, dynamic>?> getGenerationStatus(String projectId) async {
+    try {
+      final response = await _dioClient.dio.get(
+        '/projects/$projectId/generation-status',
+      );
+
+      if (response.statusCode == 200 && response.data['data'] != null) {
+        return response.data['data'] as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      throw _dioClient.handleError(e);
+    }
+  }
+
   /// Get course for a project
   Future<CourseModel> getCourse(String projectId) async {
     try {

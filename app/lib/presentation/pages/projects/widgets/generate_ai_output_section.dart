@@ -4,6 +4,7 @@ import '../../../widgets/app_button.dart';
 /// Widget displaying CTA to generate course and quiz
 class GenerateAiOutputSection extends StatelessWidget {
   final bool isGenerating;
+  final int progress;
   final VoidCallback onGenerate;
   final bool needsSync;
 
@@ -11,6 +12,7 @@ class GenerateAiOutputSection extends StatelessWidget {
     super.key,
     required this.isGenerating,
     required this.onGenerate,
+    this.progress = 0,
     this.needsSync = false,
   });
 
@@ -111,6 +113,29 @@ class GenerateAiOutputSection extends StatelessWidget {
               isLoading: isGenerating,
             ),
           ),
+
+          if (isGenerating) ...[
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: progress / 100,
+                minHeight: 8,
+                backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text(
+                '$progress% Completed',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -24,6 +24,10 @@ class ProjectDetailsState {
   final bool isLoadingCourse;
   final bool isLoadingQuiz;
 
+  // Generation Job State
+  final bool isGenerating;
+  final int generationProgress;
+
   /// Marker for explicitly setting nullable values to null
   static const nullValue = NullValue();
 
@@ -38,6 +42,8 @@ class ProjectDetailsState {
     this.quiz,
     this.isLoadingCourse = false,
     this.isLoadingQuiz = false,
+    this.isGenerating = false,
+    this.generationProgress = 0,
   });
 
   ProjectDetailsState copyWith({
@@ -51,6 +57,8 @@ class ProjectDetailsState {
     Object? quiz = nullValue,
     bool? isLoadingCourse,
     bool? isLoadingQuiz,
+    bool? isGenerating,
+    int? generationProgress,
   }) {
     return ProjectDetailsState(
       project: project is NullValue ? this.project : project as ProjectModel?,
@@ -63,6 +71,8 @@ class ProjectDetailsState {
       quiz: quiz is NullValue ? this.quiz : quiz as QuizModel?,
       isLoadingCourse: isLoadingCourse ?? this.isLoadingCourse,
       isLoadingQuiz: isLoadingQuiz ?? this.isLoadingQuiz,
+      isGenerating: isGenerating ?? this.isGenerating,
+      generationProgress: generationProgress ?? this.generationProgress,
     );
   }
 }
