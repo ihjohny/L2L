@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+
 interface Config {
   env: string;
   port: number;
@@ -141,7 +143,7 @@ const config: Config = {
   },
   gemini: {
     apiKey: process.env.GEMINI_API_KEY || '',
-    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+    model: process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL
   },
   extractor: {
     useAiExtractor: process.env.USE_AI_EXTRACTOR === 'true'

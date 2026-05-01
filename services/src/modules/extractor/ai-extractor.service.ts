@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 
 import { logger } from '../../utils/logger';
-import { config } from '../../config';
+import { config, DEFAULT_GEMINI_MODEL } from '../../config';
 import { extractorDebug } from './extractor-debug';
 import type { FetchContentOptions, FetchContentResult } from './extractor.service';
 
@@ -55,7 +55,7 @@ Output strictly valid JSON with the following structure:
       await extractorDebug.writeAiPrompt(url, prompt);
 
       const aiResponse = await this.ai.models.generateContent({
-        model: config.gemini.model || 'gemini-2.5-flash',
+        model: config.gemini.model || DEFAULT_GEMINI_MODEL,
         contents: prompt,
         config: {
           responseMimeType: 'application/json',

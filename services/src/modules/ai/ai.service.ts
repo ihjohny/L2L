@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { logger } from '../../utils/logger';
-import { config } from '../../config';
+import { config, DEFAULT_GEMINI_MODEL } from '../../config';
 import {
   SummaryContent,
   FlashcardsContent,
@@ -16,7 +16,7 @@ class AiService {
   private model: string;
 
   constructor() {
-    this.model = config.gemini.model || 'gemini-2.5-flash';
+    this.model = config.gemini.model || DEFAULT_GEMINI_MODEL;
     if (config.gemini.apiKey) {
       this.ai = new GoogleGenAI({ apiKey: config.gemini.apiKey });
     } else {
