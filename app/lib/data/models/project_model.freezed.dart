@@ -182,6 +182,174 @@ abstract class _ProjectAiOutput implements ProjectAiOutput {
       throw _privateConstructorUsedError;
 }
 
+SyncAiOutput _$SyncAiOutputFromJson(Map<String, dynamic> json) {
+  return _SyncAiOutput.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SyncAiOutput {
+  bool get course => throw _privateConstructorUsedError;
+  bool get quiz => throw _privateConstructorUsedError;
+
+  /// Serializes this SyncAiOutput to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SyncAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SyncAiOutputCopyWith<SyncAiOutput> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SyncAiOutputCopyWith<$Res> {
+  factory $SyncAiOutputCopyWith(
+          SyncAiOutput value, $Res Function(SyncAiOutput) then) =
+      _$SyncAiOutputCopyWithImpl<$Res, SyncAiOutput>;
+  @useResult
+  $Res call({bool course, bool quiz});
+}
+
+/// @nodoc
+class _$SyncAiOutputCopyWithImpl<$Res, $Val extends SyncAiOutput>
+    implements $SyncAiOutputCopyWith<$Res> {
+  _$SyncAiOutputCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SyncAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? course = null,
+    Object? quiz = null,
+  }) {
+    return _then(_value.copyWith(
+      course: null == course
+          ? _value.course
+          : course // ignore: cast_nullable_to_non_nullable
+              as bool,
+      quiz: null == quiz
+          ? _value.quiz
+          : quiz // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SyncAiOutputImplCopyWith<$Res>
+    implements $SyncAiOutputCopyWith<$Res> {
+  factory _$$SyncAiOutputImplCopyWith(
+          _$SyncAiOutputImpl value, $Res Function(_$SyncAiOutputImpl) then) =
+      __$$SyncAiOutputImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool course, bool quiz});
+}
+
+/// @nodoc
+class __$$SyncAiOutputImplCopyWithImpl<$Res>
+    extends _$SyncAiOutputCopyWithImpl<$Res, _$SyncAiOutputImpl>
+    implements _$$SyncAiOutputImplCopyWith<$Res> {
+  __$$SyncAiOutputImplCopyWithImpl(
+      _$SyncAiOutputImpl _value, $Res Function(_$SyncAiOutputImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SyncAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? course = null,
+    Object? quiz = null,
+  }) {
+    return _then(_$SyncAiOutputImpl(
+      course: null == course
+          ? _value.course
+          : course // ignore: cast_nullable_to_non_nullable
+              as bool,
+      quiz: null == quiz
+          ? _value.quiz
+          : quiz // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SyncAiOutputImpl implements _SyncAiOutput {
+  const _$SyncAiOutputImpl({this.course = false, this.quiz = false});
+
+  factory _$SyncAiOutputImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SyncAiOutputImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final bool course;
+  @override
+  @JsonKey()
+  final bool quiz;
+
+  @override
+  String toString() {
+    return 'SyncAiOutput(course: $course, quiz: $quiz)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SyncAiOutputImpl &&
+            (identical(other.course, course) || other.course == course) &&
+            (identical(other.quiz, quiz) || other.quiz == quiz));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, course, quiz);
+
+  /// Create a copy of SyncAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SyncAiOutputImplCopyWith<_$SyncAiOutputImpl> get copyWith =>
+      __$$SyncAiOutputImplCopyWithImpl<_$SyncAiOutputImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SyncAiOutputImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SyncAiOutput implements SyncAiOutput {
+  const factory _SyncAiOutput({final bool course, final bool quiz}) =
+      _$SyncAiOutputImpl;
+
+  factory _SyncAiOutput.fromJson(Map<String, dynamic> json) =
+      _$SyncAiOutputImpl.fromJson;
+
+  @override
+  bool get course;
+  @override
+  bool get quiz;
+
+  /// Create a copy of SyncAiOutput
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SyncAiOutputImplCopyWith<_$SyncAiOutputImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 ProjectModel _$ProjectModelFromJson(Map<String, dynamic> json) {
   return _ProjectModel.fromJson(json);
 }
@@ -193,7 +361,7 @@ mixin _$ProjectModel {
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   ProjectAiOutput? get aiOutput => throw _privateConstructorUsedError;
-  bool get shouldSyncAiOutput => throw _privateConstructorUsedError;
+  SyncAiOutput? get syncAiOutput => throw _privateConstructorUsedError;
   int get totalLinks => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -220,12 +388,13 @@ abstract class $ProjectModelCopyWith<$Res> {
       String name,
       String? description,
       ProjectAiOutput? aiOutput,
-      bool shouldSyncAiOutput,
+      SyncAiOutput? syncAiOutput,
       int totalLinks,
       DateTime createdAt,
       DateTime updatedAt});
 
   $ProjectAiOutputCopyWith<$Res>? get aiOutput;
+  $SyncAiOutputCopyWith<$Res>? get syncAiOutput;
 }
 
 /// @nodoc
@@ -248,7 +417,7 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
     Object? name = null,
     Object? description = freezed,
     Object? aiOutput = freezed,
-    Object? shouldSyncAiOutput = null,
+    Object? syncAiOutput = freezed,
     Object? totalLinks = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -274,10 +443,10 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
           ? _value.aiOutput
           : aiOutput // ignore: cast_nullable_to_non_nullable
               as ProjectAiOutput?,
-      shouldSyncAiOutput: null == shouldSyncAiOutput
-          ? _value.shouldSyncAiOutput
-          : shouldSyncAiOutput // ignore: cast_nullable_to_non_nullable
-              as bool,
+      syncAiOutput: freezed == syncAiOutput
+          ? _value.syncAiOutput
+          : syncAiOutput // ignore: cast_nullable_to_non_nullable
+              as SyncAiOutput?,
       totalLinks: null == totalLinks
           ? _value.totalLinks
           : totalLinks // ignore: cast_nullable_to_non_nullable
@@ -306,6 +475,20 @@ class _$ProjectModelCopyWithImpl<$Res, $Val extends ProjectModel>
       return _then(_value.copyWith(aiOutput: value) as $Val);
     });
   }
+
+  /// Create a copy of ProjectModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SyncAiOutputCopyWith<$Res>? get syncAiOutput {
+    if (_value.syncAiOutput == null) {
+      return null;
+    }
+
+    return $SyncAiOutputCopyWith<$Res>(_value.syncAiOutput!, (value) {
+      return _then(_value.copyWith(syncAiOutput: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -322,13 +505,15 @@ abstract class _$$ProjectModelImplCopyWith<$Res>
       String name,
       String? description,
       ProjectAiOutput? aiOutput,
-      bool shouldSyncAiOutput,
+      SyncAiOutput? syncAiOutput,
       int totalLinks,
       DateTime createdAt,
       DateTime updatedAt});
 
   @override
   $ProjectAiOutputCopyWith<$Res>? get aiOutput;
+  @override
+  $SyncAiOutputCopyWith<$Res>? get syncAiOutput;
 }
 
 /// @nodoc
@@ -349,7 +534,7 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? description = freezed,
     Object? aiOutput = freezed,
-    Object? shouldSyncAiOutput = null,
+    Object? syncAiOutput = freezed,
     Object? totalLinks = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -375,10 +560,10 @@ class __$$ProjectModelImplCopyWithImpl<$Res>
           ? _value.aiOutput
           : aiOutput // ignore: cast_nullable_to_non_nullable
               as ProjectAiOutput?,
-      shouldSyncAiOutput: null == shouldSyncAiOutput
-          ? _value.shouldSyncAiOutput
-          : shouldSyncAiOutput // ignore: cast_nullable_to_non_nullable
-              as bool,
+      syncAiOutput: freezed == syncAiOutput
+          ? _value.syncAiOutput
+          : syncAiOutput // ignore: cast_nullable_to_non_nullable
+              as SyncAiOutput?,
       totalLinks: null == totalLinks
           ? _value.totalLinks
           : totalLinks // ignore: cast_nullable_to_non_nullable
@@ -404,7 +589,7 @@ class _$ProjectModelImpl extends _ProjectModel {
       required this.name,
       this.description,
       this.aiOutput,
-      this.shouldSyncAiOutput = false,
+      this.syncAiOutput,
       this.totalLinks = 0,
       required this.createdAt,
       required this.updatedAt})
@@ -424,8 +609,7 @@ class _$ProjectModelImpl extends _ProjectModel {
   @override
   final ProjectAiOutput? aiOutput;
   @override
-  @JsonKey()
-  final bool shouldSyncAiOutput;
+  final SyncAiOutput? syncAiOutput;
   @override
   @JsonKey()
   final int totalLinks;
@@ -436,7 +620,7 @@ class _$ProjectModelImpl extends _ProjectModel {
 
   @override
   String toString() {
-    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutput: $aiOutput, shouldSyncAiOutput: $shouldSyncAiOutput, totalLinks: $totalLinks, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ProjectModel(id: $id, userId: $userId, name: $name, description: $description, aiOutput: $aiOutput, syncAiOutput: $syncAiOutput, totalLinks: $totalLinks, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -451,8 +635,8 @@ class _$ProjectModelImpl extends _ProjectModel {
                 other.description == description) &&
             (identical(other.aiOutput, aiOutput) ||
                 other.aiOutput == aiOutput) &&
-            (identical(other.shouldSyncAiOutput, shouldSyncAiOutput) ||
-                other.shouldSyncAiOutput == shouldSyncAiOutput) &&
+            (identical(other.syncAiOutput, syncAiOutput) ||
+                other.syncAiOutput == syncAiOutput) &&
             (identical(other.totalLinks, totalLinks) ||
                 other.totalLinks == totalLinks) &&
             (identical(other.createdAt, createdAt) ||
@@ -464,7 +648,7 @@ class _$ProjectModelImpl extends _ProjectModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, userId, name, description,
-      aiOutput, shouldSyncAiOutput, totalLinks, createdAt, updatedAt);
+      aiOutput, syncAiOutput, totalLinks, createdAt, updatedAt);
 
   /// Create a copy of ProjectModel
   /// with the given fields replaced by the non-null parameter values.
@@ -489,7 +673,7 @@ abstract class _ProjectModel extends ProjectModel {
       required final String name,
       final String? description,
       final ProjectAiOutput? aiOutput,
-      final bool shouldSyncAiOutput,
+      final SyncAiOutput? syncAiOutput,
       final int totalLinks,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$ProjectModelImpl;
@@ -509,7 +693,7 @@ abstract class _ProjectModel extends ProjectModel {
   @override
   ProjectAiOutput? get aiOutput;
   @override
-  bool get shouldSyncAiOutput;
+  SyncAiOutput? get syncAiOutput;
   @override
   int get totalLinks;
   @override

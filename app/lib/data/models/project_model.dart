@@ -17,6 +17,19 @@ class ProjectAiOutput with _$ProjectAiOutput {
 }
 
 @freezed
+class SyncAiOutput with _$SyncAiOutput {
+  const factory SyncAiOutput({
+    @Default(false) bool course,
+    @Default(false) bool quiz,
+  }) = _SyncAiOutput;
+
+  factory SyncAiOutput.fromJson(Map<String, dynamic> json) => SyncAiOutput(
+    course: json['course'] ?? false,
+    quiz: json['quiz'] ?? false,
+  );
+}
+
+@freezed
 class ProjectModel with _$ProjectModel {
   const ProjectModel._();
 
@@ -26,7 +39,7 @@ class ProjectModel with _$ProjectModel {
     required String name,
     String? description,
     ProjectAiOutput? aiOutput,
-    @Default(false) bool shouldSyncAiOutput,
+    SyncAiOutput? syncAiOutput,
     @Default(0) int totalLinks,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -40,7 +53,9 @@ class ProjectModel with _$ProjectModel {
     aiOutput: json['aiOutput'] != null
         ? ProjectAiOutput.fromJson(json['aiOutput'])
         : null,
-    shouldSyncAiOutput: json['shouldSyncAiOutput'] ?? false,
+    syncAiOutput: json['syncAiOutput'] != null
+        ? SyncAiOutput.fromJson(json['syncAiOutput'])
+        : null,
     totalLinks: json['totalLinks'] ?? 0,
     createdAt: json['createdAt'] != null
         ? DateTime.parse(json['createdAt'].toString())
@@ -70,5 +85,9 @@ extension ProjectModelX on ProjectModel {
 
   bool get hasQuiz => aiOutput?.quizId != null && aiOutput!.quizId!.isNotEmpty;
 
-  bool get needsAiSync => shouldSyncAiOutput;
+  bool get needsAiSync => syncAiOutput?.course == true || syncAiOutput?.quiz == true;
+
+  bool get needsCourseSync => syncAiOutput?.course == true;
+
+  bool get needsQuizSync => syncAiOutput?.quiz == true;
 }

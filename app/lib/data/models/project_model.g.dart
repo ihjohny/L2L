@@ -20,6 +20,18 @@ Map<String, dynamic> _$$ProjectAiOutputImplToJson(
       'quizId': instance.quizId,
     };
 
+_$SyncAiOutputImpl _$$SyncAiOutputImplFromJson(Map<String, dynamic> json) =>
+    _$SyncAiOutputImpl(
+      course: json['course'] as bool? ?? false,
+      quiz: json['quiz'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$$SyncAiOutputImplToJson(_$SyncAiOutputImpl instance) =>
+    <String, dynamic>{
+      'course': instance.course,
+      'quiz': instance.quiz,
+    };
+
 _$ProjectModelImpl _$$ProjectModelImplFromJson(Map<String, dynamic> json) =>
     _$ProjectModelImpl(
       id: json['id'] as String,
@@ -29,7 +41,9 @@ _$ProjectModelImpl _$$ProjectModelImplFromJson(Map<String, dynamic> json) =>
       aiOutput: json['aiOutput'] == null
           ? null
           : ProjectAiOutput.fromJson(json['aiOutput'] as Map<String, dynamic>),
-      shouldSyncAiOutput: json['shouldSyncAiOutput'] as bool? ?? false,
+      syncAiOutput: json['syncAiOutput'] == null
+          ? null
+          : SyncAiOutput.fromJson(json['syncAiOutput'] as Map<String, dynamic>),
       totalLinks: (json['totalLinks'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -42,7 +56,7 @@ Map<String, dynamic> _$$ProjectModelImplToJson(_$ProjectModelImpl instance) =>
       'name': instance.name,
       'description': instance.description,
       'aiOutput': instance.aiOutput,
-      'shouldSyncAiOutput': instance.shouldSyncAiOutput,
+      'syncAiOutput': instance.syncAiOutput,
       'totalLinks': instance.totalLinks,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
